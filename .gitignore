@@ -48,3 +48,7 @@ Temporary Items
 .Rhistory
 *.R~
 *.csv
+
+*.r#
+
+.#numSecCheck.r

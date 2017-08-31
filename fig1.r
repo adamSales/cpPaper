@@ -26,15 +26,35 @@ stud <- rbind(hs1[,1:100],hs2[,1:100])
 stud$field_id <- c(hs1$field_id,hs2$field_id)
 stud <- stud[stud$treatment==1,]
 
+totalTreatedStudents <- n_distinct(stud$field_id)
+
 prob <- x
 prob <- prob[prob$field_id%in%stud$field_id,]
-prob <- prob[!grepl('test',prob$section,ignore.case=TRUE),]
+for(vv in names(prob)){
+ if(is.factor(prob[[vv]])) prob[[vv]] <- as.character(prob[[vv]])
+ if(is.character(prob[[vv]]))
+  prob[[vv]] <- factor(tolower(prob[[vv]]))
+}
+prob$curriculum <- as.character(prob$curriculum)
+prob$curriculum[grep('cc',prob$curriculum)] <- 'CC'
+prob$curriculum <- sub('del_','',prob$curriculum)
+prob$curriculum <- factor(prob$curriculum)
 
-data <- merge(prob,stud,all.x=TRUE,all.y=FALSE)
+load('~/Box Sync/CT/data/sectionLevelUsageData/advanceData.RData')
+adv <- advance[advance$field_id%in%stud$field_id,]
+for(vv in names(adv)) if(is.factor(adv[[vv]])) levels(adv[[vv]]) <- tolower(levels(adv[[vv]]))
+adv$curriculum <- as.character(adv$curriculum)
+adv$curriculum[grep('cc',adv$curriculum)] <- 'CC'
+adv$curriculum <- sub('del_','',adv$curriculum)
+adv$curriculum <- factor(adv$curriculum)
 
-data$overall <- ifelse(grepl('cc-',data$curriculum),'Customized','Standard')
+data <- full_join(prob,adv)
 
-stud$obs <- stud$field_id%in%x$field_id
+data <- full_join(data,stud)
+
+data <- data[!grepl('test',data$section,ignore.case=TRUE),]
+
+data$overall <- data$curriculum=='CC'
 
 secByStud <- summarize(group_by(data,state,year,field_id,year,overall),numSec=n_distinct(section))
 
