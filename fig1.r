@@ -99,6 +99,9 @@ levels(data$state) <- names(sort(table(stud$state[stud$schoolid2%in%smallDiff]))
 
 
 
+
+
+
 secByStud <- summarize(group_by(data,state,year,field_id,year),numSec=n_distinct(section,na.rm=TRUE))
 secByStud$numSec[secByStud$numSec==0] <- NA
 
@@ -158,6 +161,14 @@ workedUnits$meanWorked <- workedUnits$numWorked/ifelse(workedUnits$year=='Year 1
 
 unitsWorked <- ggplot(workedUnits,aes(x=Unit,y=meanWorked,color=year,group=year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))
 
+## masteredUnits <- with(subset(unitLevel,grad==1),table(unit,year))[units,]
+## masteredUnits <- data.frame(numMastered=c(masteredUnits[,1],masteredUnits[,2]),year=c(rep('Year 1',length(units)),rep('Year 2',length(units))),
+##                           Unit=factor(rep(units,2),units))
+## masteredUnits$meanMastered <- masteredUnits$numMastered/ifelse(masteredUnits$year=='Year 1',
+##                                                        n_distinct(unitLevel$field_id[unitLevel$year==1 & !is.na(unitLevel$unit)]),
+##                                                        n_distinct(unitLevel$field_id[unitLevel$year==2 & !is.na(unitLevel$unit)]))
+
+## ggplot(masteredUnits,aes(x=Unit,y=meanMastered,color=year,group=year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))
 
 ### just to try it in a different way...
 ## use1 <- rbind(x[x$field_id%in%unique(data$field_id[data$year==1]),c('field_id','unit')],
@@ -178,3 +189,5 @@ unitsWorked <- ggplot(workedUnits,aes(x=Unit,y=meanWorked,color=year,group=year)
 
 ## workedUnits$mean2 <- c(means1,means2)
 #### OK it works (except for "unit conversions" which I messed around with)
+
+
