@@ -96,11 +96,11 @@ summary(mainEffMod <- glmer(obsUsage~state+grade+gradeNA+race+raceNA+sex+sexNA+s
 summary(missMod <- glmer(obsUsage~(state+grade+gradeNA+race+raceNA+sex+sexNA+spec_speced+specedNA+spec_gifted+spec_esl+eslNA+frl+frlNA+xirt+xirtNA)*year+(1|schoolid2),data=studImp,family=binomial))
 
 schoolMiss <- NULL
-for(scl in unique(studImp$schoolid2)){
+for(scl in unique(stud$schoolid2)){
  schoolMiss <- rbind(schoolMiss,with(stud,
   c(mean(obsUsage[year==1 & schoolid2==scl]),
     mean(obsUsage[year==2 & schoolid2==scl]))))}
-rownames(schoolMiss) <- unique(studImp$schoolid2)
+rownames(schoolMiss) <- unique(stud$schoolid2)
 schoolMiss <- cbind(schoolMiss,diff=schoolMiss[,1]-schoolMiss[,2])
 smallDiff <- rownames(schoolMiss)[!is.na(schoolMiss[,'diff']) & abs(schoolMiss[,'diff'])<0.4 & schoolMiss[,1]>0& schoolMiss[,2]>0]
 
