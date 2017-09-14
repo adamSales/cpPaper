@@ -38,14 +38,16 @@ for(vv in names(prob)){
   prob[[vv]] <- factor(tolower(prob[[vv]]))
 }
 prob$curriculum <- as.character(prob$curriculum)
-prob$curriculum[grep('cc',prob$curriculum)] <- 'CC'
+prob$curriculum[grep('cc',prob$curriculum)] <- 'Customized'
 prob$curriculum <- sub('del_','',prob$curriculum)
+prob$curriculum <- sub(' bonus','',prob$curriculum)
 prob$curriculum <- factor(prob$curriculum)
 
 adv <- advance[advance$field_id%in%stud$field_id,]
 for(vv in names(adv)) if(is.factor(adv[[vv]])) levels(adv[[vv]]) <- tolower(levels(adv[[vv]]))
 adv$curriculum <- as.character(adv$curriculum)
-adv$curriculum[grep('cc',adv$curriculum)] <- 'CC'
+adv$curriculum[grep('cc',adv$curriculum)] <- 'Customized'
+adv$curriculum <- sub(' bonus','',adv$curriculum)
 adv$curriculum <- sub('del_','',adv$curriculum)
 adv$curriculum <- factor(adv$curriculum)
 
@@ -69,20 +71,21 @@ data <- full_join(data,stud)
 
 data <- data[!grepl('test',data$section,ignore.case=TRUE),]
 
-data$overall <- ifelse(data$curriculum=='CC',
-                       'Customized','Standard')
-
+data$Curriculum <- factor(ifelse(data$curriculum=='Customized',
+                                 'Customized','Standard'),
+                          levels=c('Standard','Customized'))
 
 ##########################################################
 ### should we remove schools where usage missingness was very
 ### different between years 1 & 2??
 data <- data[data$schoolid2%in%smallDiff,]
 #############################################
+studPerState <- group_by(data,state)%>%summarize(nstud=n_distinct(field_id))
+data$State <- factor(data$state,levels=levels(data$state)[order(studPerState$nstud,decreasing=TRUE)])
 
-levels(data$state) <- names(sort(table(stud$state[stud$schoolid2%in%smallDiff])))
+data$Yr <- c('Yr 1','Yr 2')[data$year]
+data$Year <- c('Year 1','Year 2')[data$year]
 
-
-
-
+levels(data$curriculum) <- list(`Bridge-to-Algebra`='bridge-to-algebra',`Algebra I`='algebra i',`Algebra II`='algebra ii',Geometry='geometry',Customized='Customized')
 
 save(data,file='cpPaper.RData')

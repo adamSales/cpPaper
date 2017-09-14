@@ -15,95 +15,132 @@ dataA <- data
 ##  by=list(secLevel$field_id),FUN=length)
 source('dataMerge.r')
 
-secByStud <- summarize(group_by(data,state,year,field_id,year),numSec=n_distinct(section,na.rm=TRUE))
-secByStud$numSec[secByStud$numSec==0] <- NA
+data$state <- data$State
 
-secByStud$yearFac <- c('Yr 1','Yr 2')[secByStud$year]
+#### how much problem-level missingness is there (compared to section-level dataset)?
+smallDiffID <- unique(stud$field_id[stud$schoolid2%in%smallDiff])
+probSecs <- prob%>%filter(field_id%in%smallDiffID & !field_id%in%twice)%>%distinct(field_id,unit,section)
+
+advSecs <- adv%>%filter(field_id%in%smallDiffID & !field_id%in%twice)%>%distinct(field_id,unit,section)
+
+AS <- apply(advSecs,1,paste,collapse='')
+PS <- apply(probSecs,1,paste,collapse='')
+
+nboth <- length(intersect(AS,PS))
+nadv <- length(setdiff(AS,PS))
+npr <- length(setdiff(PS,AS))
+
+mean(AS%in%PS)
+mean(PS%in%AS)
+
+idsSecUn <- data%>%filter(field_id%in%setdiff(smallDiffID,twice))%>%group_by(field_id,section,unit)%>%summarize(probNA=all(is.na(Prob1)),advNA=all(is.na(status)))
+
+idsSecUn%>%ungroup()%>%summarize(both=mean(!probNA & !advNA),neither=mean(probNA & advNA),advOnly=mean(probNA &!advNA),probOnly=mean(advNA & !probNA))
+
+########################################
+### # sections by state/year
+#####################################
 
 
-secStateYear <- ggplot(secByStud,aes(yearFac,numSec))+geom_boxplot()+facet_grid(~state)+ylim(0,250)+labs(x='',y='Number of Sections Per Student')
-ggsave('fig1.jpg',width=6,height=3)
+secByStud <- summarize(group_by(data,state,Yr,field_id),numSec=n_distinct(section,na.rm=TRUE),time=sum(total_t1,na.rm=TRUE),mastered=n_distinct(section[status=='graduated'],na.rm=TRUE))
 
-#secStateYearCurr <- ggplot(secByStud,aes(yearFac,numSec,fill=Curriculum))+geom_boxplot()+facet_grid(~state)+ylim(0,250)+labs(x='',y='Number of Sections Per Student')
-#ggsave('fig1a.jpg',width=6,height=3)
+secByStud <- within(secByStud,{
+                        numSec[numSec==0] <- NA
+                        time[time==0] <- NA
+                        mastered[mastered==0] <- NA
+                    })
+
+print(secStateYear <- ggplot(secByStud,aes(Yr,numSec))+geom_boxplot()+facet_grid(~state)+coord_cartesian(ylim=c(0,250))+labs(x='',y='Number of Sections Per Student'))
+ggsave('numSecStateYear.jpg',width=6,height=3)
+
+secByStudCurr <- summarize(group_by(data,state,Yr,field_id,curriculum),numSec=n_distinct(section,na.rm=TRUE),time=sum(total_t1,na.rm=TRUE),mastered=n_distinct(section[status=='graduated'],na.rm=TRUE))
+
+secByStudCurr <- within(secByStudCurr,{
+                        numSec[numSec==0] <- NA
+                        time[time==0] <- NA
+                        mastered[mastered==0] <- NA
+                    })
+
+print(currStateYear <- ggplot(filter(secByStudCurr,!is.na(curriculum)),aes(Yr,numSec,fill=curriculum))+geom_boxplot())#+facet_grid(~state))
+
+currPer <- secByStudCurr %>%filter(!is.na(curriculum))%>%group_by(Yr,curriculum,state)%>%summarize(numSec=sum(numSec,na.rm=TRUE))
+currPer$perSec <- currPer$numSec/sapply(1:nrow(currPer),function(i) sum(currPer$numSec[currPer$state==currPer$state[i] & currPer$Yr==currPer$Yr[i]],na.rm=TRUE))
+levels(currPer$curriculum) <- list(`>Algebra I`=c('Algebra II','Geometry'),`Algebra I`='Algebra I',`Bridge-to-Algebra`='Bridge-to-Algebra',
+                                   Customized='Customized')
+
+print(currPerPlot <- ggplot(currPer,aes(Yr,perSec,fill=curriculum))+geom_col()+facet_grid(~state)+labs(y='% of Sections Worked',x='',fill='Curriculum'))
+ggsave('curricula.jpg',width=6,height=3)
 
 
-cc <- data %>% group_by(state,year,field_id,section) %>% summarize(curr=mean(overall=='Customized',na.rm=TRUE))
-perCCdat <- cc %>% filter(state%in%c('KY','TX','MI')) %>% group_by(state,year)%>% summarize(perCC=mean(curr,na.rm=TRUE))
+### time on system by state/year
+print(timeStateYear <- ggplot(secByStud,aes(Yr,time/3600000))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+coord_cartesian(ylim=c(0,100))+labs(x='',y='Time on CTAI Software per Student (Hours)'))
+ggsave('timeStatYear.jpg',width=6,height=3)
+
+### mastered sections by state/year
+print(mastStateYear <- ggplot(secByStud,aes(Yr,mastered))+geom_boxplot()+facet_grid(~state)+labs(x='',y='# Sections Mastered Per Student')+coord_cartesian(ylim=c(0,250)))
+ggsave('mastSecStateYear.jpg',width=6,height=3)
+
+
+##################################3
+### % of worked sections from customized vs standard curriculum
+##################################
+
+cc <- data %>% group_by(state,Year,field_id,section,Curriculum) %>% summarize(curr=mean(Curriculum=='Customized',na.rm=TRUE))%>% group_by(state,Year)%>% summarize(perCC=mean(curr,na.rm=TRUE))%>%filter(perCC>0.00000)
 
 #perCCdat <- data%>% filter(state%in%c('KY','TX','MI')) %>% group_by(state,year,section,overall) %>% mutate(perCC= mean(overall=='Customized'))
 
-perCCdat$yearFac <- ifelse(perCCdat$year==1,'Yr 1','Yr 2')
-percCC <- ggplot(perCCdat,aes(yearFac,perCC))+geom_col()+facet_grid(~state)+labs(x='',y='% Sections from Customized Curriculua')
+#perCCdat$yearFac <- ifelse(perCCdat$year==1,'Yr 1','Yr 2')
+print(percCC <- ggplot(cc,aes(Year,perCC))+geom_col()+facet_grid(~state)+labs(x='',y='% Sections from Customized Curriculua')+ylim(0,1))
 ggsave('percentCC.jpg',width=6,height=3)
 
-sectionLevelDat <- data%>% group_by(field_id,unit,section) %>% summarize(state=state[1],schoolidn=schoolidn[1],grdlvl=grdlvl[1],grade=grade[1],teachid=teachid[1],classid=classid[1],customized=mean(overall=='Customized',na.rm=TRUE),dateBegin=min(date,na.rm=TRUE),dateEnd=max(date,na.rm=TRUE),time=sum(total_t1,na.rm=TRUE),status=status[1],ndays=n_distinct(date,na.rm=TRUE),year=year[1],nprob=n_distinct(Prob1,na.rm=TRUE))
 
-studLevel <- sectionLevelDat%>%group_by(field_id)%>%summarize(state=state[1],schoolidn=schoolidn[1],grdlvl=grdlvl[1],grade=grade[1],teachid=teachid[1],classid=classid[1],customized=mean(customized,na.rm=TRUE),dateBegin=min(dateBegin,na.rm=TRUE),dateEnd=max(dateEnd,na.rm=TRUE),time=sum(time,na.rm=TRUE),nsec=n_distinct(section,na.rm=TRUE),grad=sum(status=='graduated',na.rm=TRUE),cp=sum(status=='changed placement',na.rm=TRUE),prom=sum(status=='promoted',na.rm=TRUE),ndays=sum(ndays,na.rm=TRUE),year=year[1],nprob=sum(nprob,na.rm=TRUE))
 
-sectionLevelDat <- within(sectionLevelDat,{
-                          nprob[nprob==0] <- NA
-                          time[time==0] <- NA
-                          ndays[ndays==0] <- NA
-                      })
-
-### mastered sections by state/year
-mastSec <- sectionLevelDat%>%group_by(state,year,field_id,year)%>%summarize(nGrad=mean(status=='graduated',na.rm=TRUE)*n())
-mastSec$yearFac <- c('Yr 1','Yr 2')[mastSec$year]
-
-mastStateYear <- ggplot(mastSec,aes(yearFac,nGrad))+geom_boxplot()+facet_grid(~state)+labs(x='',y='# Sections Mastered Per Student')+ylim(0,200)
-ggsave('fig3.jpg',width=6,height=3)
-
+#############################################
 ### which units were worked, by year
-sectionLevelDat$unit[grep('unit-conversions',sectionLevelDat$unit)] <- 'unit-conversions'
-unitLevel <- sectionLevelDat%>%group_by(field_id,unit)%>%summarize(state=state[1],schoolidn=schoolidn[1],grdlvl=grdlvl[1],grade=grade[1],teachid=teachid[1],classid=classid[1],customized=mean(customized,na.rm=TRUE),dateBegin=min(dateBegin,na.rm=TRUE),dateEnd=max(dateEnd,na.rm=TRUE),time=sum(time,na.rm=TRUE),cp=mean(status=='changed placement',na.rm=TRUE),grad=mean(status=='graduated',na.rm=TRUE),prom=mean(status=='promoted',na.rm=TRUE),finc=mean(status=='final_or_incomplete',na.rm=TRUE),ndays=sum(ndays,na.rm=TRUE),year=year[1],nprob=sum(nprob,na.rm=TRUE))
+#############################################3
 
 curricula <- read.csv('~/Box Sync/CT/data/sectionLevelUsageData/RAND_study_curricula.csv',stringsAsFactors=FALSE)
 curricula <- subset(curricula,curriculum_name=='algebra i')
 curricula$unit <- tolower(curricula$unit)
 curricula <- subset(curricula,unit%in%intersect(curricula$unit[curricula$ct=='2007'],curricula$unit[curricula$ct=='2008r1']))
 units <- curricula$unit[curricula$ct=='2007']
+sectionStats <- read.csv('~/Box Sync/CT/data/sectionLevelUsageData/section_stats.csv',stringsAsFactors=FALSE)
+UnitName <- sectionStats$unit_name[match(units,sectionStats$unit_id)]
+UnitName[units=='inequality-systems-solving'] <- 'Systems of Linear Inequalities'
+UnitName[units=='intro-pythag-theorem'] <- 'Pythagorean Theorem'
+UnitName[units=='linear-inequality-graphing'] <- 'Graphs of Linear Inequalities'
+UnitName[units=='linear-systems-solving'] <- 'Systems of Linear Equations'
+UnitName[units=='probability'] <- 'Probability'
+UnitName[units=='unit-conversions'] <- 'Unit Conversions'
 
+UnitName <- sub('Linear','Lin.',UnitName)
+UnitName <- sub('Model','Mod.',UnitName)
+UnitName <- sub('First','1st',UnitName)
+UnitName <- sub('Independent','Ind',UnitName)
+UnitName <- sub('Variable','Var.',UnitName)
+UnitName <- sub('Equation','Eq.',UnitName)
+UnitName <- sub('Graph','Gph',UnitName)
+UnitName <- sub('Quadrant|Quadratic','Quad.',UnitName)
+UnitName <- sub('Intercept','Int',UnitName)
+UnitName <- sub('Property','Prop.',UnitName)
+UnitName <- sub('Distributive','Dist.',UnitName)
+UnitName <- sub(' A','',UnitName)
+UnitName <- sub('.s','s',UnitName)
 
+nstud <- data%>%filter(!is.na(unit))%>%group_by(Year)%>%summarize(nstud=n_distinct(field_id))
+data$Unit <- data$unit
+data$Unit[grep('unit-conversions',data$Unit)] <- 'unit-conversions'
 
-workedUnits <- table(unitLevel$unit,unitLevel$year)[units,]
-workedUnits <- data.frame(numWorked=c(workedUnits[,1],workedUnits[,2]),year=c(rep('Year 1',length(units)),rep('Year 2',length(units))),
-                          Unit=factor(rep(units,2),units))
-workedUnits$meanWorked <- workedUnits$numWorked/ifelse(workedUnits$year=='Year 1',
-                                                       n_distinct(unitLevel$field_id[unitLevel$year==1 & !is.na(unitLevel$unit)]),
-                                                       n_distinct(unitLevel$field_id[unitLevel$year==2 & !is.na(unitLevel$unit)]))
+unitLevel <- data%>%filter(Unit%in%units)%>%group_by(Unit,Year)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
 
+unitLevel$perWorked <- unitLevel$numWorked/nstud$nstud[match(unitLevel$Year,nstud$Year)]
 
-unitsWorked <- ggplot(workedUnits,aes(x=Unit,y=meanWorked,color=year,group=year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))
+unitLevel$Unit <- factor(unitLevel$Unit,levels=units)
+levels(unitLevel$Unit) <- UnitName
 
-## masteredUnits <- with(subset(unitLevel,grad==1),table(unit,year))[units,]
-## masteredUnits <- data.frame(numMastered=c(masteredUnits[,1],masteredUnits[,2]),year=c(rep('Year 1',length(units)),rep('Year 2',length(units))),
-##                           Unit=factor(rep(units,2),units))
-## masteredUnits$meanMastered <- masteredUnits$numMastered/ifelse(masteredUnits$year=='Year 1',
-##                                                        n_distinct(unitLevel$field_id[unitLevel$year==1 & !is.na(unitLevel$unit)]),
-##                                                        n_distinct(unitLevel$field_id[unitLevel$year==2 & !is.na(unitLevel$unit)]))
+print(unitsWorked <- ggplot(unitLevel,aes(x=Unit,y=perWorked,color=Year,group=Year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))+labs(x='',y='% Worked'))
 
-## ggplot(masteredUnits,aes(x=Unit,y=meanMastered,color=year,group=year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))
-
-### just to try it in a different way...
-## use1 <- rbind(x[x$field_id%in%unique(data$field_id[data$year==1]),c('field_id','unit')],
-##               advance[advance$field_id%in%unique(data$field_id[data$year==1]),c('field_id','unit')])
-## use1 <- use1[!duplicated(use1),]
-## use1$year <- 1
-
-## use1S <- split(use1,use1$field_id)
-## means1 <- sapply(units,function(unit) mean(sapply(use1S,function(sss) is.element(unit,sss$unit))))
-
-## use2 <- rbind(x[x$field_id%in%unique(data$field_id[data$year==2]),c('field_id','unit')],
-##               advance[advance$field_id%in%unique(data$field_id[data$year==2]),c('field_id','unit')])
-## use2 <- use2[!duplicated(use2),]
-## use2$year <- 2
-
-## use2S <- split(use2,use2$field_id)
-## means2 <- sapply(units,function(unit) mean(sapply(use2S,function(sss) is.element(unit,sss$unit))))
-
-## workedUnits$mean2 <- c(means1,means2)
-#### OK it works (except for "unit conversions" which I messed around with)
+print(unitCPs <- ggplot(filter(unitLevel,numWorked>100),aes(x=Unit,y=meanCP,color=Year,group=Year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))+labs(x='',y='% Reassigned'))
 
 
 ### problems per unit by year
@@ -145,7 +182,7 @@ nprob2 <- data%>%filter(!is.na(Prob1))%>%group_by(field_id)%>%summarize(year=yea
 
 ### days per section
 daysTimePerSec <- data%>%
-    filter(!(state=='MI'&overall=='Customized'))%>%
+    filter(!(state=='MI'&overall=='Customized'&year==1))%>%
     group_by(field_id,year,state,section,overall)%>%
         summarize(days=max(date,na.rm=TRUE)-min(date,na.rm=TRUE),
                   ndays=n_distinct(date,na.rm=TRUE),
@@ -153,6 +190,7 @@ daysTimePerSec <- data%>%
             mutate(Year=c('Yr 1','Yr 2')[year],
                    Curriculum=factor(overall,levels=c('Standard','Customized')),
                    time=time/60000)
+
 
 
 daysTimePerSec <- within(daysTimePerSec,{
@@ -165,7 +203,17 @@ daysTimePerSec <- within(daysTimePerSec,{
             ##               days=mean(days,na.rm=TRUE),
             ##               time=mean(time,na.rm=TRUE))
 
+timePerSecGrad <- data%>%
+    filter(!(state=='MI'&overall=='Customized'&year==1) & status=='graduated')%>%
+    group_by(field_id,year,state,section,overall)%>%
+        summarize(time=sum(total_t1,na.rm=TRUE))%>%
+            mutate(Year=c('Yr 1','Yr 2')[year],
+                   Curriculum=factor(overall,levels=c('Standard','Customized')),
+                   time=time/60000)
 
+timePerSecGrad <- within(timePerSecGrad,{
+                             time[time==0]=NA
+                             time[!is.finite(time)]=NA})
 
 
 
@@ -173,6 +221,55 @@ print(daysSec <- ggplot(daysTimePerSec,aes(x=Year,y=days,fill=Curriculum))+geom_
 
 print(ndaySec <- ggplot(daysTimePerSec,aes(x=Year,y=ndays,fill=Curriculum))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+ylim(0,7))
 
-print(timeSec <- ggplot(daysTimePerSec,aes(x=Year,y=time,fill=Curriculum))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+ylim(0,200)+labs(ylab='Minutes Per Section',xlab=NULL))
+print(timeSec <- ggplot(daysTimePerSec,aes(x=Year,y=time,fill=Curriculum))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+ylim(0,200)+labs(y='Minutes Per Section',xlab=NULL))
 
+ggsave('timePerSec.pdf')
+
+print(timeSec <- ggplot(daysTimePerSec,aes(x=Year,y=time))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+ylim(0,200)+labs(y='Minutes Per Section',x=NULL))
+
+print(timeSecGrad <- ggplot(timePerSecGrad,aes(x=Year,y=time,fill=Curriculum))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+ylim(0,200)+labs(ylab='Minutes Per Section',xlab=NULL))
+ggsave('timePerSecGrad.pdf')
+
+
+
+##### CPs
+statusPerSec <- data%>%
+    filter(!is.na(Curriculum) &!(state=='MI'&Curriculum=='Customized'&year==1))%>%
+    group_by(field_id,Yr,state,section,Curriculum,status)%>%
+        summarize(cp=any(status=='changed placement'))%>%group_by(state,Curriculum,Yr,field_id)%>%summarise(pcp=mean(cp,na.rm=TRUE),ncp=sum(cp,na.rm=TRUE))
+
+print(cpByStud <- ggplot(statusPerSec,aes(x=Yr,y=pcp,fill=Curriculum))+geom_boxplot()+facet_grid(~state))
+ggsave('cpByStud.jpg',width=6,height=3)
+
+### how many classmates graduated, promoted, CP'd same section before i?
+## section-level data:
+
+data$status <- ordered(data$status,c('final_or_incomplete','changed placement','promoted','graduated'))
+secLev <- data%>%group_by(field_id,unit,section,Year,Yr,curriculum,classid2,schoolid2)%>%
+    summarize(startDate=min(date,na.rm=TRUE),endDate=max(date,na.rm=TRUE),state=state[1],status=max(status,na.rm=TRUE))
+secLev$status[!is.finite(secLev$status)] <- NA
+
+countFun <- function(i,cdat){
+    id <- cdat$field_id[i]
+    ed <- cdat$endDate[i]
+    cdat <- subset(cdat,field_id!=id & endDate<ed)
+    c(graduatedBefore=sum(cdat$status=='graduated',na.rm=TRUE),
+      promotedBefore=sum(cdat$status=='promoted',na.rm=TRUE),
+      cpBefore=sum(cdat$status=='changed placement',na.rm=TRUE))
+}
+
+cdatFun <- function(cdat){
+    cdat$total <- nrow(cdat)
+    if(all(!is.finite(cdat$endDate))){
+        cdat$graduatedBefore <- NA
+        cdat$promotedBefore <- NA
+        cdat$cpBefore <- NA
+        return(cdat)
+    }
+    cdat <- cbind(cdat,do.call('rbind',lapply(1:nrow(cdat),countFun,cdat=cdat)))
+    cdat
+}
+
+cpOrd <- secLev%>%group_by(unit,section,Year,classid2)%>%do(cdatFun(.))
+save(cpOrd,file='cpOrd.RData')
 
