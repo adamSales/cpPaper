@@ -1,3 +1,5 @@
+library(scales)
+library(reshape2)
 library(dplyr)
 library(ggplot2)
 
@@ -13,7 +15,13 @@ dataA <- data
 ## secLevel <- aggregate(data,by=list(state=data$state,curriculum=data$curriculum,field_id=data$field_id,year=data$year,section=data$section,overall=data$overall),FUN=length)
 ## secByStud <- aggregate(subset(secLevel,select=c(state,year,section,field_id,overall,)),
 ##  by=list(secLevel$field_id),FUN=length)
+
+## either:
 source('dataMerge.r')
+
+## or:
+load('cpPaper.RData')
+
 
 data$state <- data$State
 
@@ -104,43 +112,29 @@ curricula <- subset(curricula,curriculum_name=='algebra i')
 curricula$unit <- tolower(curricula$unit)
 curricula <- subset(curricula,unit%in%intersect(curricula$unit[curricula$ct=='2007'],curricula$unit[curricula$ct=='2008r1']))
 units <- curricula$unit[curricula$ct=='2007']
-sectionStats <- read.csv('~/Box Sync/CT/data/sectionLevelUsageData/section_stats.csv',stringsAsFactors=FALSE)
-UnitName <- sectionStats$unit_name[match(units,sectionStats$unit_id)]
-UnitName[units=='inequality-systems-solving'] <- 'Systems of Linear Inequalities'
+sectionStats <- read.csv('~/Box Sync/CT/data/sectionLevelUsageData/section_stats_withAbb.csv',stringsAsFactors=FALSE)
+UnitName <- sectionStats$unit_name_abb[match(units,sectionStats$unit_id)]
+UnitName[units=='inequality-systems-solving'] <- 'Systems of Lin. Ineq.'
 UnitName[units=='intro-pythag-theorem'] <- 'Pythagorean Theorem'
-UnitName[units=='linear-inequality-graphing'] <- 'Graphs of Linear Inequalities'
-UnitName[units=='linear-systems-solving'] <- 'Systems of Linear Equations'
+UnitName[units=='linear-inequality-graphing'] <- 'Graphs of Lin. Ineq.'
+UnitName[units=='linear-systems-solving'] <- 'Systems of Lin. Eq.'
 UnitName[units=='probability'] <- 'Probability'
 UnitName[units=='unit-conversions'] <- 'Unit Conversions'
-
-UnitName <- sub('Linear','Lin.',UnitName)
-UnitName <- sub('Model','Mod.',UnitName)
-UnitName <- sub('First','1st',UnitName)
-UnitName <- sub('Independent','Ind',UnitName)
-UnitName <- sub('Variable','Var.',UnitName)
-UnitName <- sub('Equation','Eq.',UnitName)
-UnitName <- sub('Graph','Gph',UnitName)
-UnitName <- sub('Quadrant|Quadratic','Quad.',UnitName)
-UnitName <- sub('Intercept','Int',UnitName)
-UnitName <- sub('Property','Prop.',UnitName)
-UnitName <- sub('Distributive','Dist.',UnitName)
-UnitName <- sub(' A','',UnitName)
-UnitName <- sub('.s','s',UnitName)
 
 nstud <- data%>%filter(!is.na(unit))%>%group_by(Year)%>%summarize(nstud=n_distinct(field_id))
 data$Unit <- data$unit
 data$Unit[grep('unit-conversions',data$Unit)] <- 'unit-conversions'
 
-unitLevel <- data%>%filter(Unit%in%units)%>%group_by(Unit,Year)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
+unitLevel <- data%>%filter(Unit%in%units)%>%group_by(Unit,Year,state)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
 
 unitLevel$perWorked <- unitLevel$numWorked/nstud$nstud[match(unitLevel$Year,nstud$Year)]
 
 unitLevel$Unit <- factor(unitLevel$Unit,levels=units)
 levels(unitLevel$Unit) <- UnitName
 
-print(unitsWorked <- ggplot(unitLevel,aes(x=Unit,y=perWorked,color=Year,group=Year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))+labs(x='',y='% Worked'))
+print(unitsWorked <- ggplot(unitLevel,aes(x=Unit,y=perWorked,color=Year,group=Year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))+labs(x='',y='% Worked')+theme(legend.position='top'))
 
-print(unitCPs <- ggplot(filter(unitLevel,numWorked>100),aes(x=Unit,y=meanCP,color=Year,group=Year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))+labs(x='',y='% Reassigned'))
+print(unitCPs <- ggplot(filter(unitLevel,numWorked>100),aes(x=Unit,y=meanCP,color=Year,group=Year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))+labs(x='',y='% Reassigned')+theme(legend.position='top'))
 
 
 ### problems per unit by year
@@ -248,15 +242,21 @@ data$status <- ordered(data$status,c('final_or_incomplete','changed placement','
 secLev <- data%>%group_by(field_id,unit,section,Year,Yr,curriculum,classid2,schoolid2)%>%
     summarize(startDate=min(date,na.rm=TRUE),endDate=max(date,na.rm=TRUE),state=state[1],status=max(status,na.rm=TRUE))
 secLev$status[!is.finite(secLev$status)] <- NA
+secLev$endDate[!is.finite(secLev$endDate)] <- NA
 
-countFun <- function(i,cdat){
-    id <- cdat$field_id[i]
-    ed <- cdat$endDate[i]
+countFun <- function(id,ed,cdat){
+#    id <- cdat$field_id[i]
+#    ed <- cdat$endDate[i]
     cdat <- subset(cdat,field_id!=id & endDate<ed)
     c(graduatedBefore=sum(cdat$status=='graduated',na.rm=TRUE),
       promotedBefore=sum(cdat$status=='promoted',na.rm=TRUE),
       cpBefore=sum(cdat$status=='changed placement',na.rm=TRUE))
 }
+
+secLevSplit <- split(secLev,with(secLev,list(unit,section,classid2)))
+secLevCP <- subset(secLev,status=='changed placement')
+cpOrd <- do.call('rbind',lapply(1:nrow(secLevCP),function(i) with(secLevCP,countFun(id=field_id[i],ed=endDate[i],cdat=secLevSplit[[paste(unit[i],section[i],classid2[i],sep='.')]]))))
+save(cpOrd,file='cpOrd.RData')
 
 cdatFun <- function(cdat){
     cdat$total <- nrow(cdat)
@@ -272,4 +272,87 @@ cdatFun <- function(cdat){
 
 cpOrd <- secLev%>%group_by(unit,section,Year,classid2)%>%do(cdatFun(.))
 save(cpOrd,file='cpOrd.RData')
+
+cpOrd$perc_graduatedBefore=cpOrd$graduatedBefore/(cpOrd$total-1)
+cpOrd$perc_promotedBefore=cpOrd$promotedBefore/(cpOrd$total-1)
+cpOrd$perc_changedplacementBefore=cpOrd$cpBefore/(cpOrd$total-1)
+cpOrd$perc_totalBefore=cpOrd$perc_changedplacementBefore+cpOrd$perc_promotedBefore+cpOrd$perc_graduatedBefore
+
+mean(cpOrd$perc_totalBefore,na.rm=TRUE)
+
+#### overall by year
+ordOverall <- cpOrd%>%group_by(Year)%>%summarize(Mastered=mean(perc_graduatedBefore,na.rm=TRUE),Promoted=mean(perc_promotedBefore,na.rm=TRUE),Reassigned=mean(perc_changedplacementBefore,na.rm=TRUE))%>%melt()
+
+ggplot(ordOverall,aes(x=Year,y=value,fill=variable))+geom_bar(stat="identity")+scale_y_continuous(labels=percent)+labs(x='',y='% of Classmates',fill='Classmates\' \nSection Status')+coord_flip()+theme(legend.position='top')
+
+cpOrd <- cpOrd%>%filter(unit %in% units)
+cpOrd$unit <- factor(cpOrd$unit,levels=units)
+levels(cpOrd$unit) <- UnitName
+
+cpOrd1 <- subset(cpOrd,status=='changed placement' & Year=='Year 1')
+cpOrd2 <- subset(cpOrd,status=='changed placement' & Year=='Year 2')
+
+cpOrdUnit1 <- aggregate(cpOrd1[,c('perc_graduatedBefore','perc_promotedBefore','perc_changedplacementBefore')],by=list(unit=cpOrd1$unit),FUN=mean,na.rm=TRUE)
+cpOrdUnit2 <- aggregate(cpOrd2[,c('perc_graduatedBefore','perc_promotedBefore','perc_changedplacementBefore')],by=list(unit=cpOrd2$unit),FUN=mean,na.rm=TRUE)
+
+cpOrdUnit1 <- reshape2::melt(cpOrdUnit1)
+cpOrdUnit2 <- reshape2::melt(cpOrdUnit2)
+
+cpOrdUnit1$Year <- 'Year 1'
+cpOrdUnit2$Year <- 'Year 2'
+cpOrdUnit <- rbind(cpOrdUnit1,cpOrdUnit2)
+
+levels(cpOrdUnit$variable) <- c('Mastered','Promoted','Reassigned')
+
+ggplot(data=cpOrdUnit, aes(x=unit, y=value, fill=variable)) +
+  geom_bar(stat="identity") +   theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5)) +
+  labs(x='',y='% of Classmates',fill='Classmates\' \nSection Status')+facet_grid(Year~.)
+ggsave('beforeCP.pdf',width=6.5,height=5)
+
+
+
+#### cp % by class total
+cpOrd1$ClassSize <- cpOrd1$total
+cpOrd1$ClassSize[cpOrd1$ClassSize>=25] <- 25
+cpOrd2$ClassSize <- cpOrd2$total
+cpOrd2$ClassSize[cpOrd2$ClassSize>=25] <- 25
+
+cpOrdTotal1 <- aggregate(cpOrd1[,c('perc_graduatedBefore','perc_promotedBefore','perc_changedplacementBefore')],by=list(total=cpOrd1$ClassSize),FUN=mean,na.rm=TRUE)
+cpOrdTotal2 <- aggregate(cpOrd2[,c('perc_graduatedBefore','perc_promotedBefore','perc_changedplacementBefore')],by=list(total=cpOrd2$ClassSize),FUN=mean,na.rm=TRUE)
+
+cpOrdTotal1 <- reshape2::melt(cpOrdTotal1,id='total')
+cpOrdTotal2 <- reshape2::melt(cpOrdTotal2,id='total')
+
+cpOrdTotal1$Year <- 'Year 1'
+cpOrdTotal2$Year <- 'Year 2'
+cpOrdTotal <- rbind(cpOrdTotal1,cpOrdTotal2)
+
+levels(cpOrdTotal$variable) <- c('Mastered','Promoted','Reassigned')
+
+ggplot(data=cpOrdTotal, aes(x=total, y=value, fill=variable)) +
+  geom_bar(stat="identity") +   theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5)) +
+  labs(x='Class Size (in Dataset)',y='% of Classmates',fill='Classmates\' Section Status:')+facet_grid(Year~.)+theme(legend.position='top')+
+  scale_x_continuous(breaks=seq(0,25,5),labels=c(seq(0,20,5),'25+'))
+
+ggsave('beforeCPsize.pdf',width=6.5,height=5)
+
+
+
+### usage over time
+nsecByDate <- secLev%>%filter(!is.na(section) & !is.na(endDate) & !(Yr=='Yr 1' & endDate>as.Date('06/30/2008',format='%m/%d/%Y')) & !(Yr=='Yr 2' & endDate<as.Date('07/01/2008',format='%m/%d/%Y')))%>%mutate(month=months(endDate,abb=TRUE))%>%group_by(field_id,Year,month)%>%summarize(nsec=n())%>%group_by(Year,month)%>%summarize(nsec=median(nsec,na.rm=TRUE))
+
+cpPerByDate <- secLev%>%filter(!is.na(section) & !is.na(endDate) & !(Yr=='Yr 1' & endDate>as.Date('06/30/2008',format='%m/%d/%Y')) & !(Yr=='Yr 2' & endDate<as.Date('07/01/2008',format='%m/%d/%Y')))%>%mutate(month=months(endDate,abb=TRUE))%>%group_by(Year,month)%>%summarize(cpPer=mean(status=='changed placement',na.rm=TRUE))
+
+nsecByDate$month <- factor(nsecByDate$month,levels=months(seq.Date(as.Date('2007/07/01'),as.Date('2008/06/01'),by='month'),TRUE))
+cpPerByDate$month <- factor(cpPerByDate$month,levels=months(seq.Date(as.Date('2007/07/01'),as.Date('2008/06/01'),by='month'),TRUE))
+
+
+ggplot(filter(nsecByDate,!month%in%c('Jul','Aug')),aes(x=month,y=nsec,color=Year,group=Year))+geom_point()+geom_line()+labs(x='',color='',y='Median # Sections Worked per Student')+theme(legend.position='top')
+ggsave('numSecByMonth.pdf')
+library(scales)
+ggplot(filter(nsecByDate,!month%in%c('Jul','Aug')),aes(x=month,y=cpPer,color=Year,group=Year))+geom_point()+geom_line()+scale_y_continuous(labels = percent)+labs(x='',color='',y='% of Worked Sections Ending in Reassignment')+theme(legend.position='top')
+ggsave('cpByMonth.pdf')
+
+
+
 
