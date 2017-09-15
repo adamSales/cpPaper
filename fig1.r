@@ -249,72 +249,66 @@ ggsave('cpByStud.jpg',width=6,height=3)
 ## section-level data:
 
 data$status <- ordered(data$status,c('final_or_incomplete','changed placement','promoted','graduated'))
-secLev <- data%>%group_by(field_id,unit,section,Year,Yr,curriculum,classid2,schoolid2)%>%
-    summarize(startDate=min(date,na.rm=TRUE),endDate=max(date,na.rm=TRUE),state=state[1],status=max(status,na.rm=TRUE))
-secLev$status[!is.finite(secLev$status)] <- NA
-secLev$endDate[!is.finite(secLev$endDate)] <- NA
+secLev <- data%>%filter(is.finite(status) & is.finite(date))%>%
+    group_by(field_id,unit,section,Year,Yr,curriculum,classid2,schoolid2)%>%
+    summarize(startDate=min(date),endDate=max(date),state=state[1],
+              status=max(status))%>%
+    arrange(endDate)
 
-countFun <- function(id,ed,cdat){
-#    id <- cdat$field_id[i]
-#    ed <- cdat$endDate[i]
-    cdat <- subset(cdat,field_id!=id & endDate<ed)
-    c(graduatedBefore=sum(cdat$status=='graduated',na.rm=TRUE),
-      promotedBefore=sum(cdat$status=='promoted',na.rm=TRUE),
-      cpBefore=sum(cdat$status=='changed placement',na.rm=TRUE))
-}
+secLev$unitSectionClass <- paste(secLev$unit,secLev$section,secLev$classid2)
+secLev$nCP <- secLev$nGrad <- secLev$nProm <- secLev$nFoI <- secLev$total <- NA
+cpDat <- subset(secLev,status=='changed placement')
+cpClasses <- unique(cpDat$unitSectionClass)
+secLevCP <- filter(secLev,unitSectionClass%in%cpClasses)
 
-secLevSplit <- split(subset(secLev,!is.na(endDate) & !is.na(status)),with(secLev,list(unit,section,classid2)))
-secLevCP <- subset(secLev,status=='changed placement')
-cpOrd <- do.call('rbind',lapply(1:nrow(secLevCP),function(i) with(secLevCP,countFun(id=field_id[i],ed=endDate[i],cdat=secLevSplit[[paste(unit[i],section[i],classid2[i],sep='.')]]))))
-save(cpOrd,file='cpOrd.RData')
+secLevCPsplit <- split(secLevCP,secLevCP$unitSectionClass)
 
-cdatFun <- function(cdat){
-    cdat$total <- nrow(cdat)
-    if(all(!is.finite(cdat$endDate))){
-        cdat$graduatedBefore <- NA
-        cdat$promotedBefore <- NA
-        cdat$cpBefore <- NA
-        return(cdat)
+cpDat$ncpSame <- NA
+ncp <- nrow(cpDat)
+for(i in 1:ncp){
+    cls <- secLevCPsplit[[cpDat$unitSectionClass[i]]]
+    date <- cpDat$endDate[i]
+    total <- nrow(cls)
+    if(total==1) cpDat[i, c('nCP','nGrad','nProm','nFoI')] <- rep(0,4)
+    else{
+        cls <- cls[cls$field_id!=cpDat$field_id[i] & cls$endDate<=date,]
+        bf <- nrow(cls)
+        if(bf==0) cpDat[i, c('nCP','nGrad','nProm','nFoI')] <- rep(0,4)
+        else{
+            cpDat[i, c('nFoI','nCP','nProm','nGrad')] <-
+                xtabs(~status,data=cls)
+        }
+        cpDat$ncpSame[i] <- sum(cls$endDate==date & cls$status=='changed placement')
     }
-    cdat <- cbind(cdat,do.call('rbind',lapply(1:nrow(cdat),countFun,cdat=cdat)))
-    cdat
+    cpDat$total[i] <- total
+    if(i%%100==0) cat(round(i/ncp*100,2),'% ')
 }
+cat('\n')
 
-cpOrd <- secLev%>%group_by(unit,section,Year,classid2)%>%do(cdatFun(.))
-save(cpOrd,file='cpOrd.RData')
+cpDat$nBefore <- rowSums(cpDat[,c('nCP','nGrad','nProm','nFoI')])
+for(vv in c('CP','Grad','Prom','FoI','Before','cpSame'))
+    cpDat[[paste0('p',vv)]] <- cpDat[[paste0('n',vv)]]/(cpDat$total-1)
 
-cpOrd$perc_graduatedBefore=cpOrd$graduatedBefore/(cpOrd$total-1)
-cpOrd$perc_promotedBefore=cpOrd$promotedBefore/(cpOrd$total-1)
-cpOrd$perc_changedplacementBefore=cpOrd$cpBefore/(cpOrd$total-1)
-cpOrd$perc_totalBefore=cpOrd$perc_changedplacementBefore+cpOrd$perc_promotedBefore+cpOrd$perc_graduatedBefore
-
-mean(cpOrd$perc_totalBefore,na.rm=TRUE)
 
 #### overall by year
-ordOverall <- cpOrd%>%group_by(Year)%>%summarize(Mastered=mean(perc_graduatedBefore,na.rm=TRUE),Promoted=mean(perc_promotedBefore,na.rm=TRUE),Reassigned=mean(perc_changedplacementBefore,na.rm=TRUE))%>%melt()
+ordOverall <- cpDat%>%filter(total>1)%>%group_by(Year)%>%summarize(Mastered=mean(pGrad,na.rm=TRUE),Promoted=mean(pProm,na.rm=TRUE),Reassigned=mean(pCP,na.rm=TRUE),Final=mean(pFoI))%>%melt()
+ordOverall$Year <- factor(ordOverall$Year,levels=c('Year 2','Year 1'))
 
-ggplot(ordOverall,aes(x=Year,y=value,fill=variable))+geom_bar(stat="identity")+scale_y_continuous(labels=percent)+labs(x='',y='% of Classmates',fill='Classmates\' \nSection Status')+coord_flip()+theme(legend.position='top')
+ggplot(ordOverall,aes(x=Year,y=value,fill=variable))+geom_bar(stat="identity")+scale_y_continuous(labels=percent,limits=c(0,1))+labs(x='',y='% of Classmates',fill='Classmates\' \nSection Status')+coord_flip()+theme(legend.position='top')
 
-cpOrd <- cpOrd%>%filter(unit %in% units)
-cpOrd$unit <- factor(cpOrd$unit,levels=units)
-levels(cpOrd$unit) <- UnitName
+ggplot(cpDat,aes(pBefore))+geom_histogram()+facet_grid(Year~.)
 
-cpOrd1 <- subset(cpOrd,status=='changed placement' & Year=='Year 1')
-cpOrd2 <- subset(cpOrd,status=='changed placement' & Year=='Year 2')
+### by state
+stateBefore <- ggplot(cpDat,aes(Year,pBefore))+geom_boxplot()+facet_grid(~state)
 
-cpOrdUnit1 <- aggregate(cpOrd1[,c('perc_graduatedBefore','perc_promotedBefore','perc_changedplacementBefore')],by=list(unit=cpOrd1$unit),FUN=mean,na.rm=TRUE)
-cpOrdUnit2 <- aggregate(cpOrd2[,c('perc_graduatedBefore','perc_promotedBefore','perc_changedplacementBefore')],by=list(unit=cpOrd2$unit),FUN=mean,na.rm=TRUE)
+stateCP <- cpDat%>%filter(total>1)%>%ungroup%>%select(Year,state,pCP,pGrad,pProm)%>%melt(id.vars=c('Year','state'))
+stateTot <- ggplot(stateCP,aes(variable,value))+geom_boxplot()+facet_grid(Year~state)
+### by unit
+cpDatUnit <- cpDat%>%filter(unit %in% units)%>%group_by(unit,Year)%>%summarize(Mastered=mean(pGrad,na.rm=TRUE),Promoted=mean(pProm,na.rm=TRUE),Reassigned=mean(pCP,na.rm=TRUE),Final=mean(pFoI))#%>%melt()
+cpDatUnit$unit <- factor(cpDatUnit$unit,levels=units)
+levels(cpDatUnit$unit) <- UnitName
 
-cpOrdUnit1 <- reshape2::melt(cpOrdUnit1)
-cpOrdUnit2 <- reshape2::melt(cpOrdUnit2)
-
-cpOrdUnit1$Year <- 'Year 1'
-cpOrdUnit2$Year <- 'Year 2'
-cpOrdUnit <- rbind(cpOrdUnit1,cpOrdUnit2)
-
-levels(cpOrdUnit$variable) <- c('Mastered','Promoted','Reassigned')
-
-ggplot(data=cpOrdUnit, aes(x=unit, y=value, fill=variable)) +
+ggplot(data=cpDatUnit, aes(x=unit, y=value, fill=variable)) +
   geom_bar(stat="identity") +   theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5)) +
   labs(x='',y='% of Classmates',fill='Classmates\' \nSection Status')+facet_grid(Year~.)
 ggsave('beforeCP.pdf',width=6.5,height=5)
