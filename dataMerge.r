@@ -88,4 +88,4 @@ data$Year <- c('Year 1','Year 2')[data$year]
 
 levels(data$curriculum) <- list(`Bridge-to-Algebra`='bridge-to-algebra',`Algebra I`='algebra i',`Algebra II`='algebra ii',Geometry='geometry',Customized='Customized')
 
-save(data,file='cpPaper.RData')
+save(data,prob,adv,stud,file='cpPaper.RData')
