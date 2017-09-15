@@ -46,7 +46,7 @@ idsSecUn <- data%>%filter(field_id%in%setdiff(smallDiffID,twice))%>%group_by(fie
 idsSecUn%>%ungroup()%>%summarize(both=mean(!probNA & !advNA),neither=mean(probNA & advNA),advOnly=mean(probNA &!advNA),probOnly=mean(advNA & !probNA))
 
 ########################################
-### # sections by state/year
+### # sections/time on system by state/year
 #####################################
 
 
@@ -61,6 +61,7 @@ secByStud <- within(secByStud,{
 print(secStateYear <- ggplot(secByStud,aes(Yr,numSec))+geom_boxplot()+facet_grid(~state)+coord_cartesian(ylim=c(0,250))+labs(x='',y='Number of Sections Per Student'))
 ggsave('numSecStateYear.jpg',width=6,height=3)
 
+###### accounting for curriculum
 secByStudCurr <- summarize(group_by(data,state,Yr,field_id,curriculum),numSec=n_distinct(section,na.rm=TRUE),time=sum(total_t1,na.rm=TRUE),mastered=n_distinct(section[status=='graduated'],na.rm=TRUE))
 
 secByStudCurr <- within(secByStudCurr,{
@@ -69,8 +70,9 @@ secByStudCurr <- within(secByStudCurr,{
                         mastered[mastered==0] <- NA
                     })
 
-print(currStateYear <- ggplot(filter(secByStudCurr,!is.na(curriculum)),aes(Yr,numSec,fill=curriculum))+geom_boxplot())#+facet_grid(~state))
+print(currStateYear <- ggplot(filter(secByStudCurr,!is.na(curriculum)),aes(Yr,numSec,fill=curriculum))+geom_boxplot()+facet_grid(~state))
 
+#### what proportion of worked sections from customized curricula?
 currPer <- secByStudCurr %>%filter(!is.na(curriculum))%>%group_by(Yr,curriculum,state)%>%summarize(numSec=sum(numSec,na.rm=TRUE))
 currPer$perSec <- currPer$numSec/sapply(1:nrow(currPer),function(i) sum(currPer$numSec[currPer$state==currPer$state[i] & currPer$Yr==currPer$Yr[i]],na.rm=TRUE))
 levels(currPer$curriculum) <- list(`>Algebra I`=c('Algebra II','Geometry'),`Algebra I`='Algebra I',`Bridge-to-Algebra`='Bridge-to-Algebra',
@@ -117,7 +119,7 @@ UnitName <- sectionStats$unit_name_abb[match(units,sectionStats$unit_id)]
 UnitName[units=='inequality-systems-solving'] <- 'Systems of Lin. Ineq.'
 UnitName[units=='intro-pythag-theorem'] <- 'Pythagorean Theorem'
 UnitName[units=='linear-inequality-graphing'] <- 'Graphs of Lin. Ineq.'
-UnitName[units=='linear-systems-solving'] <- 'Systems of Lin. Eq.'
+UnitName[units=='linear-systems-solving'] <- 'Systems of Lin. Eq. Solving'
 UnitName[units=='probability'] <- 'Probability'
 UnitName[units=='unit-conversions'] <- 'Unit Conversions'
 
@@ -125,17 +127,25 @@ nstud <- data%>%filter(!is.na(unit))%>%group_by(Year)%>%summarize(nstud=n_distin
 data$Unit <- data$unit
 data$Unit[grep('unit-conversions',data$Unit)] <- 'unit-conversions'
 
-unitLevel <- data%>%filter(Unit%in%units)%>%group_by(Unit,Year,state)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
+unitLevel <- data%>%filter(Unit%in%units)%>%group_by(Unit,Year)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
 
 unitLevel$perWorked <- unitLevel$numWorked/nstud$nstud[match(unitLevel$Year,nstud$Year)]
 
 unitLevel$Unit <- factor(unitLevel$Unit,levels=units)
 levels(unitLevel$Unit) <- UnitName
 
-print(unitsWorked <- ggplot(unitLevel,aes(x=Unit,y=perWorked,color=Year,group=Year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))+labs(x='',y='% Worked')+theme(legend.position='top'))
+unitLevel$year <- factor(ifelse(unitLevel$Year=='Year 1',1,2))
+print(unitsWorked <- ggplot(unitLevel,aes(x=Unit,y=perWorked,color=year,group=year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10),legend.position=c(.96,.82))+labs(x='',y='% Worked',color='Year')+scale_y_continuous(labels=percent))
+ggsave('unitsWorked.jpg',height=4,width=6)
 
-print(unitCPs <- ggplot(filter(unitLevel,numWorked>100),aes(x=Unit,y=meanCP,color=Year,group=Year))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5))+labs(x='',y='% Reassigned')+theme(legend.position='top'))
 
+unitCPs <- ggplot(filter(unitLevel,numWorked>100),aes(x=Unit,y=meanCP,color=year,group=year))+
+          geom_point()+geom_line()+
+          theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10))+
+          theme(legend.position=c(.96,.82),legend.text=element_text(size=10))+
+          labs(x='',y='% Reassigned',color='Year')+
+          scale_y_continuous(labels=percent)
+ggsave('CPbyUnit.jpg',unitCPs,height=4,width=6)
 
 ### problems per unit by year
 n1 <- n_distinct(data$field_id[data$year==1 & !is.na(data$Prob1)])
@@ -253,7 +263,7 @@ countFun <- function(id,ed,cdat){
       cpBefore=sum(cdat$status=='changed placement',na.rm=TRUE))
 }
 
-secLevSplit <- split(secLev,with(secLev,list(unit,section,classid2)))
+secLevSplit <- split(subset(secLev,!is.na(endDate) & !is.na(status)),with(secLev,list(unit,section,classid2)))
 secLevCP <- subset(secLev,status=='changed placement')
 cpOrd <- do.call('rbind',lapply(1:nrow(secLevCP),function(i) with(secLevCP,countFun(id=field_id[i],ed=endDate[i],cdat=secLevSplit[[paste(unit[i],section[i],classid2[i],sep='.')]]))))
 save(cpOrd,file='cpOrd.RData')
