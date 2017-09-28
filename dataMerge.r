@@ -37,6 +37,7 @@ for(vv in names(prob)){
  if(is.character(prob[[vv]]))
   prob[[vv]] <- factor(tolower(prob[[vv]]))
 }
+prob$curriculumOrigProb <- prob$curriculum
 prob$curriculum <- as.character(prob$curriculum)
 prob$curriculum[grep('cc',prob$curriculum)] <- 'Customized'
 prob$curriculum <- sub('del_','',prob$curriculum)
@@ -45,6 +46,7 @@ prob$curriculum <- factor(prob$curriculum)
 
 adv <- advance[advance$field_id%in%stud$field_id,]
 for(vv in names(adv)) if(is.factor(adv[[vv]])) levels(adv[[vv]]) <- tolower(levels(adv[[vv]]))
+adv$curriculumOrigAdv <- adv$curriculum
 adv$curriculum <- as.character(adv$curriculum)
 adv$curriculum[grep('cc',adv$curriculum)] <- 'Customized'
 adv$curriculum <- sub(' bonus','',adv$curriculum)
@@ -53,27 +55,35 @@ adv$curriculum <- factor(adv$curriculum)
 
 data <- full_join(prob,adv)
 
+data$curriculumOrig <- gsub('del_','',as.character(data$curriculumOrigAdv))
+data$curriculumOrig <- gsub(' bonus','',data$curriculumOrig)
+
 ### take out year 2 data for students who were in the study both years
 probDate <- sapply(strsplit(as.character(data$ts1),' '),`[`,1)
 data$date <- as.Date(probDate,'%m/%d/%y')
 
-remove <- with(data,ifelse(field_id%in%twice,
-                         ifelse(is.na(date),
-                                ifelse(is.na(year),
-                                       study.year==2,year==2),
-                                date>as.Date('2008-08-01')),FALSE))
+## remove <- with(data,ifelse(field_id%in%twice,
+##                          ifelse(is.na(date),
+##                                 ifelse(is.na(year),
+##                                        study.year==2,year==2),
+##                                 date>as.Date('2008-08-01')),FALSE))
 
-data <- data[!remove,]
+## data <- data[!remove,]
 
 data$year <- data$study.year <- NULL
-
-data <- full_join(data,stud)
+data$year <- stud$year[match(data$field_id,stud$field_id)]
 
 data <- data[!grepl('test',data$section,ignore.case=TRUE),]
+
+data <- filter(data,!(year==2 & date<as.Date('2008-06-01')))
+data <- filter(data,!(year==1 & date>as.Date('2008-08-01')))
 
 data$Curriculum <- factor(ifelse(data$curriculum=='Customized',
                                  'Customized','Standard'),
                           levels=c('Standard','Customized'))
+
+data <- full_join(data,stud)
+
 
 ##########################################################
 ### should we remove schools where usage missingness was very
@@ -87,5 +97,8 @@ data$Yr <- c('Yr 1','Yr 2')[data$year]
 data$Year <- c('Year 1','Year 2')[data$year]
 
 levels(data$curriculum) <- list(`Bridge-to-Algebra`='bridge-to-algebra',`Algebra I`='algebra i',`Algebra II`='algebra ii',Geometry='geometry',Customized='Customized')
+
+data$status <- ordered(data$status,c('final_or_incomplete','changed placement','promoted','graduated'))
+data$state <- data$State
 
 save(data,prob,adv,stud,file='cpPaper.RData')
