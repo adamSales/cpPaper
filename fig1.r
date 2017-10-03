@@ -1,3 +1,4 @@
+library(lubridate)
 library(scales)
 library(reshape2)
 library(dplyr)
@@ -243,14 +244,15 @@ secLev <- data%>%filter(is.finite(status) & is.finite(date))%>%
 
 ### cp over timep
 secLev <- within(secLev,endMonth <- factor(month(secLev$endDate,TRUE,TRUE),levels=c('Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug')))
-secLevMonth <- secLev%>%group_by(endMonth,Year)%>%summarize(ncp=n(),CPper=mean(status=='changed placement',na.rm=TRUE))
+secLevMonth <- secLev%>%group_by(endMonth,Year)%>%summarize(nsec=n(),CPper=mean(status=='changed placement',na.rm=TRUE))
 secLev$cp <- as.numeric(secLev$status=='changed placement')
 
-ggplot(secLevMonth,aes(endMonth,CPper,group=Year,color=Year,size=ncp))+geom_point()+
-    geom_smooth(aes(as.numeric(endMonth)+day(endDate)/31-0.5,cp,group=Year,
-                    color=Year,size=1),
-                method = "glm", formula = y ~ splines::bs(x, 3),data=secLev,method.args=list(family='binomial'),
-                show.legend=FALSE)+scale_y_continuous(breaks=seq(0,0.05,.01),labels=percent)+
+ggplot(filter(secLevMonth,ncp>100),aes(endMonth,CPper,group=Year,color=Year,size=ncp))+geom_point()+geom_line(size=1)+
+    ## geom_smooth(aes(as.numeric(endMonth)+day(endDate)/31-0.5,cp,group=Year,
+    ##                 color=Year,size=1),
+    ##             method = "glm", formula = y ~ splines::bs(x, 4),data=secLev,method.args=list(family='binomial'),
+                                        #            show.legend=FALSE)+
+scale_y_continuous(breaks=seq(0,0.05,.01),labels=percent)+
     coord_cartesian(ylim=c(0,0.05))+ labs(x='Month',y='% of Sections Ending in Reassignment')
 ggsave('cpByMonth.jpg',width=6.5,height=3)
 
@@ -312,7 +314,7 @@ stateBefore <- ggplot(cpDat,aes(Year,pBefore))+geom_boxplot()+facet_grid(~state)
 stateCP <- cpDat%>%filter(total>1)%>%ungroup%>%select(Year,state,pCPbf,pCPsame,pGrad,pProm)%>%melt(id.vars=c('Year','state'))
 stateTot <- ggplot(stateCP,aes(variable,value))+geom_boxplot()+facet_grid(Year~state)
 ### by unit
-cpDatUnit <- cpDat%>%filter(unit %in% units)%>%group_by(unit,Year)%>%summarize(Mastered=mean(pGrad,na.rm=TRUE),Promoted=mean(pProm,na.rm=TRUE),Reassigned=mean(pCP,na.rm=TRUE),Final=mean(pFoI))#%>%melt()
+cpDatUnit <- cpDat%>%filter(unit %in% units)%>%group_by(unit,Year)%>%summarize(Mastered=mean(pGrad,na.rm=TRUE),Promoted=mean(pProm,na.rm=TRUE),Reassigned=mean(pCP,na.rm=TRUE),Final=mean(pFoI),totalCP=n())#%>%melt()
 cpDatUnit$unit <- factor(cpDatUnit$unit,levels=units)
 levels(cpDatUnit$unit) <- UnitName
 
@@ -320,6 +322,8 @@ ggplot(data=cpDatUnit, aes(x=unit, y=value, fill=variable)) +
   geom_bar(stat="identity") +   theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5)) +
   labs(x='',y='% of Classmates',fill='Classmates\' \nSection Status')+facet_grid(Year~.)
 ggsave('beforeCP.pdf',width=6.5,height=5)
+
+#### cpBefore by # of CP/unit
 
 
 
@@ -368,6 +372,7 @@ secLevSeq$dist <- unsplit(dist,secLevSeq$field_id)
 
 secLevSeq <- secLevSe
 
+
 ### usage over time
 nsecByDate <- secLev%>%filter(!is.na(section) & !is.na(endDate) & !(Yr=='Yr 1' & endDate>as.Date('06/30/2008',format='%m/%d/%Y')) & !(Yr=='Yr 2' & endDate<as.Date('07/01/2008',format='%m/%d/%Y')))%>%mutate(month=months(endDate,abb=TRUE))%>%group_by(field_id,Year,month)%>%summarize(nsec=n())%>%group_by(Year,month)%>%summarize(nsec=median(nsec,na.rm=TRUE))
 
@@ -384,5 +389,9 @@ ggplot(filter(nsecByDate,!month%in%c('Jul','Aug')),aes(x=month,y=cpPer,color=Yea
 ggsave('cpByMonth.pdf')
 
 
+
+
+#### what's the next section each student works?
+secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]))
 
 
