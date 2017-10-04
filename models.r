@@ -20,7 +20,7 @@ cpDat$late <- cpDat$month%in%c('Jan','Feb','March','April')
 
 cpDat$cp <- cpDat$status=='changed placement'
 
-cpMod <- glmer(cp~year*(ns(xirt,5)+late)+spec_gifted+spec_speced+spec_esl+state+(ns(xirt,5)+late|classid2)+(1|field_id)+(late|unit),data=cpDat,family=binomial)
+cpMod <- glmer(cp~year*(xirt+late)+spec_gifted+spec_speced+spec_esl+state+(xirt+late|classid2)+(1|field_id)+(late|unit),data=cpDat,family=binomial)
 
 
 ### does failing to master one section increase the odds of failing to master the next?

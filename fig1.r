@@ -72,39 +72,6 @@ secByStudCurr <- within(secByStudCurr,{
 
 print(currStateYear <- ggplot(filter(secByStudCurr,!is.na(curriculum)),aes(Yr,numSec,fill=curriculum))+geom_boxplot()+facet_grid(~state))
 
-##########################################################################
-### curricula
-##########################################################################
-data$overall <- factor(ifelse(data$curriculum=='Customized','Customized','Standard'),levels=c('Standard','Customized'))
-data$Curriculum=data$curriculum
-levels(data$Curriculum) <- list(`>Algebra I`=c('Algebra II','Geometry'),`Algebra I`='Algebra I',
-                                `Bridge-to-Algebra`='Bridge-to-Algebra',Customized='Customized')
-
-### apportion customized sections to other curricula:
-custSec <- unique(data$section[data$overall=='Customized'])
-alg1Sec <- unique(data$section[data$Curriculum=='Algebra I'])
-advSec <- unique(data$section[data$Curriculum=='>Algebra'])
-BtASec <- unique(data$section[data$Curriculum=='Bridge-to-Algebra'])
-
-currFunc <- function(sec){
-
-    if(sec%in%alg1Sec) return('Algebra I')
-    if(sec%in%BtASec) return('Bridge-to-Algebra')
-    if(sec%in%advSec) return('>Algebra I')
-    if(grepl('triangle',sec)) return('>Algebra I')
-    if(grepl('geo-',sec)) return('>Algebra I')
-    if(grepl('exponents',sec)) return('Algebra I')
-    if(grepl('cta1',sec)) return('Algebra I')
-    if(grepl('graph',sec)) return('Algebra I')
-    if(grepl('linear',sec)) return('Algebra I')
-    if(grepl('quad',sec)) return('Algebra I')
-    return('na')
-}
-
-standCurr <- vapply(custSec, currFunc,'a')
-standCurr[standCurr=='na'] <- NA
-data$Curriculum[!is.na(data$Curriculum) & data$overall=='Customized' & !is.na(data$section)] <-
-    standCurr[match(data$section[!is.na(data$section) & data$overall=='Customized' & !is.na(data$Curriculum)],custSec)]
 
 #### what proportion of worked sections from each curriculum?
  currWorked <- data%>%distinct(field_id,section,unit,Curriculum,Year,State,overall)
@@ -392,6 +359,41 @@ ggsave('cpByMonth.pdf')
 
 
 #### what's the next section each student works?
-secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]))
+secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]),nextUnit=c(unit[-1],NA))
+
+secOrder$cp <- secOrder$status=='changed placement'
+secOrder$mast <- secOrder$status=='graduated'
+library(lme4)
+mastNext <- glmer(mast~(1|field_id)+(1|classid2)+section+as.factor(prevStatus),data=secOrder,family=binomial)
+
+### transition plot
+library(Gmisc)
+secOrderCP <- subset(secOrder,status=='changed placement')
 
 
+secOrderCP$Unit <- secOrderCP$unit
+secOrderCP$Unit[grep('unit-conversions',secOrderCP$Unit)] <- 'unit-conversions'
+
+secOrderCP$unitName <- factor(secOrderCP$Unit,levels=units)
+levels(secOrderCP$unitName) <- UnitName
+
+secOrderCP$nextUnit[grep('unit-conversions',secOrderCP$nextUnit)] <- 'unit-conversions'
+
+secOrderCP$nextUnitName <- factor(secOrderCP$nextUnit,levels=units)
+levels(secOrderCP$nextUnitName) <- UnitName
+
+trans <- with(secOrderCP,table(unitName,nextUnitName))
+
+trans <- trans[rowSums(trans)>50,rowSums(trans)>50]
+trans <- trans[rowSums(trans)>50,rowSums(trans)>50]
+
+transitionPlot(trans)
+
+nsec <- nrow(trans)
+
+plot(1,1,xlim=c(0,6),ylim=c(0,nsec),cex=0)
+text(rep(1,nsec),nsec:1,rownames(trans))
+text(rep(5,nsec),nsec:1,rownames(trans))
+for(i in 1:nsec){
+    arrows(rep(2.5,nsec),rep(nsec-i+1,nsec),rep(3.5,nsec),nsec:1,lwd=5*trans[i,]/rowSums(trans)[i])#,col=rgb(0,0,0,trans[i,]/max(trans)))
+}

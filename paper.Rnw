@@ -1,0 +1,139 @@
+\documentclass[12pt]{article}
+
+%\usepackage{endfloat}
+%\usepackage{soul}
+
+%\usepackage{type1ec}
+\usepackage{subcaption}
+\usepackage{fullpage}
+\usepackage{enumerate}
+%\usepackage{graphicx}
+%\usepackage{graphics}
+\usepackage{multirow}
+\usepackage{comment}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bbm}
+\usepackage{setspace}
+\usepackage{verbatim}
+\usepackage{natbib}
+\usepackage{bm}
+\usepackage{pdflscape}
+%\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{xr}
+%\usepackage{mathabx}
+%\usepackage{filecontents}
+%\usepackage{bibentry}
+%\usepackage{hanging}
+%\usepackage{apacite}
+%\usepackage{hyperref}
+\usepackage{makecell}
+
+%\usepackage{endnotes}
+
+%\let\footnote=\endnote
+
+
+\title{Mastery Learning in Practice:\\
+A Descriptive Analysis of Data from the  Cognitive Tutor Algebra I Effectiveness Trial}
+
+\author{Anita Israni \and Adam C Sales \and John F Pane}
+
+
+<<include=FALSE>>=
+library(knitr)
+library(tikzDevice)
+opts_chunk$set(
+echo=FALSE, results='asis',cache=TRUE,warning=FALSE,error=FALSE,dev='tikz',message=FALSE,autodep = FALSE
+    )
+
+options(tikzDefaultEngine = "pdftex")
+
+library(lubridate)
+library(scales)
+library(reshape2)
+library(dplyr)
+library(ggplot2)
+
+
+@
+
+<<data,include=FALSE>>=
+source('dataMerge.r')
+@
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Mastery learning sits at the foundation of intelligent tutoring systems. The philosophy of mastery learning assumes a well-structured curriculum, and posits that students progress within the curriculum as they master its skills. The Cognitive Tutor Algebra I (CTAI) system, developed by Carnegie Learning, Inc., is one of the best studied and best regarded examples of modern educational software. It is a blended learning system for teaching algebraic concepts and principles, to middle and high school students, including both textbook materials and software. The software component of the curriculum allows students to progress at their own pace and receive individualized feedback on their performance. A large-scale randomized effectiveness trial conducted by the RAND corporation showed that, in some circumstances, CTAI boosts students’ scores on an Algebra-I post-test by about one fifth of a standard deviation (Pane, et al.  2013). CTAI’s success in this experiment would seem to vindicate its pedagogy: mastery learning, and the algebra I curriculum on which it is based.
+
+However, the theory underlying CTAI does not always determine its use. To be sure, the software has a standard set of algebra topics, divided into units and further into sections; and a standard sequence for presenting them. But this precise curriculum is not mandatory. At the request of educators, it can be customized by altering what units or sections are included (including, possibly, material from a different standard curriculum such as geometry), as well as their sequence, to conform to local or state standards. Further, teachers have the option of moving students within the curriculum, regardless of the software’s estimate of their skill mastery.
+
+This article examines teachers’ and schools’ non-adherence to the standard, mastery-based CTAI curriculum, using data from the RAND study, a seven-state randomized controlled trial of CTAI in high schools and middle schools. The study found a significant positive effect of CTAI in high schools, during their second year of implementation but not the first. Students in the treatment group of the study were enrolled in one or more of the standard or customized curriculum during their participation in the study, and the software logged aspects of their usage, including time spent, sections encountered, and whether the software judged the students to have mastered the sections. Both Carnegie Learning and the researchers running the study restricted their software support and oversight to what is typically provided outside of an experimental context. Thus, the data from the study reflect typical software usage. Secondary data analyses used principal stratification to show that students who attempted more sections experienced larger treatment effects, and students who had high or low assistance levels, as opposed to an average level, experienced smaller treatment effects (Sales & Pane, 2015, Sales et al. 2016).
+
+Here we extend the previous findings to investigate patterns of change in the sequence of topics presented to students. As noted earlier, schools could use a standard curriculum, a customized curriculum, or switch from one curriculum to another. Each curriculum consisted of a sequence of units, which was comprised of a sequence of sections. For example, the standard CTAI Algebra I curriculum in Year 1 comprised of 40 units covering approximately 170 sections. The
+number of sections within each unit varied. By default, the software operates by automatically moving students from section to section based on the sequence of topics defined by the curriculum they were currently enrolled in. In this software-controlled sequencing, students ideally spend the time necessary to learn the material of a section, are judged by the software to have mastered the material, and then “graduate” to the next section. Students who exhaust a section's material without mastering its skills are “promoted” to the next section. Students left uninterrupted follow the sequence of topics defined by their curriculum, ideally graduating from topics by showing mastery. However, teachers could modify a student’s path within the curriculum. They could reassign students from their current sections to other sections earlier or later in the intended sequence, including sections they had worked on previously.
+This study attempts to elucidate teachers' goals in reassigning students. One hypothesis is the need for teachers push ahead students who were falling behind, i.e. to reassign them from sections on which they were struggling, to allow them catch up with the rest of the class. Another hypothesis is that teachers sought to push students past easier sections to begin working on more relevant topics for them. A third hypothesis is that teachers needed to cover certain topics in preparation for an upcoming state exams, and might have reassigned groups of students all at the same time to cover topics that might otherwise not have been covered. This hypothesis may lead to an increase in reassignments as the exam approaches. Overall, understanding patterns of reassignment is the focus of this paper, along with insights into how teachers were using the software component of CTAI.
+
+\section{The RAND Effectiveness Trial}
+The study to measure the effectiveness of CTAI included 7 states, 73 high schools, and 74 middle schools with nearly 18,700 high school students and 6,800 middle school students. Schools were enrolled in a total of 52 school districts that were distributed between urban, suburban, and rural areas. Schools were matched on a set of covariates, and then randomly assigned to the treatment or control group. Schools in the control group continued with their current algebra curriculum, and schools in the treatment group used Carnegie Learning’s curriculum which includes textbook materials as well as CTAI. Each school participated for two years, with a different cohort of students taking algebra the second year (with a small fraction of students present in the study both years because they repeated algebra). It should be noted that this study did not include statewide implementations; the study results cannot be generalized to all schools within the state. In some states, one large school district participated, while in other states, a set of smaller school districts participated. The states included Alabama (AL), Connecticut (CT), Kentucky (KY), Louisiana (LA), Michigan (MI), New Jersey (NJ), and Texas (TX). Each state participated in both the middle school and high school arms of the study, except AL, which participated only in the middle school arm. The current study focuses on high school students only, due to the large number of students in this cohort and the significant positive treatment effect previously found for this cohort. All discussion that follows refers exclusively to the high school data.
+
+There are some limitations to the available data for this study. In particular, the developer was able to provide the intended sequence of units/sections for only a subset of the customized curricula. Data from some schools, and some students within schools, were missing either because the log files were not retrievable, or because of an imperfect ability to link log data to other study data files. In addition, there was missing completion dates for many customized curricula; making it difficult to analyze the customized curricula when any sort of date was needed, such as time to complete a section.
+
+\section{Standard versus Customized Curricula}
+
+All students who participated in the treatment condition of the study were enrolled in at least one curriculum throughout the school year. In Year 1, the standard Algebra curriculum was the most-used curriculum across schools participating in the study; other curricula were Bridge-to-Algebra (pre-algebra), Algebra II, and five customized curricula that were used in two schools. The standard curricula used in Year 2 included the three that were used in Year 1, plus Geometry and Algebra II Bonus. In Year 2, Carnegie Learning also developed many more customized curricula with input from participating schools, for a total of 33 curricula used in 13 schools. This led to fewer students enrolled in the standard curriculum and more enrolled in customized curricula overall in Year 2.
+
+In the available data, representing a subset of the entire study sample, the number of students enrolled in at least one standard curriculum in Year 1 was 2,801; in Year 2, this number decreased to 1,204. The number of students enrolled in at least one customized curriculum was 115 in Year 1 and increased to 2,333 in Year 2. It should be noted that students could be enrolled in multiple curricula. For instance, teachers could choose to enroll students in any of the standard curricula provided, such as Algebra I or Algebra II, along with any of the customized curricula that were used by the school.
+
+The use of customized curricula varied substantially by state. For instance, schools in CT and NJ did not use customized curricula in either Year 1 or Year 2. All other states contained schools that used customized curricula in addition to the standard curricula. CT schools maintained similar number of students in Algebra I across both years with 111 in Year 1 and 135 in Year 2. NJ substantially decreased the number of students in the CTAI program from 89 to 32 from Year 1 to Year 2. However, while all other states (KY, LA, MI, and TX) did decrease enrollment in the standard Algebra I curriculum the second year, those same states increased enrollment in the customized curricula. KY added 3 customized curricula with 146 students, LA added 15 customized curricula with 286 students, MI added 5 customized curricula with 370 students, and TX added 10 additional customized curricula and had the largest enrollment in these curricula with 1,531 students. Students enrolled in the standard Algebra I curriculum dropped from 974 in Year 1 to 61 in Year 2 in TX. As noted above, students could be enrolled in more than one curriculum. In Year 2, the average number of curricula per a student ranged from 1.00 (NJ and CT) to 2.53 (TX). The next highest value was LA at 2.10.
+
+Throughout the school year, teachers could have a class of students working on multiple curricula either sequentially, where the students changed curricula in lock step, or simultaneously, where students worked on different curricula at the same time. As an example, two teachers located in KY had their students working on Algebra I throughout most of the year and then reassigned them to Algebra II in the last month of school. Another teacher in KY had students variously enrolled in three different curricula throughout the entire year (Bridge-to-Algebra, Algebra I, and a specialized Geometry curriculum), while another teacher in MI during Year 2 had students enrolled in three curricula sequentially throughout the year covering Algebra I until November, and then starting a customized curriculum and using it until February, and ending the year with another customized curriculum that was used until June. While there are numerous instances of these uses of multiple curricula in Year 2, there are also many occurrences of teachers who had their students enrolled in the standard Algebra I throughout the entire year.  In TX mostly, with some instances in MI, there were teachers who exclusively used customized curricula the whole year.
+
+\section{Student Usage Across Sections and Years}
+\begin{figure}
+<<usageTime, fig.height=3,fig.width=6>>=
+secByStud <- summarize(group_by(data,state,Yr,field_id),numSec=n_distinct(section,na.rm=TRUE),time=sum(total_t1,na.rm=TRUE),mastered=n_distinct(section[status=='graduated'],na.rm=TRUE))
+
+secByStud <- within(secByStud,{
+                        numSec[numSec==0] <- NA
+                        time[time==0] <- NA
+                        mastered[mastered==0] <- NA
+                    })
+
+print(timeStateYear <- ggplot(secByStud,aes(Yr,time/3600000))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+coord_cartesian(ylim=c(0,100))+labs(x='',y='Time on CTAI Software per Student (Hours)'))
+#ggsave('timeStatYear.jpg',width=6,height=3)
+
+@
+\caption{Boxplots of hours each student spent on Cognitive Tutor
+  software over by year and state. Students spending more than 100
+  hours (\Sexpr{sum(secByStud[['time']]>100,na.rm=TRUE)} of \Sexpr{nrow(secByStud)}) and students
+  with no timestamp data (\Sexpr{sum(is.na(secByStud[['time']]))})
+  were excluded.}
+\label{fig:timeByStud}
+\end{figure}
+
+
+\begin{figure}
+<<mastSec,dependson='usageTime'>>=
+print(mastStateYear <- ggplot(secByStud,aes(Yr,mastered))+geom_boxplot()+facet_grid(~state)+labs(x='',y='\\# Sections Mastered Per Student')+coord_cartesian(ylim=c(0,250)))
+@
+\caption{Boxplots of the number of sections each of Cognitive Tutor
+  software each student mastered, by year and state. Students
+  mastering more than 250 sections (\Sexpr{sum(secByStud[['mastered']]>250,na.rm=TRUE)}) of \Sexpr{nrow(secByStud)}) and students
+  with no mastery data (\Sexpr{sum(is.na(secByStud[['mastered']]))})
+  were excluded.}
+\label{fig:mastSec}
+\end{figure}
+
+
+Figure \ref{fig:timeByStud} shows that the number of sections worked varied substantially between students and across states and years. Across years, students in Texas, New Jersey, and Connecticut worked fewer sections each than in Kentucky, Louisiana, and Michigan. From year 1 to 2, the median number of sections a student worked on decreased in every state, decreasing more substantially Texas and New Jersey than in others. The variance of the numbers of sections students worked in Michigan increased from year 1 to 2 as well.
+
+Figure 2 shows the proportion of worked sections that were from a customized curriculum in the three states that used customized curricula substantially: Kentucky, Michigan, and Texas. As students worked fewer sections in year 2, a greater proportion of the sections they did work were from customized curricula. Across states, the average number of sections worked per student enrolled for the standard curricula was 53.83 in Year 1 and was similar at 52.45 in Year 2 across all states. For customized curricula in Year 2, the average number of worked sections per student enrolled was 19.93. However, since students were often enrolled in multiple curricula, these numbers underestimate the number of sections worked by students over the whole year.
+
+Of course, more worked sections does not necessarily mean better worked sections. For instance, students might attempt fewer sections in year two, but graduate a higher percentage. Thus we investigated whether, on average, there were more graduated sections per students the second year, and how this related to whether they were enrolled in the standard versus customized curricula. Overall, the number of graduated sections per student increased in Year 2. The number of graduated sections per student was 17.94 in Year 1 and 25.66 in Year 2 in standard curricula. However, the customized curricula had fewer average graduated sections per student enrolled compared to the standard curricula; these numbers were 5.64 in Year 1 and 11.47 in Year 2. The percentages of average graduated sections to the average total worked sections were: 33.33% in Year 1 and 48.92% in Year 2 in the standard curricula, and 57.55% in Year 2 for the customized curricula. The average number of promoted sections per student also increased from Year 1 to Year 2, though only slightly. In Year 1, the average number of promotions were 1.20 for the customized curricula versus 3.64 for the standard curricula; in Year 2, those numbers were 2.20 and 4.95, respectively.
+
+We also evaluated the time spent per section across different curricula and states.  Some records were omitted from this analysis: sections missing information on date of completion, as well as each student’s last section attempted because there is no completion date recorded for those sections. As presented in Figures 2 and 3 for Year 1 and 2, respectively, students in NJ increased the time spent per section from Year 1 to Year 2; however, there were relatively few students in the study from NJ. From Figure 1, it was shown that CT and TX completed, on average, fewer sections per student. From the information presented in Figures 2 and 3, these states spent the highest average number of days per section. TX, with the largest enrollment of students and the greatest use of customized curricula in Year 2, had students spending slightly more days completing sections in customized curricula relative to the standard curricula.
+
+Figures 4 and 5 present information for only sections that were “graduated” by students, that is, cases in which a student was judged by the software to have mastered the material in the section. Results are similar to the data presented in Figures 2 and 3. However, in Year 2, TX students in customized curricula spent fewer days on a section they mastered, compared to the time TX students spent mastering sections in the standard curricula. This difference is also seen in KY and LA. If customized curriculum are more aligned with teachers’ instruction, graduating from a section may require fewer days than sections in the standard curricula, possibly because students are working on the same topics in class as they are in the software. Figures 4 and 5 also show that, on average, CT and TX spent more days graduating from sections, regardless whether the section was part of a standard curricula or customized curricula. One explanation for the longer time periods in these states may be due to a teacher’s use of the software simultaneously with the textbook instruction. In this case, the teachers could have switched back-and-forth as they instructed, hence extending the time worked by their students. For the states with shorter time periods, teachers may have followed a more sequential process where they first completed one component, e.g. textbook material, and then allowed students to focus on and complete the second component, e.g. software.
