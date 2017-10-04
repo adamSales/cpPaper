@@ -75,40 +75,6 @@ print(currStateYear <- ggplot(filter(secByStudCurr,!is.na(curriculum)),aes(Yr,nu
 ##########################################################################
 ### curricula
 ##########################################################################
-data$overall <- factor(ifelse(data$curriculum=='Customized','Customized','Standard'),levels=c('Standard','Customized'))
-data$Curriculum=data$curriculum
-levels(data$Curriculum) <- list(`>Algebra I`=c('Algebra II','Geometry'),`Algebra I`='Algebra I',
-                                `Bridge-to-Algebra`='Bridge-to-Algebra',Customized='Customized')
-
-### apportion customized sections to other curricula:
-custSec <- unique(data$section[data$overall=='Customized'])
-alg1Sec <- unique(data$section[data$Curriculum=='Algebra I'])
-advSec <- unique(data$section[data$Curriculum=='>Algebra'])
-BtASec <- unique(data$section[data$Curriculum=='Bridge-to-Algebra'])
-
-currFunc <- function(sec){
-
-    if(sec%in%alg1Sec) return('Algebra I')
-    if(sec%in%BtASec) return('Bridge-to-Algebra')
-    if(sec%in%advSec) return('>Algebra I')
-    if(grepl('triangle',sec)) return('>Algebra I')
-    if(grepl('geo-',sec)) return('>Algebra I')
-    if(grepl('exponents',sec)) return('Algebra I')
-    if(grepl('cta1',sec)) return('Algebra I')
-    if(grepl('graph',sec)) return('Algebra I')
-    if(grepl('linear',sec)) return('Algebra I')
-    if(grepl('quad',sec)) return('Algebra I')
-    return('na')
-}
-
-standCurr <- vapply(custSec, currFunc,'a')
-standCurr[standCurr=='na'] <- NA
-data$Curriculum[!is.na(data$Curriculum) & data$overall=='Customized' & !is.na(data$section)] <-
-    standCurr[match(data$section[!is.na(data$section) & data$overall=='Customized' & !is.na(data$Curriculum)],custSec)]
-data$Curriculum[grep('algebrai',data$curriculumOrig)] <- 'Algebra I'
-data$Curriculum[grep('algebra1',data$curriculumOrig)] <- 'Algebra I'
-data$Curriculum[grep('geom',data$curriculumOrig)] <- '>Algebra I'
-
 
 #### what proportion of worked sections from each curriculum?
 currWorked <- data%>%distinct(field_id,section,unit,Curriculum,Year,State,overall)

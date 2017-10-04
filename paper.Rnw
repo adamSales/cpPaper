@@ -81,20 +81,113 @@ The study to measure the effectiveness of CTAI included 7 states, 73 high school
 
 There are some limitations to the available data for this study. In particular, the developer was able to provide the intended sequence of units/sections for only a subset of the customized curricula. Data from some schools, and some students within schools, were missing either because the log files were not retrievable, or because of an imperfect ability to link log data to other study data files. In addition, there was missing completion dates for many customized curricula; making it difficult to analyze the customized curricula when any sort of date was needed, such as time to complete a section.
 
-\section{Standard versus Customized Curricula}
+\section{Standard and Customized Curricula}
 
-All students who participated in the treatment condition of the study were enrolled in at least one curriculum throughout the school year. In Year 1, the standard Algebra curriculum was the most-used curriculum across schools participating in the study; other curricula were Bridge-to-Algebra (pre-algebra), Algebra II, and five customized curricula that were used in two schools. The standard curricula used in Year 2 included the three that were used in Year 1, plus Geometry and Algebra II Bonus. In Year 2, Carnegie Learning also developed many more customized curricula with input from participating schools, for a total of 33 curricula used in 13 schools. This led to fewer students enrolled in the standard curriculum and more enrolled in customized curricula overall in Year 2.
+\begin{figure}
+  \centering
+<<curricula,dependson='data',fig.width=6.4,fig.height=3>>=
 
-In the available data, representing a subset of the entire study sample, the number of students enrolled in at least one standard curriculum in Year 1 was 2,801; in Year 2, this number decreased to 1,204. The number of students enrolled in at least one customized curriculum was 115 in Year 1 and increased to 2,333 in Year 2. It should be noted that students could be enrolled in multiple curricula. For instance, teachers could choose to enroll students in any of the standard curricula provided, such as Algebra I or Algebra II, along with any of the customized curricula that were used by the school.
+omar <- par()$oma
 
-The use of customized curricula varied substantially by state. For instance, schools in CT and NJ did not use customized curricula in either Year 1 or Year 2. All other states contained schools that used customized curricula in addition to the standard curricula. CT schools maintained similar number of students in Algebra I across both years with 111 in Year 1 and 135 in Year 2. NJ substantially decreased the number of students in the CTAI program from 89 to 32 from Year 1 to Year 2. However, while all other states (KY, LA, MI, and TX) did decrease enrollment in the standard Algebra I curriculum the second year, those same states increased enrollment in the customized curricula. KY added 3 customized curricula with 146 students, LA added 15 customized curricula with 286 students, MI added 5 customized curricula with 370 students, and TX added 10 additional customized curricula and had the largest enrollment in these curricula with 1,531 students. Students enrolled in the standard Algebra I curriculum dropped from 974 in Year 1 to 61 in Year 2 in TX. As noted above, students could be enrolled in more than one curriculum. In Year 2, the average number of curricula per a student ranged from 1.00 (NJ and CT) to 2.53 (TX). The next highest value was LA at 2.10.
+par(oma=c(0,2,0,0),mar=c( 3,.5,2,0))
+par(mfrow=c(1,9))
+for(st in levels(data$State)){
+#    cwy <- currWorkedSt%>%filter(State==st)%>%group_by(Curriculum,overall)%>%summarize(`Yr 1`=p[Year=='Year 1'],`Yr 2`=p[Year=='Year 2'])
+    cwy <- data%>%filter(!is.na(Curriculum) & State==st)%>%group_by(Curriculum,overall)%>%
+    summarize(`Yr 1`=sum(Year=='Year 1'),`Yr 2`=sum(Year=='Year 2'))
+    for(y in c(1,2)) cwy[,paste('Yr',y)] <- cwy[,paste('Yr',y)]/sum(cwy[,paste('Yr',y)])
+    cwy <- cwy[nrow(cwy):1,]
+    barplot(as.matrix(cwy[,3:4]),col=COLS[as.numeric(cwy$Curriculum)],angle=ifelse(cwy$overall=='Customized',45,NA),density=ifelse(cwy$overall=='Customized',75,NA),main=st,yaxt='n')
+    if(st==levels(data$State)[1]) axis(2,at=seq(0,1,0.1),labels=paste0(seq(0,100,10),'\\%'))
+    #box()
+}
+cwy <- data%>%filter(!is.na(Curriculum))%>%group_by(Curriculum,overall)%>%
+    summarize(`Yr 1`=sum(Year=='Year 1'),`Yr 2`=sum(Year=='Year 2'))
+for(y in c(1,2)) cwy[,paste('Yr',y)] <- cwy[,paste('Yr',y)]/sum(cwy[,paste('Yr',y)])
+cwy <- cwy[nrow(cwy):1,]
+barplot(as.matrix(cwy[,3:4]),col=COLS[as.numeric(cwy$Curriculum)],angle=ifelse(cwy$overall=='Customized',45,NA),density=ifelse(cwy$overall=='Customized',75,NA),main='Overall',yaxt='n')
 
-Throughout the school year, teachers could have a class of students working on multiple curricula either sequentially, where the students changed curricula in lock step, or simultaneously, where students worked on different curricula at the same time. As an example, two teachers located in KY had their students working on Algebra I throughout most of the year and then reassigned them to Algebra II in the last month of school. Another teacher in KY had students variously enrolled in three different curricula throughout the entire year (Bridge-to-Algebra, Algebra I, and a specialized Geometry curriculum), while another teacher in MI during Year 2 had students enrolled in three curricula sequentially throughout the year covering Algebra I until November, and then starting a customized curriculum and using it until February, and ending the year with another customized curriculum that was used until June. While there are numerous instances of these uses of multiple curricula in Year 2, there are also many occurrences of teachers who had their students enrolled in the standard Algebra I throughout the entire year.  In TX mostly, with some instances in MI, there were teachers who exclusively used customized curricula the whole year.
+plot(1:10,type='n',xaxt='n',yaxt='n',bty='n')
+legend(-1.5,7.5, c("Bridge-to-\n Algebra",'Algebra I','$>$Alg. I','','Standard','Cust.'),
+       fill=c(COLS,NA,'#010101','#010101'),border=rep('white',6),
+       angle=c(NA,NA,NA,NA,NA,45),density=c(NA,NA,NA,NA,NA,75),xpd = TRUE, bty = "n",inset=c(0,0))
+
+par(oma=omar)
+@
+\caption{Percentage of worked problems coming from various levels
+  (denoted by color, with Algebra II and Geometry bundled as ``$>$Algebra I''), from
+  standard and customized variants, denoted by shading.}
+\label{fig:curricula}
+\end{figure}
+
+Students' automatic progress throught the CTAI software is governed by
+curricula---sequences of sections and units embedded in the software.
+Without external meddling, the curriculum a student works on
+determines what section he or she will be directed towards next after
+mastering (or exhausting the problems) from a previous section.
+In the CTAI effectiveness trial, the most common curriculum was,
+naturally, Algebra I.
+This came with three closely related varients, due to software releases.
+Students requiring more remediation were able to work on a less
+advanced curriculum, called ``Bridge to Algebra,'' and more advanced
+students could work on Algebra II or Geometry.
+
+In the second year of the study, some high schools, primarily in
+Texas, Michigan, and Kentucky, requested customized variants of the
+curricula.
+This was typically due to state standards and testing schedules.
+These ``customized curricula'' altered the order of some sections and
+units, and were particular to schools.
+
+Figure \ref{fig:curricula} shows the percentage of worked problems
+from each curriculum, from standard and customized varieties, by state
+and year.
+First, note that the vast majority of worked problems were from the
+Algebra I sequence.
+A small but notable number of more advanced problems were worked in
+Kentucky in Year 2, and some less advanced problems were worked in
+Michigan and Louisiana.
+Secondly, note the rise in ``customized curricula'' in year 2 in
+Texas, Kentucky, and Michigan, the three states with the most students
+in our dataset.
+In particular, Texas shifted almost entirely to customized curriclua
+from years 1 to 2.
+
+
+% All students who participated in the treatment condition of the study were enrolled in at least one curriculum throughout the school year.
+% Figure
+% In Year 1, the standard Algebra curriculum was the most-used curriculum across schools participating in the study; other curricula were Bridge-to-Algebra (pre-algebra), Algebra II, and five customized curricula that were used in two schools. The standard curricula used in Year 2 included the three that were used in Year 1, plus Geometry and Algebra II Bonus. In Year 2, Carnegie Learning also developed many more customized curricula with input from participating schools, for a total of 33 curricula used in 13 schools. This led to fewer students enrolled in the standard curriculum and more enrolled in customized curricula overall in Year 2.
+
+% In the available data, representing a subset of the entire study sample, the number of students enrolled in at least one standard curriculum in Year 1 was 2,801; in Year 2, this number decreased to 1,204. The number of students enrolled in at least one customized curriculum was 115 in Year 1 and increased to 2,333 in Year 2. It should be noted that students could be enrolled in multiple curricula. For instance, teachers could choose to enroll students in any of the standard curricula provided, such as Algebra I or Algebra II, along with any of the customized curricula that were used by the school.
+
+% The use of customized curricula varied substantially by state. For instance, schools in CT and NJ did not use customized curricula in either Year 1 or Year 2. All other states contained schools that used customized curricula in addition to the standard curricula. CT schools maintained similar number of students in Algebra I across both years with 111 in Year 1 and 135 in Year 2. NJ substantially decreased the number of students in the CTAI program from 89 to 32 from Year 1 to Year 2. However, while all other states (KY, LA, MI, and TX) did decrease enrollment in the standard Algebra I curriculum the second year, those same states increased enrollment in the customized curricula. KY added 3 customized curricula with 146 students, LA added 15 customized curricula with 286 students, MI added 5 customized curricula with 370 students, and TX added 10 additional customized curricula and had the largest enrollment in these curricula with 1,531 students. Students enrolled in the standard Algebra I curriculum dropped from 974 in Year 1 to 61 in Year 2 in TX. As noted above, students could be enrolled in more than one curriculum. In Year 2, the average number of curricula per a student ranged from 1.00 (NJ and CT) to 2.53 (TX). The next highest value was LA at 2.10.
+
+Throughout the school year, teachers could have a class of students
+working on multiple curricula either sequentially, where the students
+changed curricula in lock step, or simultaneously, where students
+worked on different curricula at the same time. As an example, two
+teachers located in KY had their students working on Algebra I
+throughout most of the year and then reassigned them to Algebra II in
+the last month of school. Another teacher in KY had students variously
+enrolled in three different curricula throughout the entire year
+(Bridge-to-Algebra, Algebra I, and a specialized Geometry curriculum),
+while another teacher in MI during Year 2 had students enrolled in
+three curricula sequentially throughout the year covering Algebra I
+until November, and then starting a customized curriculum and using it
+until February, and ending the year with another customized curriculum
+that was used until June. While there are numerous instances of these
+uses of multiple curricula in Year 2, there are also many occurrences
+of teachers who had their students enrolled in the standard Algebra I
+throughout the entire year.  In TX mostly, with some instances in MI,
+there were teachers who exclusively used customized curricula the
+whole year.
 
 \section{Student Usage Across Sections and Years}
 \begin{figure}
-<<usageTime, fig.height=3,fig.width=6>>=
+<<usageTime, fig.height=3,fig.width=6,dependson='data'>>=
 secByStud <- summarize(group_by(data,state,Yr,field_id),numSec=n_distinct(section,na.rm=TRUE),time=sum(total_t1,na.rm=TRUE),mastered=n_distinct(section[status=='graduated'],na.rm=TRUE))
+
+secByStud$time <- secByStud$time/3600000
 
 secByStud <- within(secByStud,{
                         numSec[numSec==0] <- NA
@@ -102,38 +195,67 @@ secByStud <- within(secByStud,{
                         mastered[mastered==0] <- NA
                     })
 
-print(timeStateYear <- ggplot(secByStud,aes(Yr,time/3600000))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+coord_cartesian(ylim=c(0,100))+labs(x='',y='Time on CTAI Software per Student (Hours)'))
+levels(secByStud$state) <- c(levels(secByStud$state),'Overall')
+secByStud2 <- secByStud
+secByStud2 <- rbind(secByStud,secByStud2)
+secByStud2$state[seq(nrow(secByStud)+1,2*nrow(secByStud))] <- 'Overall'
+
+print(timeStateYear <- ggplot(secByStud2,aes(Yr,time))+geom_boxplot(outlier.shape=NA)+facet_grid(~state)+coord_cartesian(ylim=c(0,110))+labs(x='',y='Hours on CTAI Software per Student'))
 #ggsave('timeStatYear.jpg',width=6,height=3)
 
 @
-\caption{Boxplots of hours each student spent on Cognitive Tutor
-  software over by year and state. Students spending more than 100
-  hours (\Sexpr{sum(secByStud[['time']]>100,na.rm=TRUE)} of \Sexpr{nrow(secByStud)}) and students
-  with no timestamp data (\Sexpr{sum(is.na(secByStud[['time']]))})
+\caption{Boxplots (excluding outliers) of hours each student spent on Cognitive Tutor
+  software over by year and state. Students  with no timestamp data
+  (\Sexpr{sum(is.na(secByStud[['time']]))/2})
   were excluded.}
 \label{fig:timeByStud}
 \end{figure}
 
 
+
 \begin{figure}
-<<mastSec,dependson='usageTime'>>=
-print(mastStateYear <- ggplot(secByStud,aes(Yr,mastered))+geom_boxplot()+facet_grid(~state)+labs(x='',y='\\# Sections Mastered Per Student')+coord_cartesian(ylim=c(0,250)))
+<<mastSec,dependson='usageTime',fig.width=6,fig.height=3,dependson=c('usageTime','data')>>=
+print(mastStateYear <- ggplot(secByStud2,aes(Yr,mastered))+geom_boxplot()+facet_grid(~state)+labs(x='',y='\\# Sections Mastered Per Student')+coord_cartesian(ylim=c(0,250)))
 @
 \caption{Boxplots of the number of sections each of Cognitive Tutor
   software each student mastered, by year and state. Students
-  mastering more than 250 sections (\Sexpr{sum(secByStud[['mastered']]>250,na.rm=TRUE)}) of \Sexpr{nrow(secByStud)}) and students
-  with no mastery data (\Sexpr{sum(is.na(secByStud[['mastered']]))})
+  mastering more than 250 sections (\Sexpr{sum(secByStud[['mastered']]>250,na.rm=TRUE)/2}) of \Sexpr{nrow(secByStud)/2}) and students
+  with no mastery data (\Sexpr{sum(is.na(secByStud[['mastered']]))/2})
   were excluded.}
 \label{fig:mastSec}
 \end{figure}
 
 
-Figure \ref{fig:timeByStud} shows that the number of sections worked varied substantially between students and across states and years. Across years, students in Texas, New Jersey, and Connecticut worked fewer sections each than in Kentucky, Louisiana, and Michigan. From year 1 to 2, the median number of sections a student worked on decreased in every state, decreasing more substantially Texas and New Jersey than in others. The variance of the numbers of sections students worked in Michigan increased from year 1 to 2 as well.
 
-Figure 2 shows the proportion of worked sections that were from a customized curriculum in the three states that used customized curricula substantially: Kentucky, Michigan, and Texas. As students worked fewer sections in year 2, a greater proportion of the sections they did work were from customized curricula. Across states, the average number of sections worked per student enrolled for the standard curricula was 53.83 in Year 1 and was similar at 52.45 in Year 2 across all states. For customized curricula in Year 2, the average number of worked sections per student enrolled was 19.93. However, since students were often enrolled in multiple curricula, these numbers underestimate the number of sections worked by students over the whole year.
+
+
+Figure \ref{fig:timeByStud} shows that the number of hours students
+spent working on the CTAI software
+varied substantially between students and across states and
+years.
+Overall, students spent less time on the software in Year 2 than in
+Year 2.
+Specifically, in the first year the students spent a median of
+\Sexpr{round(median(secByStud[['time']][secByStud[['Yr']]=='Yr 1'],na.rm=TRUE),1)} hours on the software, compared to \Sexpr{round(median(secByStud[['time']][secByStud[['Yr']]=='Yr 2'],na.rm=TRUE),1)} in  the second year.
+However, usage varied more in year 2 as well---the interquartile
+range of time spent was \Sexpr{round(IQR(secByStud[['time']][secByStud[['Yr']]=='Yr 1'],na.rm=TRUE),1)} hours in the first year, compared to \Sexpr{round(IQR(secByStud[['time']][secByStud[['Yr']]=='Yr 2'],na.rm=TRUE),1)} in  the second year.
+
+Time spent varied substantially by state, with students in Texas,
+Connecticut, and New Jersey working far fewer hours than students in
+Kentucky, Louisiana, and Michigan.
+Not every state reduced its usage from years 1 to 2---while students
+in Texas, Kentucky and New Jersey used the software less in the second
+year than in the first, students in Michigan, Louisiana, and
+Connectuct increased their usage.
+
+
 
 Of course, more worked sections does not necessarily mean better worked sections. For instance, students might attempt fewer sections in year two, but graduate a higher percentage. Thus we investigated whether, on average, there were more graduated sections per students the second year, and how this related to whether they were enrolled in the standard versus customized curricula. Overall, the number of graduated sections per student increased in Year 2. The number of graduated sections per student was 17.94 in Year 1 and 25.66 in Year 2 in standard curricula. However, the customized curricula had fewer average graduated sections per student enrolled compared to the standard curricula; these numbers were 5.64 in Year 1 and 11.47 in Year 2. The percentages of average graduated sections to the average total worked sections were: 33.33% in Year 1 and 48.92% in Year 2 in the standard curricula, and 57.55% in Year 2 for the customized curricula. The average number of promoted sections per student also increased from Year 1 to Year 2, though only slightly. In Year 1, the average number of promotions were 1.20 for the customized curricula versus 3.64 for the standard curricula; in Year 2, those numbers were 2.20 and 4.95, respectively.
 
 We also evaluated the time spent per section across different curricula and states.  Some records were omitted from this analysis: sections missing information on date of completion, as well as each student’s last section attempted because there is no completion date recorded for those sections. As presented in Figures 2 and 3 for Year 1 and 2, respectively, students in NJ increased the time spent per section from Year 1 to Year 2; however, there were relatively few students in the study from NJ. From Figure 1, it was shown that CT and TX completed, on average, fewer sections per student. From the information presented in Figures 2 and 3, these states spent the highest average number of days per section. TX, with the largest enrollment of students and the greatest use of customized curricula in Year 2, had students spending slightly more days completing sections in customized curricula relative to the standard curricula.
 
 Figures 4 and 5 present information for only sections that were “graduated” by students, that is, cases in which a student was judged by the software to have mastered the material in the section. Results are similar to the data presented in Figures 2 and 3. However, in Year 2, TX students in customized curricula spent fewer days on a section they mastered, compared to the time TX students spent mastering sections in the standard curricula. This difference is also seen in KY and LA. If customized curriculum are more aligned with teachers’ instruction, graduating from a section may require fewer days than sections in the standard curricula, possibly because students are working on the same topics in class as they are in the software. Figures 4 and 5 also show that, on average, CT and TX spent more days graduating from sections, regardless whether the section was part of a standard curricula or customized curricula. One explanation for the longer time periods in these states may be due to a teacher’s use of the software simultaneously with the textbook instruction. In this case, the teachers could have switched back-and-forth as they instructed, hence extending the time worked by their students. For the states with shorter time periods, teachers may have followed a more sequential process where they first completed one component, e.g. textbook material, and then allowed students to focus on and complete the second component, e.g. software.
+
+
+
+\end{document}
