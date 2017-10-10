@@ -847,7 +847,11 @@ ggplot(filter(aaa,state%in%c('TX','KY','MI')),aes(as.factor(cpid),value,fill=var
 \begin{figure}
 <<transition,fig.height=5,fig.width=6,dependson=c('data','setup')>>=
 #### what's the next section each student works?
-secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]))
+secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]),nextUnit=c(unit[-1],NA))
+
+secOrder$cp <- secOrder$status=='changed placement'
+secOrder$mast <- secOrder$status=='graduated'
+
 
 secOrderCP <- subset(secOrder,status=='changed placement')
 
@@ -868,7 +872,7 @@ trans <- with(secOrderCP,table(unitName,nextUnitName))
 trans <- trans[rowSums(trans)>50,rowSums(trans)>50]
 trans <- trans[rowSums(trans)>50,rowSums(trans)>50]
 
-transitionPlot(trans)
+#transitionPlot(trans)
 
 nsec <- nrow(trans)
 
