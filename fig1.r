@@ -250,15 +250,29 @@ unitLevelState$Unit <- factor(unitLevelState$Unit,levels=units)
 levels(unitLevelState$Unit) <- UnitName
 ggplot(unitLevelState,aes(x=Unit,y=perWorked,color=state,group=state))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10),legend.position=c(.96,.82))#+labs(x='',y='% Worked',color='Year')+scale_y_continuous(labels=percent))
 
-nstudState <- data%>%filter(!is.na(unit) & Year=='Year 2')%>%group_by(state)%>%summarize(nstud=n_distinct(field_id))
-unitLevelState <- data%>%filter(Unit%in%units & Year=='Year 2' & state!='NJ' & state!='CT')%>%group_by(Unit,state)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
+### by customized curriculum (at school level)
+cust <- data%>%filter(Year=='Year 2')%>%group_by(schoolid2,state)%>%summarize(cust=mean(overall=='Customized',na.rm=T))%>%arrange(cust)
+data$cust <- data$schoolid2%in%cust$schoolid2[cust$cust>0.8]
 
-unitLevelState$perWorked <- unitLevelState$numWorked/nstudState$nstud[match(unitLevelState$state,nstudState$state)]
+nstudCust <- data%>%filter(!is.na(unit) & Year=='Year 2' & state=='TX')%>%group_by(cust)%>%summarize(nstud=n_distinct(field_id))
+unitLevelCust <- data%>%filter(Unit%in%units & Year=='Year 2'&state=='TX' )%>%group_by(Unit,cust)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
 
-unitLevelState$Unit <- factor(unitLevelState$Unit,levels=units)
-levels(unitLevelState$Unit) <- UnitName
-ggplot(unitLevelState,aes(x=Unit,y=perWorked,color=state,group=state))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10),legend.position=c(.96,.82))#+labs(x='',y='% Worked',color='Year')+scale_y_continuous(labels=percent))
+unitLevelCust$perWorked <- unitLevelCust$numWorked/nstudCust$nstud[match(unitLevelCust$cust,nstudCust$cust)]
 
+unitLevelCust$Unit <- factor(unitLevelCust$Unit,levels=units)
+levels(unitLevelCust$Unit) <- UnitName
+ggplot(unitLevelCust,aes(x=Unit,y=perWorked,color=cust,group=cust))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10),legend.position=c(.96,.82))#+labs(x='',y='% Worked',color='Year')+scale_y_continuous(labels=percent))
+
+### by school
+nstudSch <- data%>%filter(!is.na(unit) & Year=='Year 2')%>%group_by(schoolid2,state)%>%summarize(nstud=n_distinct(field_id))
+unitLevelSch <- data%>%filter(Unit%in%units & Year=='Year 2')%>%group_by(Unit,schoolid2,cust,state)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
+
+unitLevelSch$perWorked <- unitLevelSch$numWorked/nstudSch$nstud[match(unitLevelSch$schoolid2,nstudSch$schoolid2)]
+
+unitLevelSch$Unit <- factor(unitLevelSch$Unit,levels=units)
+levels(unitLevelSch$Unit) <- UnitName
+ggplot(unitLevelSch,aes(x=Unit,y=perWorked,color=schoolid2,group=schoolid2,linetype=cust))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10),legend.position='none')+#c(.96,.82))+
+    facet_grid(state~.)
 
 unitCPs <- ggplot(filter(unitLevel,numWorked>100),aes(x=Unit,y=meanCP,color=year,group=year))+
           geom_point()+geom_line()+
