@@ -72,6 +72,18 @@ secByStudCurr <- within(secByStudCurr,{
 
 print(currStateYear <- ggplot(filter(secByStudCurr,!is.na(curriculum)),aes(Yr,numSec,fill=curriculum))+geom_boxplot()+facet_grid(~state))
 
+##### number of skills tried/mastered
+load('~/Box Sync/CT/data/skillsdata/studentSkillTotals.RData')
+studLevel <- within(studLevel,mastPer <- nmast/ntry)
+studLevel <- rename(studLevel,field_id=student)
+secByStud <- left_join(secByStud,studLevel)
+
+print(skillsTry <- ggplot(secByStud,aes(Yr,ntry))+geom_boxplot()+facet_grid(~state)+labs(x='',y='# Skills Attempted'))
+
+print(skillsMast <- ggplot(secByStud,aes(Yr,nmast))+geom_boxplot()+facet_grid(~state)+labs(x='',y='# Skills Mastered'))
+
+
+
 ##########################################################################
 ### curricula
 ##########################################################################
@@ -228,6 +240,26 @@ print(unitsWorked <- ggplot(unitLevel,aes(x=Unit,y=perWorked,color=year,group=ye
 ggsave('unitsWorked.jpg',height=4,width=6)
 
 
+#### by state
+nstudState <- data%>%filter(!is.na(unit) & Year=='Year 2')%>%group_by(state)%>%summarize(nstud=n_distinct(field_id))
+unitLevelState <- data%>%filter(Unit%in%units & Year=='Year 2' & state!='NJ' & state!='CT')%>%group_by(Unit,state)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
+
+unitLevelState$perWorked <- unitLevelState$numWorked/nstudState$nstud[match(unitLevelState$state,nstudState$state)]
+
+unitLevelState$Unit <- factor(unitLevelState$Unit,levels=units)
+levels(unitLevelState$Unit) <- UnitName
+ggplot(unitLevelState,aes(x=Unit,y=perWorked,color=state,group=state))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10),legend.position=c(.96,.82))#+labs(x='',y='% Worked',color='Year')+scale_y_continuous(labels=percent))
+
+nstudState <- data%>%filter(!is.na(unit) & Year=='Year 2')%>%group_by(state)%>%summarize(nstud=n_distinct(field_id))
+unitLevelState <- data%>%filter(Unit%in%units & Year=='Year 2' & state!='NJ' & state!='CT')%>%group_by(Unit,state)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
+
+unitLevelState$perWorked <- unitLevelState$numWorked/nstudState$nstud[match(unitLevelState$state,nstudState$state)]
+
+unitLevelState$Unit <- factor(unitLevelState$Unit,levels=units)
+levels(unitLevelState$Unit) <- UnitName
+ggplot(unitLevelState,aes(x=Unit,y=perWorked,color=state,group=state))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10),legend.position=c(.96,.82))#+labs(x='',y='% Worked',color='Year')+scale_y_continuous(labels=percent))
+
+
 unitCPs <- ggplot(filter(unitLevel,numWorked>100),aes(x=Unit,y=meanCP,color=year,group=year))+
           geom_point()+geom_line()+
           theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10))+
@@ -247,12 +279,14 @@ statusPerSec <- data%>%
 
 statusOverall <-  data%>%filter(!is.na(status))%>%
     group_by(field_id,Yr,state,unit,section,Curriculum,overall)%>%summarize(status=max(status))
-statusStateYr <- statusOverall %>% group_by(state,Yr)%>%
+
+statusStateYr <- addOverallState(statusOverall) %>% group_by(state,Yr)%>%
     summarize(pgrad=mean(status=='graduated'),pfoi=mean(status=='final_or_incomplete'),
               pcp=mean(status=='changed placement'),pprom=mean(status=='promoted'))%>%
     melt(measure.vars=c('pgrad','pfoi','pcp','pprom'))
 
 levels(statusStateYr$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='pprom',Graduated='pgrad')
+
 
 print(statusStateYrPlot <- ggplot(statusStateYr,aes(Yr,value,fill=variable))+geom_col()+facet_grid(~state)+labs(y='% of Sections Worked',x='',fill='Exit Status')+scale_y_continuous(labels=percent))
 
