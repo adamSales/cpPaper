@@ -95,7 +95,7 @@ However, the theory underlying CTAI does not always determine its use. To be sur
 This article examines teachers’ and schools’ non-adherence to the standard, mastery-based CTAI curriculum, using data from the RAND study, a seven-state randomized controlled trial of CTAI in high schools and middle schools. The study found a significant positive effect of CTAI in high schools, during their second year of implementation but not the first. Students in the treatment group of the study were enrolled in one or more of the standard or customized curriculum during their participation in the study, and the software logged aspects of their usage, including time spent, sections encountered, and whether the software judged the students to have mastered the sections. Both Carnegie Learning and the researchers running the study restricted their software support and oversight to what is typically provided outside of an experimental context. Thus, the data from the study reflect typical software usage. Secondary data analyses used principal stratification to show that students who attempted more sections experienced larger treatment effects, and students who had high or low assistance levels, as opposed to an average level, experienced smaller treatment effects (Sales \& Pane, 2015, Sales et al. 2016).
 
 Here we extend the previous findings to investigate patterns of change in the sequence of topics presented to students. As noted earlier, schools could use a standard curriculum, a customized curriculum, or switch from one curriculum to another. Each curriculum consisted of a sequence of units, which was comprised of a sequence of sections. For example, the standard CTAI Algebra I curriculum in Year 1 comprised of 40 units covering approximately 170 sections. The
-number of sections within each unit varied. By default, the software operates by automatically moving students from section to section based on the sequence of topics defined by the curriculum they were currently enrolled in. In this software-controlled sequencing, students ideally spend the time necessary to learn the material of a section, are judged by the software to have mastered the material, and then “graduate” to the next section. Students who exhaust a section's material without mastering its skills are “promoted” to the next section. Students left uninterrupted follow the sequence of topics defined by their curriculum, ideally graduating from topics by showing mastery. However, teachers could modify a student’s path within the curriculum. They could reassign students from their current sections to other sections earlier or later in the intended sequence, including sections they had worked on previously.
+number of sections within each unit varied.
 This study attempts to elucidate teachers' goals in reassigning students. One hypothesis is the need for teachers push ahead students who were falling behind, i.e. to reassign them from sections on which they were struggling, to allow them catch up with the rest of the class. Another hypothesis is that teachers sought to push students past easier sections to begin working on more relevant topics for them. A third hypothesis is that teachers needed to cover certain topics in preparation for an upcoming state exams, and might have reassigned groups of students all at the same time to cover topics that might otherwise not have been covered. This hypothesis may lead to an increase in reassignments as the exam approaches. Overall, understanding patterns of reassignment is the focus of this paper, along with insights into how teachers were using the software component of CTAI.
 
 \section{The RAND Effectiveness Trial}
@@ -109,32 +109,47 @@ There are some limitations to the available data for this study. In particular, 
   \centering
 <<curricula,dependson=c('setup','data'),fig.width=6.4,fig.height=3>>=
 
-omar <- par()$oma
+bbb <- addOverallState(data)%>%filter(!is.na(Curriculum) & State!='NJ')%>%
+    group_by(state,Curriculum,overall,Yr)%>%
+    summarize(n=n())
+staten <- addOverallState(data)%>%filter(!is.na(Curriculum) & State!='NJ')%>%group_by(state,Yr)%>%summarize(n=n())
 
-par(oma=c(0,2,0,0),mar=c( 3,.5,2,0))
-par(mfrow=c(1,9))
-for(st in levels(data$State)){
-#    cwy <- currWorkedSt%>%filter(State==st)%>%group_by(Curriculum,overall)%>%summarize(`Yr 1`=p[Year=='Year 1'],`Yr 2`=p[Year=='Year 2'])
-    cwy <- data%>%filter(!is.na(Curriculum) & State==st)%>%group_by(Curriculum,overall)%>%
-    summarize(`Yr 1`=sum(Year=='Year 1'),`Yr 2`=sum(Year=='Year 2'))
-    for(y in c(1,2)) cwy[,paste('Yr',y)] <- cwy[,paste('Yr',y)]/sum(cwy[,paste('Yr',y)])
-    cwy <- cwy[nrow(cwy):1,]
-    barplot(as.matrix(cwy[,3:4]),col=COLS[as.numeric(cwy$Curriculum)],angle=ifelse(cwy$overall=='Customized',45,NA),density=ifelse(cwy$overall=='Customized',75,NA),main=st,yaxt='n')
-    if(st==levels(data$State)[1]) axis(2,at=seq(0,1,0.1),labels=paste0(seq(0,100,10),'\\%'))
-    #box()
-}
-cwy <- data%>%filter(!is.na(Curriculum))%>%group_by(Curriculum,overall)%>%
-    summarize(`Yr 1`=sum(Year=='Year 1'),`Yr 2`=sum(Year=='Year 2'))
-for(y in c(1,2)) cwy[,paste('Yr',y)] <- cwy[,paste('Yr',y)]/sum(cwy[,paste('Yr',y)])
-cwy <- cwy[nrow(cwy):1,]
-barplot(as.matrix(cwy[,3:4]),col=COLS[as.numeric(cwy$Curriculum)],angle=ifelse(cwy$overall=='Customized',45,NA),density=ifelse(cwy$overall=='Customized',75,NA),main='Overall',yaxt='n')
+for(i in 1:nrow(bbb)) bbb$n[i] <- bbb$n[i]/staten$n[staten$state==bbb$state[i] & staten$Yr==bbb$Yr[i]]
 
-plot(1:10,type='n',xaxt='n',yaxt='n',bty='n')
-legend(-1.5,7.5, c("Bridge-to-\n Algebra",'Algebra I','$>$Alg. I','','Standard','Cust.'),
-       fill=c(COLS,NA,'#010101','#010101'),border=rep('white',6),
-       angle=c(NA,NA,NA,NA,NA,45),density=c(NA,NA,NA,NA,NA,75),xpd = TRUE, bty = "n",inset=c(0,0))
+ggplot(bbb,aes(Yr,n,fill=Curriculum,alpha=overall))+geom_col()+facet_grid(~state)+scale_alpha_manual(values=c(1,0.5))+scale_fill_manual(values=COLS)+scale_y_continuous(labels=percent)+labs(x='',y='% of Problems Worked',alpha='')
 
-par(oma=omar)
+## ggplot(bbb,aes(Yr,n,color=bbb))+geom_col(show.legend=FALSE)+geom_col(aes(fill=Curriculum))+geom_col(aes(fill=overall),alpha=0.5)+facet_grid(~state)
+##     scale_fill_manual(values=c('#8dd3c7','#8dd3c7','#ffffb3','#ffffb3','#bebada','white','black'))
+##     geom_col(aes(Yr,n,fill=overall),alpha=0.5)+
+##     #geom_col(aes(Yr,n,fill=overall))+#scale_fill_manual(values=c('white','black'))+
+##     facet_grid(~state)
+
+## omar <- par()$oma
+
+## par(oma=c(0,2,0,0),mar=c( 3,.5,2,0))
+## par(mfrow=c(1,9))
+## for(st in levels(data$State)){
+## #    cwy <- currWorkedSt%>%filter(State==st)%>%group_by(Curriculum,overall)%>%summarize(`Yr 1`=p[Year=='Year 1'],`Yr 2`=p[Year=='Year 2'])
+##     cwy <- data%>%filter(!is.na(Curriculum) & State==st)%>%group_by(Curriculum,overall)%>%
+##     summarize(`Yr 1`=sum(Year=='Year 1'),`Yr 2`=sum(Year=='Year 2'))
+##     for(y in c(1,2)) cwy[,paste('Yr',y)] <- cwy[,paste('Yr',y)]/sum(cwy[,paste('Yr',y)])
+##     cwy <- cwy[nrow(cwy):1,]
+##     barplot(as.matrix(cwy[,3:4]),col=COLS[as.numeric(cwy$Curriculum)],angle=ifelse(cwy$overall=='Customized',45,NA),density=ifelse(cwy$overall=='Customized',50,NA),main=st,yaxt='n')
+##     if(st==levels(data$State)[1]) axis(2,at=seq(0,1,0.1),labels=paste0(seq(0,100,10),'\\%'))
+##     #box()
+## }
+## cwy <- data%>%filter(!is.na(Curriculum))%>%group_by(Curriculum,overall)%>%
+##     summarize(`Yr 1`=sum(Year=='Year 1'),`Yr 2`=sum(Year=='Year 2'))
+## for(y in c(1,2)) cwy[,paste('Yr',y)] <- cwy[,paste('Yr',y)]/sum(cwy[,paste('Yr',y)])
+## cwy <- cwy[nrow(cwy):1,]
+## barplot(as.matrix(cwy[,3:4]),col=COLS[as.numeric(cwy$Curriculum)],angle=ifelse(cwy$overall=='Customized',45,NA),density=ifelse(cwy$overall=='Customized',50,NA),main='Overall',yaxt='n')
+
+## plot(1:10,type='n',xaxt='n',yaxt='n',bty='n')
+## legend(-1.5,7.5, c("Bridge-to-\n Algebra",'Algebra I','$>$Alg. I','','Standard','Cust.'),
+##        fill=c(COLS,NA,'#010101','#010101'),border=rep('white',6),
+##        angle=c(NA,NA,NA,NA,NA,45),density=c(NA,NA,NA,NA,NA,50),xpd = TRUE, bty = "n",inset=c(0,0))
+
+## par(oma=omar)
 @
 \caption{Percentage of worked problems coming from various levels
   (denoted by color, with Algebra II and Geometry bundled as ``$>$Algebra I''), from
@@ -259,10 +274,11 @@ sections in year 2 than in year 1.
 
 
 \begin{figure}
+\centering
 <<usageTime, fig.height=3,fig.width=6,dependson=c('data','setup','usageMedians')>>=
 
 
-print(timeStateYear <- ggplot(secByStud2,aes(Yr,time))+geom_boxplot(outlier.shape=NA)+
+print(timeStateYear <- ggplot(filter(secByStud2,state!='NJ'),aes(Yr,time))+geom_boxplot(outlier.shape=NA)+
           geom_jitter(data = function(x) dplyr::filter_(x, ~ outlier.time), width=0.2)+
           facet_grid(~state)+coord_cartesian(ylim=c(0,110))+labs(x='',y='Hours on CT Software per Student'))
                                         #ggsave('timeStatYear.jpg',width=6,height=3)
@@ -281,12 +297,12 @@ print(timeStateYear <- ggplot(secByStud2,aes(Yr,time))+geom_boxplot(outlier.shap
 \end{figure}
 
 <<supplementalFigs1,include=FALSE,dependson=c('data','setup','usageMedians')>>=
-secStateYear <- ggplot(secByStud2,aes(Yr,numSec))+geom_boxplot(outlier.shape=NA)+
+secStateYear <- ggplot(filter(secByStud2,state!='NJ'),aes(Yr,numSec))+geom_boxplot(outlier.shape=NA)+
           geom_jitter(data = function(x) dplyr::filter_(x, ~ outlier.sec), width=0.2)+
           facet_grid(~state)+labs(x='',y='# of Sections Worked per Student')+coord_cartesian(ylim=c(0,200))
 ggsave('secStateYear.jpg',width=6,height=3)
 
-probStateYear <- ggplot(secByStud2,aes(Yr,nprob))+geom_boxplot(outlier.shape=NA)+
+probStateYear <- ggplot(filter(secByStud2,state!='NJ'),aes(Yr,nprob))+geom_boxplot(outlier.shape=NA)+
           geom_jitter(data = function(x) dplyr::filter_(x, ~ outlier.prob), width=0.2)+
           facet_grid(~state)+labs(x='',y='# of Problems Worked per Student')+coord_cartesian(ylim=c(0,2000))
 ggsave('probStateYear.jpg',width=6,height=3)
@@ -354,6 +370,7 @@ incrase in the number of outliers.
 
 
 \begin{figure}
+\centering
 <<unitsWorked,dependson=c('usageMedians','data','setup'),fig.width=6,fig.height=3>>=
 secByStud2 <-
   secByStud2 %>%
@@ -361,7 +378,7 @@ secByStud2 <-
   mutate(outlier = numUnit > quantile(numUnit,0.75,na.rm=TRUE) + IQR(numUnit,na.rm=TRUE) * 1.5) %>%
   ungroup
 
-print(unitsStateYear <- ggplot(secByStud2,aes(Yr,numUnit))+geom_boxplot(outlier.shape=NA)+geom_jitter(data = function(x) dplyr::filter_(x, ~ outlier), width=0.2)+facet_grid(~state)+labs(x='',y='# Units Worked Per Student')+coord_cartesian(ylim=c(0,55)))
+print(unitsStateYear <- ggplot(filter(secByStud2,state!='NJ'),aes(Yr,numUnit))+geom_boxplot(outlier.shape=NA)+geom_jitter(data = function(x) dplyr::filter_(x, ~ outlier), width=0.2)+facet_grid(~state)+labs(x='',y='# Units Worked Per Student')+coord_cartesian(ylim=c(0,55)))
 @
 \caption{Boxplots of the number of units of Cognitive Tutor
   software each student worked, by year and state. Students
@@ -385,7 +402,7 @@ Figures 4 and 5 present information for only sections that were “graduated” 
 \end{comment}
 
 
-\section{Mastery Learning: Working Units in Order---Or Not}
+\section{Working Units in Order---Or Not}
 
 Overally, students used CT less in the second year than in the
 first.
@@ -463,5 +480,418 @@ Presumeably teachers and administrators wanted students to focus on
 that unit, perhaps because they found it to be particularly effective,
 because students tend to struggle with its main topic, or because its
 topic may figure prominantly in an upcoming standardized test.
+
+\begin{figure}
+  \centering
+<<unitsWorkedCust,dependson=c('data','setup','whichUnits'),fig.height=4,fig.width=6>>=
+### by customized curriculum (at school level)
+cust <- data%>%filter(Year=='Year 2')%>%group_by(schoolid2,state)%>%summarize(cust=mean(overall=='Customized',na.rm=T))%>%arrange(cust)
+data$cust <- ifelse(data$schoolid2%in%cust$schoolid2[cust$cust>0.8],'Customized','Standard')
+
+nstudCust <- data%>%filter(!is.na(unit) & Year=='Year 2')%>%group_by(cust)%>%summarize(nstud=n_distinct(field_id))
+unitLevelCust <- data%>%filter(Unit%in%units & Year=='Year 2' )%>%group_by(Unit,cust)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
+
+unitLevelCust$perWorked <- unitLevelCust$numWorked/nstudCust$nstud[match(unitLevelCust$cust,nstudCust$cust)]
+
+unitLevelCust$Unit <- factor(unitLevelCust$Unit,levels=units)
+levels(unitLevelCust$Unit) <- UnitName
+ggplot(unitLevelCust,aes(x=Unit,y=perWorked,color=cust,group=cust))+geom_point()+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10),legend.position=c(.96,.82))+labs(x='',y='% Worked',color='Curriculum',title='Year 2')+scale_y_continuous(labels=percent)
+@
+\caption{The percentages of year-2 students with usage data who worked at
+  least one problem from each unit in the Algebra I curriculum. The
+  units are arranged in order for the standard curriculum. Students
+  are divided between those attending schools using primarily a customized
+  curriculum and those using primariy the standard Algebra I curriculum.}
+\label{fig:unitsWorkedCust}
+\end{figure}
+
+Most of the variation in unit order was driven by the rise, in year 2,
+of customized curricula.
+Figure \ref{fig:unitsWorkedCust} divides year-2 students into those
+attending schools using primarily a customized curriculum, and those
+attending schools using primarily a standardized
+curriculum.\footnote{At least
+  \Sexpr{trunc(100*min(cust[['cust']][cust[['cust']]>0.8]))}\% of
+  problems at ``Customized'' schools were from a customized curriculum,
+  and at most
+  \Sexpr{ceiling(100*max(cust[['cust']][cust[['cust']]<0.8]))}\% of
+  problems at ``Standard'' schools were from a customized curriculum.}
+Students using a standardized curriculum followed the standard
+sequence---more or less---while students using customized curricula
+did not.
+That said, there were some order violations in the standard group:
+specifically, more students worked problems from units ``4-Quadrant
+Linear Graphs'' and ``Exponents'' than worked the preceding sections;
+this suggests that some teachers used the reassignment tool to
+prioritize particular topics.
+Of course, this may have occurred in schools with customized
+curriculua as well---a possibility we will discuss in the next
+section.
+
+\begin{figure}
+  \centering
+<<unitsBySchool,dependson=c('data','setup','whichUnits'),fig.height=7,fig.width=6>>=
+### by school
+nstudSch <- data%>%filter(!is.na(unit) & Year=='Year 2')%>%group_by(schoolid2,state)%>%summarize(nstud=n_distinct(field_id))
+unitLevelSch <- with(filter(data,Unit%in%units & Year=='Year 2'),expand.grid(Unit=unique(Unit),schoolid2=unique(schoolid2)))
+unitLevelSch$state <- data$state[match(unitLevelSch$schoolid2,data$schoolid2)]
+unitLevelSch$cust <- data$cust[match(unitLevelSch$schoolid2,data$schoolid2)]
+unitLevelSch$numWorked <- with(filter(data,Year=='Year 2'),vapply(1:nrow(unitLevelSch),function(i)
+    n_distinct(field_id[schoolid2==unitLevelSch$schoolid2[i] & Unit==unitLevelSch$Unit[i]]),1))
+
+#unitLevelSch <- data%>%filter(Unit%in%units & Year=='Year 2')%>%group_by(Unit,schoolid2,cust,state)%>%summarize(numWorked= n_distinct(field_id,na.rm=TRUE),numCP=sum(status=='changed placement',na.rm=TRUE),meanCP=mean(status=='changed placement',na.rm=TRUE))
+
+unitLevelSch$perWorked <- unitLevelSch$numWorked/nstudSch$nstud[match(unitLevelSch$schoolid2,nstudSch$schoolid2)]
+
+unitLevelSch$Unit <- factor(unitLevelSch$Unit,levels=units)
+levels(unitLevelSch$Unit) <- UnitName
+
+ggplot(filter(unitLevelSch,state!='NJ'),aes(x=Unit,y=perWorked,color=schoolid2,group=schoolid2,linetype=cust))+geom_point(size=.5)+geom_line()+theme(axis.text.x = element_text(angle = 90, hjust = 1,vjust=0.5,size=10),legend.text=element_text(size=10))+
+                                        #,legend.position=c(.96,.82))+
+    facet_grid(state~.)+scale_y_continuous(labels=percent)+scale_color_discrete(guide=FALSE)+
+    labs(x='',y='% Worked',linetype='Curriculum',title='Year 2')
+@
+\caption{The percentages of year-2 students with usage data in each
+  school who worked at least one problem from each unit in the Algebra I curriculum. The
+  units are arranged in order for the standard curriculum. Schools are
+  classified as either using primarily customized curricula (solid
+  line) or using primarily the standard Algebra I curriculum (dotted).}
+\label{fig:unitsBySchool}
+\end{figure}
+
+Figure \ref{fig:unitsBySchool} further decomposes the year-2 results
+by school and state, showing a large amount of variation between
+states, as well as variation between schools within states.
+In Texas, every school used customized curricula, most of which seem to
+prioritize some of the same units, for instance, ``Linear Patterns,''
+``Ind. Variables in Lin. Mod.,'' and
+``Lin. Eq. w/ Var's Both Side.''
+These topics might be emphasized on Texas standardized tests.
+On the other hand, there was also variance between schools.
+For instance, one school prioritized units ``2 Step Lin. Eq.''
+and ``4−Quadrant Linear Graphs'' while nearly eliminating ``Linear Patterns.''
+
+Between-school variation is evident in the other states, as well.
+In four of the five Kentucky schools, nearly every student worked on
+the first nine units; in the one Kentucky school that used a
+customized curriculum, nearly every student worked on the first 13
+units, omitted the 15th (``Lin. Mod. in General Form''), and worked on
+the 16th and 17th (``Literal Eq.'' and ``Lin. Eq. w/ Var's Both Sides'').
+In the remaining school, nearly every student worked on the first
+section, but usage decreased rapidly from there.
+Curiously, in one Michigan school which used the standard curriculum,
+no students seem to have worked on the ``Lin. Mod. \& Ratios'' section.
+
+If unit order and topic scaffolding are important to CT's mastery
+learning mechanism, the wide variation in students' realized curricula
+would seem to pose a problem.
+The fact that the prescribed order was followed less in the second
+year of the study, when CTAI was effective, than in the first year,
+when it wasn't, suggests that the standard curriculum may play a
+smaller role than one might otherwise imagine.
+
+\section{Mastering the Material---Or Not}
+The central idea behind mastery learning is that students progress
+through the curriculum as they master skills.
+In the context of CT, skills are clustered within sections, which are
+in turn clustered within units.
+Students progress from the current section to the next section after
+mastering all of the current section's skills.
+Ideally, students would master all of the skills in all of the
+sections they work.
+
+By default, the software operates by automatically moving students
+from section to section based on the sequence of topics defined by the
+curriculum they were currently enrolled in. In this
+software-controlled sequencing, students ideally spend the time
+necessary to learn the material of a section, are judged by the
+software to have mastered the material, and then ``graduate'' to the
+next section. Students who exhaust a section's material without
+mastering its skills are “promoted” to the next section.
+Students left uninterrupted follow the sequence of topics defined by
+their curriculum, ideally graduating from topics by showing mastery.
+However, teachers could modify a student’s path within the curriculum.
+They could ``reassign'' students from their current sections to other
+sections earlier or later in the intended sequence, including sections
+they had worked on previously.
+Finally, if the semester ends, or a student stops using CT for some
+other reason, while in the middle of working through a
+section, he or she will leave their ``Final'' section without
+mastering all of its skills.
+All in all, each CT section begun ends in one of four possible ways:
+mastery, promotion, reassignment, or as the student's final section.
+
+\begin{figure}
+  \centering
+<<overallStatus,dependson=c('data','setup'),fig.height=3,fig.width=6>>=
+statusPerSec <- data%>%
+    filter(!is.na(Curriculum) &!(state=='MI'&Curriculum=='Customized'&year==1))%>%
+    group_by(field_id,Yr,state,section,Curriculum,status)%>%
+        summarize(cp=any(status=='changed placement'))%>%group_by(state,Curriculum,Yr,field_id)%>%summarise(pcp=mean(cp,na.rm=TRUE),ncp=sum(cp,na.rm=TRUE))
+
+statusOverall <-  data%>%filter(!is.na(status))%>%
+    group_by(field_id,Yr,state,unit,section,Curriculum,overall)%>%summarize(status=max(status))
+
+statusStateYr <- addOverallState(statusOverall) %>% group_by(state,Yr)%>%
+    summarize(pgrad=mean(status=='graduated'),pfoi=mean(status=='final_or_incomplete'),
+              pcp=mean(status=='changed placement'),pprom=mean(status=='promoted'))%>%
+    melt(measure.vars=c('pgrad','pfoi','pcp','pprom'))
+
+levels(statusStateYr$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='pprom',Mastered='pgrad')
+
+
+ ggplot(filter(statusStateYr,state!='NJ'),aes(Yr,value,fill=variable))+geom_col()+facet_grid(~state)+labs(y='% of Sections Worked',x='',fill='Exit Status')+scale_y_continuous(labels=percent)
+
+@
+\caption{The distributions of outcomes of worked sections, by state and across the
+  entire sample, in the two study years.}
+\label{fig:overallStatus}
+\end{figure}
+
+\begin{table}
+ \begin{tabular}{rllllll|llllll}
+
+&   \multicolumn{6}{c}{Year 1}&\multicolumn{6}{c}{Year 2}\\
+<<statusTab,dependson='overallStatus',results='asis'>>=
+
+tab1 <- dcast(subset(statusStateYr,Yr=='Yr 1'&state!='NJ'),variable~state)
+tab2 <- dcast(subset(statusStateYr,Yr=='Yr 2'&state!='NJ'),variable~state)
+tab <- cbind(tab1,tab2[-1])
+
+tab$variable <- as.character(tab$variable)
+cat('&')
+cat(names(tab)[-1],sep='&')
+cat('\\\\')
+for(i in 1:nrow(tab)){
+    cat(tab[i,1],round(unlist(tab[i,-1])*100),sep='&')
+    cat('\\\\')
+}
+
+rownames(tab1) <- rownames(tab2) <- tab1$variable
+tab1 <- as.matrix(tab1[,-1])
+tab2 <- as.matrix(tab2[,-1])
+
+@
+
+\end{tabular}
+\caption{Percentages of worked sections that ended in each of the
+  four possible outcomes, across states and study years.}
+\label{tab:overallStatus}
+\end{table}
+
+Figure \ref{fig:overallStatus} and Table \ref{tab:overallStatus} show
+the proportions of worked sections in each state and study year that
+ended with mastery, promotion, or reassignment, or which were the
+student's final section.
+In the first year, about
+\Sexpr{round(mean(tab1['Mastered',c('TX','KY','MI','LA')])*100)}\% of
+worked sections are mastered in every
+state other than Connecticut.
+Other than in Texas, about
+\Sexpr{paste(round(range(tab1['Promoted',c('CT','KY','MI','LA')])*100),collapse='--')}\%
+of sections end in promotion.
+About \Sexpr{round(tab1['Reassigned','TX']*100)}
+and \Sexpr{round(tab1['Reassigned','CT']*100)}\% of sections in Texas
+and Connecticut end in reassignment, which is even rarer in the other states.
+
+With the exception of Texas, sections in the second year tend to be
+completed as they were in year 1.
+In Texas, however, the percentage of sections ending in reassignment increased by a factor
+of about about
+\Sexpr{round(tab2['Reassigned','TX']/tab1['Reassigned','TX'])},
+to about \Sexpr{round(tab2['Reassigned','TX']*100)}\%.
+The proportion of Texas sections labeled ``Final'' increased as well,
+most likely due to the decrease in usage.
+
+Across states, just under
+\Sexpr{round(tab1['Reassigned','Overall']*100)}\% of sections in year
+1 eneded in reassignment, as did roughly
+\Sexpr{round(tab2['Reassigned','Overall']*100)}\% in year 2.
+
+\subsection{Section Mastery and Curriculum}
+\begin{figure}
+<<statusCur,dependson='overallStatus',fig.height=3,fig.width=6>>=
+statusCurr <- statusOverall%>%filter(!is.na(Curriculum))%>% group_by(Curriculum,overall)%>%
+    summarize(pgrad=mean(status=='graduated'),pfoi=mean(status=='final_or_incomplete'),
+              pcp=mean(status=='changed placement'),pprom=mean(status=='promoted'))%>%
+    melt(measure.vars=c('pgrad','pfoi','pcp','pprom'))
+levels(statusCurr$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='pprom',Graduated='pgrad')
+statusCurr$Curriculum <- factor(statusCurr$Curriculum,levels=rev(levels(statusCurr$Curriculum)))
+print(ggplot(statusCurr,aes(overall,value,fill=variable))+geom_col()+facet_grid(~Curriculum)+labs(y='% of Sections Worked',x='',fill='Exit Status')+scale_y_continuous(labels=percent))
+
+@
+\caption{The distributions of outcomes of worked sections, by curriculum, in the two study years.}
+\label{fig:statusCur}
+\end{figure}
+
+
+\section{Digging Deeper into Section Reassignment}
+<<cpDat,dependson=c('data','setup'),include=FALSE>>=
+secLev <- data%>%filter(is.finite(status) & is.finite(timestamp) &is.finite(date))%>%
+    group_by(field_id,unit,section,Year,Yr,classid2,schoolid2)%>%
+    summarize(startDate=min(date),endDate=max(date),startTime=min(timestamp),endTime=max(timestamp),state=state[1],
+              status=max(status),Curriculum=Curriculum[1],overall=overall[1],version=version[1])%>%
+    arrange(endDate)
+
+### cp over time
+secLev <- within(secLev,endMonth <- factor(month(secLev$endDate,TRUE,TRUE),levels=c('Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul')))
+
+@
+\subsection{When are Students Reassigned?}
+
+\begin{figure}
+  \centering
+<<byMonth,dependson='cpDat',fig.height=3,fig.width=6>>=
+secLevMonth <- secLev%>%group_by(endMonth,Year)%>%summarize(ncp=n(),CPper=mean(status=='changed placement',na.rm=TRUE))
+secLev$cp <- as.numeric(secLev$status=='changed placement')
+
+ggplot(filter(secLevMonth,ncp>100),aes(endMonth,CPper,group=Year,color=Year,size=ncp))+geom_point()+geom_line(size=1)+
+    ## geom_smooth(aes(as.numeric(endMonth)+day(endDate)/31-0.5,cp,group=Year,
+    ##                 color=Year,size=1),
+    ##             method = "glm", formula = y ~ splines::bs(x, 4),data=secLev,method.args=list(family='binomial'),
+                                        #            show.legend=FALSE)+
+scale_y_continuous(breaks=seq(0,0.05,.01),labels=percent)+
+    coord_cartesian(ylim=c(0,0.05))+ labs(x='Month',y='% of Sections Ending in Reassignment')
+
+
+@
+\end{figure}
+
+\begin{figure}
+  \centering
+<<byMonthState,dependson='cpDat',fig.height=3,fig.width=6>>=
+secLevMonthSt <- secLev%>%filter(state%in%c('TX','KY','MI') & endMonth!='Jul')%>%group_by(endMonth,state,Year)%>%summarize(nsec=n(),CPper=mean(status=='changed placement',na.rm=TRUE))
+ggplot(secLevMonthSt,aes(endMonth,CPper,group=state,color=state,size=nsec))+geom_point()+facet_grid(Year~.)+
+    geom_line(size=1)+
+    ## geom_smooth(aes(as.numeric(endMonth)+day(endDate)/31-1.5,cp,group=state,
+    ##                 color=state,size=1),
+    ##             method = "glm",
+    ##             formula = y ~ splines::ns(x, knots=seq(1,10,2)),
+    ##             data=filter(secLev,state%in%c('TX','CT','NJ')& endMonth!='Jul'),
+    ##             method.args=list(family='binomial'),
+    ##             show.legend=FALSE)+
+    scale_y_continuous(labels=percent)+
+    labs(x='Month',y='% Sections Ending in Reassignment',size='Worked \n Sections',color='')
+
+
+@
+\end{figure}
+
+\subsection{Does Reassignment Depend on Classmates?}
+\begin{figure}
+<<classmates,dependson='cpDat',fig.height=6,fig.width=7>>=
+secLev$unitSectionClass <- paste(secLev$unit,secLev$section,secLev$classid2)
+cpDat <- subset(secLev,status=='changed placement' & Curriculum=='Algebra I')
+cpClasses <- unique(cpDat$unitSectionClass)
+secLevCP <- filter(secLev,unitSectionClass%in%cpClasses)
+levels(secLevCP$status) <- list(promGrad=c('promoted','graduated','final_or_incomplete'),cp='changed placement')
+secLevCPsplit <- split(secLevCP[,c('field_id','endDate','status')],secLevCP$unitSectionClass)
+
+
+ncp <- nrow(cpDat)
+seqDat <- matrix(NA,nrow=ncp,ncol=6)
+for(i in 1:ncp){
+    if(i%%100==0) cat(round(i/ncp*100,2),'% ',sep='')
+    cls <- secLevCPsplit[[cpDat$unitSectionClass[i]]]
+    if(nrow(cls)==1){
+        seqDat[i,] <- 0
+        next
+    }
+    cls <- filter(cls,field_id!=cpDat$field_id[i])
+    date <- cpDat$endDate[i]
+    ord <- factor(ifelse(cls$endDate<date,'bf',
+                  ifelse(cls$endDate==date,'same','after')),levels=c('bf','same','after'))
+    clsSplit <- split(cls,list(ord,cls$status))
+    seqDat[i,] <- vapply(clsSplit,nrow,1)
+}
+cat('\n')
+colnames(seqDat) <- names(clsSplit)
+
+classSize <- data%>%filter(!is.na(section))%>%group_by(classid2)%>%summarize(nstud=n_distinct(field_id))
+cpDat$totClassmates <- classSize$nstud[match(cpDat$classid2,classSize$classid2)]
+
+for(nn in names(clsSplit)) cpDat[[nn]] <- seqDat[,nn]/cpDat$totClassmates
+cpDat$nw <- (cpDat$totClassmates-rowSums(seqDat))/cpDat$totClassmates
+cpDat$total <- rowSums(seqDat)
+cpDat$bf.promGrad <- cpDat$bf.promGrad+cpDat$same.promGrad
+
+### plot them all
+
+mmm <- with(subset(cpDat,totClassmates>15),max(table(state,Year)))
+
+cpDat2 <- cpDat%>%filter(totClassmates>15)%>%arrange(bf.promGrad,bf.cp,same.cp,after.cp,after.promGrad)%>%group_by(Year,state)%>%mutate(cpid=seq(floor((mmm-n())/2)+1,floor((mmm-n())/2)+n()))%>%ungroup()
+
+aaa <- melt(cpDat2,measure.vars=c('bf.promGrad','bf.cp','same.cp','after.cp','after.promGrad','nw'))
+levels(aaa$variable) <- list(
+    `Never Worked\n Section`='nw',
+    `Mastered/Promoted\n Later`='after.promGrad',
+    `Reassigned\n Later`='after.cp',
+    `Reassigned\n Same Day`='same.cp',
+    `Reassigned\n Before`='bf.cp',
+    `Mastered/Promoted\n Before`='bf.promGrad')
+
+
+
+
+
+#aaa$variable <- factor(aaa$variable,levels=rev(c('pGrad','pProm','pCPbf','pCPsame','pLater','pNW')))
+ggplot(filter(aaa,state%in%c('TX','KY','MI')),aes(as.factor(cpid),value,fill=variable))+geom_col()+facet_grid(Year~state)+theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + scale_y_continuous(label=percent)+labs(fill='% of Classmates')+
+    scale_fill_manual(values=c('#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02'))
+
+@
+\end{figure}
+
+\subsection{Where To?}
+\begin{figure}
+<<transition,fig.height=5,fig.width=6,dependson=c('data','setup')>>=
+#### what's the next section each student works?
+secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]))
+
+secOrderCP <- subset(secOrder,status=='changed placement')
+
+
+secOrderCP$Unit <- secOrderCP$unit
+secOrderCP$Unit[grep('unit-conversions',secOrderCP$Unit)] <- 'unit-conversions'
+
+secOrderCP$unitName <- factor(secOrderCP$Unit,levels=units)
+levels(secOrderCP$unitName) <- UnitName
+
+secOrderCP$nextUnit[grep('unit-conversions',secOrderCP$nextUnit)] <- 'unit-conversions'
+
+secOrderCP$nextUnitName <- factor(secOrderCP$nextUnit,levels=units)
+levels(secOrderCP$nextUnitName) <- UnitName
+
+trans <- with(secOrderCP,table(unitName,nextUnitName))
+
+trans <- trans[rowSums(trans)>50,rowSums(trans)>50]
+trans <- trans[rowSums(trans)>50,rowSums(trans)>50]
+
+transitionPlot(trans)
+
+nsec <- nrow(trans)
+
+plot(1,1,xlim=c(0,6),ylim=c(0,nsec),cex=0)
+text(rep(1,nsec),nsec:1,rownames(trans))
+text(rep(5,nsec),nsec:1,rownames(trans))
+for(i in 1:nsec){
+    arrows(rep(2.5,nsec),rep(nsec-i+1,nsec),rep(3.5,nsec),nsec:1,lwd=5*trans[i,]/rowSums(trans)[i])#,col=rgb(0,0,0,trans[i,]/max(trans)))
+}
+
+
+@
+\end{figure}
+\section{Notes}
+[[don't forget to include these]]
+
+\begin{itemize}
+  \item \# of students per state?
+  \item NJ excluded from state-by-state comparisons, cuz too
+    small. Included in ``overall,'' etc.
+  \item What schools included?
+  \item Students with no mastery data: maybe they didn't work at all,
+    maybe they worked but we don't have their data. Treating them as unknown.
+\end{itemize}
 
 \end{document}
