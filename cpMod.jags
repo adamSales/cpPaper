@@ -1,0 +1,68 @@
+model{
+ for(j in 1:nWS){
+  cp[j] ~ dbern(prob[j])
+  logit(prob[j]) <- alpha0+ability[stud[j]]+difficulty[section[j]]
+ }
+ for(i in 1:nstud){
+  ability[i] ~ dnorm(classEffAb[class[i]]+schoolEffAb[school[i],year[i]]+stateEffAb[state[i],year[i]],tauAb)
+
+  Y[i]~dnorm(yhat[i],tauStd)
+  yhat[i] <- beta0+X[i,]%*%beta+beta.cp*ability[i]+classEffY[class[i]]+schoolEffY[school[i],year[i]]+stateEffY[state[i],year[i]]
+ }
+ for(cls in 1:ncls){
+  classEffAb[cls]~ dnorm(0,tauClsAb)
+  classEffY[cls]~ dnorm(0,tauClsY)
+ }
+ for(scl in 1:nscl){
+  schoolEffAb[scl,1]~ dnorm(0,tauSclAb1)
+  schoolEffAb[scl,2]~ dnorm(0,tauSclAb2)
+  schoolEffY[scl,1]~ dnorm(0,tauSclY1)
+  schoolEffY[scl,2]~ dnorm(0,tauSclY2)
+ }
+ for(st in 1:nst){
+  stateEffAb[st,1]~ dnorm(0,tauStAb1)
+  stateEffY[st,1]~ dnorm(0,tauStY1)
+  stateEffAb[st,2]~ dnorm(0,tauStAb2)
+  stateEffY[st,2]~ dnorm(0,tauStY2)
+
+ }
+
+ for(sec in 1:nsec){
+  difficulty[sec] ~ dnorm(0,1/100)
+ }
+ alpha0 ~ dnorm(0,1/100)
+ beta0 ~ dnorm(0,1/100)
+ beta.cp ~ dnorm(0,1/100)
+ for(cov in 1:ncov){
+  beta[cov] ~ dnorm(0,1/100)
+ }
+
+ # variance components
+ sigAb~dt(0, pow(2.5,-2), 1)T(0,)
+ sigStd~dt(0, pow(2.5,-2), 1)T(0,)
+ sigClsAb~dt(0, pow(2.5,-2), 1)T(0,)
+ sigClsY~dt(0, pow(2.5,-2), 1)T(0,)
+ sigSclAb1~dt(0, pow(2.5,-2), 1)T(0,)
+ sigSclY1~dt(0, pow(2.5,-2), 1)T(0,)
+ sigStAb1~dt(0, pow(2.5,-2), 1)T(0,)
+ sigStY1~dt(0, pow(2.5,-2), 1)T(0,)
+ sigSclAb2~dt(0, pow(2.5,-2), 1)T(0,)
+ sigSclY2~dt(0, pow(2.5,-2), 1)T(0,)
+ sigStAb2~dt(0, pow(2.5,-2), 1)T(0,)
+ sigStY2~dt(0, pow(2.5,-2), 1)T(0,)
+
+ tauAb <- pow(sigAb,-2)
+ tauStd <- pow(sigStd,-2)
+ tauClsAb<- pow(sigClsAb,-2)
+ tauClsY <- pow(sigClsY,-2)
+ tauSclAb1 <- pow(sigSclAb1,-2)
+ tauSclY1 <- pow(sigSclY1,-2)
+ tauStAb1 <- pow(sigStAb1,-2)
+ tauStY1 <- pow(sigStY1,-2)
+ tauSclAb2 <- pow(sigSclAb2,-2)
+ tauSclY2 <- pow(sigSclY2,-2)
+ tauStAb2 <- pow(sigStAb2,-2)
+ tauStY2 <- pow(sigStY2,-2)
+
+
+}

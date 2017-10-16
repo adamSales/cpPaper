@@ -845,7 +845,7 @@ ggplot(filter(aaa,state%in%c('TX','KY','MI')),aes(as.factor(cpid),value,fill=var
 
 \subsection{Where To?}
 \begin{figure}
-<<transition,fig.height=5,fig.width=6,dependson=c('data','setup')>>=
+<<transition,fig.height=7,fig.width=6.5,dependson=c('data','setup')>>=
 #### what's the next section each student works?
 secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]),nextUnit=c(unit[-1],NA))
 
@@ -869,23 +869,109 @@ levels(secOrderCP$nextUnitName) <- UnitName
 
 trans <- with(secOrderCP,table(unitName,nextUnitName))
 
-trans <- trans[rowSums(trans)>50,rowSums(trans)>50]
-trans <- trans[rowSums(trans)>50,rowSums(trans)>50]
+trans <- trans[rowSums(trans)>50,colSums(trans)>10]
+trans <- trans[rowSums(trans)>50,colSums(trans)>10]
+trans <- trans[rowSums(trans)>50,colSums(trans)>10]
+
 
 #transitionPlot(trans)
 
 nsec <- nrow(trans)
+uuu <- levels(secOrderCP$unitName)
+uuu <- uuu[uuu%in%c(colnames(trans),rownames(trans))]
+nsec <- length(uuu)
 
-plot(1,1,xlim=c(0,6),ylim=c(0,nsec),cex=0)
-text(rep(1,nsec),nsec:1,rownames(trans))
-text(rep(5,nsec),nsec:1,rownames(trans))
-for(i in 1:nsec){
-    arrows(rep(2.5,nsec),rep(nsec-i+1,nsec),rep(3.5,nsec),nsec:1,lwd=5*trans[i,]/rowSums(trans)[i])#,col=rgb(0,0,0,trans[i,]/max(trans)))
+par(mar=c(.1,.1,.1,.1))
+plot(1,1,xlim=c(-.5,4),ylim=c(0,nsec),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
+for(i in 1:nsec) if(uuu[i]%in%rownames(trans)) text(1,nsec-i+1,uuu[i],adj=c(1,NA))
+for(i in 1:nsec) if(uuu[i]%in%colnames(trans)) text(2,nsec-i+1,uuu[i],adj=c(0,NA))
+
+for(rr in rownames(trans))
+ for(cc in colnames(trans))
+     if(trans[rr,cc]>20){
+      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans[rr,cc]/sum(trans[rr,]),
+       col=rgb(0,0,0,alpha=ifelse(trans[rr,cc]>100,1,trans[rr,cc]/100)))
 }
 
 
 @
 \end{figure}
+
+\begin{figure}
+<<vcs,fig.height=7,fig.width=6.5,dependson=c('data','setup')>>=
+load('vcMods.RData')
+library(lme4)
+
+vcFun <- function(nm){
+    mod <- vcMods[[nm]]
+    out <- unlist(summary(mod)$varcor)
+    out <- data.frame(sig2=out,comp=names(out),stringsAsFactors=FALSE)
+    out <- rbind(out,data.frame(sig2=pi^2/3,comp='resid'))
+    out$state <- strsplit(nm,'_')[[1]][1]
+    out$year <- strsplit(nm,'_')[[1]][2]
+    out$sig2 <- out$sig2/sum(out$sig2)
+    out
+}
+
+vcDat <- do.call('rbind',lapply(names(vcMods),vcFun))
+
+yr1 <- data.frame(sig2=c(unlist(summary(vcModYr[[1]])$varcor),pi^2/3),
+                          comp=c(names(summary(vcModYr[[1]])$varcor),'resid'),
+                          state='Overall',
+                  year='1')
+yr1$sig2 <- yr1$sig2/sum(yr1$sig2)
+
+yr2 <- data.frame(sig2=c(unlist(summary(vcModYr[[2]])$varcor),pi^2/3),
+                          comp=c(names(summary(vcModYr[[2]])$varcor),'resid'),
+                          state='Overall',
+                  year='2')
+yr2$sig2 <- yr2$sig2/sum(yr2$sig2)
+
+vcDat <- rbind(vcDat,yr1,yr2)
+
+vcDat$comp <- factor(vcDat$comp)
+levels(vcDat$comp)=list(State='state',School='schoolid2',Class='classid2',Student='field_id',Unit='unit',Residual='resid')
+
+
+vcDat$state <- factor(vcDat$state,levels=c('TX','KY','MI','Overall'))
+
+ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_manual(values=rev(c('white','grey','#e41a1c','#377eb8','#4daf4a','#984ea3')))+labs(x='',y='% Variance Explained',fill='',title='Model: Multilevel Logistic Unconditional')
+
+
+
+@
+\end{figure}
+
+
+\begin{figure}
+<<xirtCP,fig.height=7,fig.width=6.5,dependson=c('data','setup')>>=
+load('cpXirtMods.RData')
+
+xirtDat <- data%>%filter(!is.na(status) & !is.na(xirt))%>%
+    group_by(field_id,classid2,schoolid2,xirt,year,spec_gifted,spec_speced,state,unit,section)%>%
+    summarize(status=max(status,na.rm=TRUE),nprob=n())%>%
+    group_by(field_id,classid2,schoolid2,xirt,year,spec_gifted,spec_speced,state)%>%
+    summarize(nprob=sum(nprob),nsec=n_distinct(section,unit),propMast=mean(status=='graduated'),
+              propCP=mean(status=='changed placement'))%>%arrange(state)
+
+xirtDat$fitted <- NA
+for(st in names(cpModSt)) xirtDat$fitted[xirtDat$state==st] <-
+                                  predict(cpModSt[[st]],xirtDat[xirtDat$state==st,],
+                                          allow.new.levels=TRUE,re.form=~0,type='response')
+
+
+xirtDat <- addOverallState(xirtDat)
+
+xirtDat$fitted[xirtDat$state=='Overall'] <-
+    predict(cpModSimp,xirtDat[xirtDat$state=='Overall',],
+            allow.new.levels=TRUE,re.form=~0,type='response')
+
+ggplot(subset(xirtDat,state!='NJ'),aes(xirt,propCP,size=nsec))+geom_point()+geom_line(aes(xirt,fitted),col='red')+facet_grid(year~state)+coord_cartesian(ylim=c(0,0.05))
+
+
+@
+\end{figure}
+
 \section{Notes}
 [[don't forget to include these]]
 

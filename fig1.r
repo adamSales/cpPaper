@@ -673,3 +673,95 @@ text(rep(5,nsec),nsec:1,rownames(trans))
 for(i in 1:nsec){
     arrows(rep(2.5,nsec),rep(nsec-i+1,nsec),rep(3.5,nsec),nsec:1,lwd=5*trans[i,]/rowSums(trans)[i])#,col=rgb(0,0,0,trans[i,]/max(trans)))
 }
+
+
+
+###############################
+#### CP and xirt
+##############################
+
+xirtDat <- data%>%filter(!is.na(status) & !is.na(xirt))%>%
+    group_by(field_id,classid2,schoolid2,xirt,year,spec_gifted,spec_speced,state,unit,section)%>%
+    summarize(status=max(status,na.rm=TRUE),nprob=n())%>%
+    group_by(field_id,classid2,schoolid2,xirt,year,spec_gifted,spec_speced,state)%>%
+    summarize(nprob=sum(nprob),nsec=n_distinct(section,unit),propMast=mean(status=='graduated'),
+              propCP=mean(status=='changed placement'))%>%arrange(state)
+
+
+
+#### prop mastered vs xirt
+ggplot(xirtDat,aes(scale(xirt),propMast,size=nsec))+geom_point()+geom_smooth(size=1)+facet_grid(year~.)
+
+ggplot(xirtDat,aes(scale(xirt),propMast,size=nsec))+geom_point()+geom_smooth(size=1)+facet_grid(year~state)
+
+
+
+### prop cp vs xirt
+ggplot(subset(xirtDat,classid2%in%unique(data$classid2[data$status=='changed placement'])),aes(scale(xirt),propCP,size=nsec))+geom_point()+geom_smooth(size=1)+facet_grid(year~.)
+
+ggplot(subset(xirtDat,classid2%in%unique(data$classid2[data$status=='changed placement'])),aes(scale(xirt),propCP,size=nsec))+geom_point()+geom_smooth(size=1)+facet_grid(year~state)+coord_cartesian(ylim=c(0,0.25))
+
+### by classroom
+bbb2 <- data%>%filter(status=='changed placement')%>%group_by(classid2,year,state)%>%summarize(nstud=n_distinct(field_id),nsec=n_distinct(section))
+
+ggplot(subset(xirtDat,classid2%in%bbb2$classid2[bbb2$year==1 & bbb2$nstud>=10]),aes(scale(xirt),propCP,size=nsec,color=state))+
+    geom_point()+geom_smooth(size=1)+facet_wrap('classid2')+ylim(0,.25)
+
+ggplot(subset(xirtDat,classid2%in%bbb2$classid2[bbb2$year==2 & bbb2$nstud>=10]),aes(scale(xirt),propCP,size=nsec,color=state))+
+    geom_point()+geom_smooth(method='lm',size=1)+facet_wrap('classid2')+ylim(0,.5)
+
+xirtCls <- data%>%
+    group_by(field_id,classid2,schoolid2,xirt,year,spec_gifted,spec_speced,state,unit,section)%>%
+    summarize(status=max(status,na.rm=TRUE))%>%filter(is.finite(status))%>%
+    group_by(classid2,schoolid2,year,state)%>%
+    summarize(nsec=n_distinct(section,unit,field_id),
+              propMast=mean(status=='graduated',na.rm=TRUE),
+              propCP=mean(status=='changed placement'))#,
+#              xirt=median(unique(xirt)))%>%arrange(state)
+
+xirtCls2 <- stud%>%group_by(classid2)%>%summarize(xirt=median(xirt,na.rm=TRUE))
+xirtCls$xirt <- xirtCls2$xirt[match(xirtCls$classid2,xirtCls2$classid2)]
+
+
+
+####### VCs
+
+load('vcMods.RData')
+library(lme4)
+
+vcFun <- function(nm){
+    mod <- vcMods[[nm]]
+    out <- unlist(summary(mod)$varcor)
+    out <- data.frame(sig2=out,comp=names(out),stringsAsFactors=FALSE)
+    out <- rbind(out,data.frame(sig2=pi^2/3,comp='resid'))
+    out$state <- strsplit(nm,'_')[[1]][1]
+    out$year <- strsplit(nm,'_')[[1]][2]
+    out$sig2 <- out$sig2/sum(out$sig2)
+    out
+}
+
+vcDat <- do.call('rbind',lapply(names(vcMods),vcFun))
+
+yr1 <- data.frame(sig2=c(unlist(summary(vcModYr[[1]])$varcor),pi^2/3),
+                          comp=c(names(summary(vcModYr[[1]])$varcor),'resid'),
+                          state='Overall',
+                  year='1')
+yr1$sig2 <- yr1$sig2/sum(yr1$sig2)
+
+yr2 <- data.frame(sig2=c(unlist(summary(vcModYr[[2]])$varcor),pi^2/3),
+                          comp=c(names(summary(vcModYr[[2]])$varcor),'resid'),
+                          state='Overall',
+                  year='2')
+yr2$sig2 <- yr2$sig2/sum(yr2$sig2)
+
+vcDat <- rbind(vcDat,yr1,yr2)
+
+vcDat$comp <- factor(vcDat$comp)
+levels(vcDat$comp)=list(State='state',School='schoolid2',Class='classid2',Student='field_id',Unit='unit',Residual='resid')
+
+
+vcDat$state <- factor(vcDat$state,levels=c('TX','KY','MI','Overall'))
+
+ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_manual(values=rev(c('white','grey','#e41a1c','#377eb8','#4daf4a','#984ea3')))+labs(x='',y='% Variance Explained',fill='',title='Model: Multilevel Logistic Unconditional')
+
+
