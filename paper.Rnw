@@ -935,7 +935,7 @@ levels(vcDat$comp)=list(State='state',School='schoolid2',Class='classid2',Studen
 
 vcDat$state <- factor(vcDat$state,levels=c('TX','KY','MI','Overall'))
 
-ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_manual(values=rev(c('white','grey','#e41a1c','#377eb8','#4daf4a','#984ea3')))+labs(x='',y='% Variance Explained',fill='',title='Model: Multilevel Logistic Unconditional')
+ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_manual(values=rev(c('white','grey','#e41a1c','#377eb8','#4daf4a','#984ea3')))+labs(x='',y='% Variance Explained',fill='',title='Model: Multilevel Logistic Unconditional')+scale_y_continuous(labels=percent)
 
 
 
@@ -966,7 +966,7 @@ xirtDat$fitted[xirtDat$state=='Overall'] <-
     predict(cpModSimp,xirtDat[xirtDat$state=='Overall',],
             allow.new.levels=TRUE,re.form=~0,type='response')
 
-ggplot(subset(xirtDat,state!='NJ'),aes(xirt,propCP,size=nsec))+geom_point()+geom_line(aes(xirt,fitted),col='red')+facet_grid(year~state)+coord_cartesian(ylim=c(0,0.05))
+ggplot(subset(xirtDat,state!='NJ'),aes(xirt,propCP,size=nsec))+geom_point()+geom_line(aes(xirt,fitted),col='red',size=1)+facet_grid(year~state)+coord_cartesian(ylim=c(0,0.05))
 
 
 @
