@@ -629,18 +629,24 @@ secLev$cp <- secLev$status=='changed placement'
 library(lme4)
 cpMod <- glmer(cp~Year*(xirt+grade+spec_speced+spec_gifted+pBefore+totClassmates+endDate+state)+(Year*(xirt+grade+spec_speced+spec_gifted+pBefore+totClassmates+endDate+state)|unit)+(xirt+grade+spec_speced+spec_gifted+pBefore+totClassmates+endDate+state|classid2)+(1|schoolid2),data=secLev)
 save(cpMod,file='cpMod.RData')
-=======
-#### what's the next section each student works?
-secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]))
 
 
 #### what's the next section each student works?
-secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]),nextUnit=c(unit[-1],NA))
+secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(date=max(date,na.rm=TRUE),time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(status=as.character(status),prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]),nextUnit=c(unit[-1],NA))
 
 secOrder$cp <- secOrder$status=='changed placement'
 secOrder$mast <- secOrder$status=='graduated'
 library(lme4)
-mastNext <- glmer(mast~(1|field_id)+(1|classid2)+section+as.factor(prevStatus),data=secOrder,family=binomial)
+
+mnDat <- filter(secOrder,prevStatus!='final_or_incomplete')
+mnDat$prevStatus <- factor(mnDat$prevStatus,levels=c('changed placement','promoted','graduated'))
+mastNext <- glmer(mast~(1|field_id/classid2)+(1|section/unit)+as.factor(prevStatus),data=mnDat,family=binomial)
+
+mastNext2 <- update(mastNext,data=subset(mnDat,status!='changed placement' & status!='final_or_incomplete'))
+
+mnDat$month <- months(mnDat$date)
+
+mastNext3 <- update(mastNext,.~.+Year+month+schoolid2)
 
 ### transition plot
 library(Gmisc)

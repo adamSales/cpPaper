@@ -9,13 +9,16 @@ usageIDs <- unique(c(unique(x$field_id),unique(advance$field_id)))
 hs1 <- read.csv('~/Box Sync/CT/data/RANDstudyData/H1_algebra_rcal_20121119_fieldid.csv')
 hs2 <- read.csv('~/Box Sync/CT/data/RANDstudyData/H2_algebra_rcal_20121119_fieldid.csv')
 
-stopifnot(all.equal(names(hs1)[1:100],names(hs2)[1:100]))
+hs2 <- hs2[!hs2$field_id%in%hs1$field_id,]
+stopifnot(all.equal(names(hs1)[c(2:100,174:194)],names(hs2)[c(2:100,176:196)]))
+stud <- rbind(hs1[,c(2:100,174:194)],hs2[,c(2:100,176:196)])
 
-stud <- rbind(hs1[,1:100],hs2[!hs2$field_id%in%hs1$field_id,1:100])
-stud$field_id <- c(hs1$field_id,hs2$field_id[!hs2$field_id%in%hs1$field_id])
 stud <- stud[stud$treatment==1,]
 
 stud$obsUsage <- stud$field_id%in%usageIDs
+
+stud$pretest <- rowMeans(stud[,grep('Exirt2_',names(stud))],na.rm=TRUE)
+
 
 schoolMiss <- NULL
 for(scl in unique(stud$schoolid2)){

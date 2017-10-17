@@ -653,23 +653,46 @@ levels(statusStateYr$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='p
 
 &   \multicolumn{6}{c}{Year 1}&\multicolumn{6}{c}{Year 2}\\
 <<statusTab,dependson='overallStatus',results='asis'>>=
+statusStateYr2 <- addOverallState(statusOverall)
+statusStateYr2a <- statusStateYr2%>%group_by(state,Yr)%>%
+    summarize(pgrad=sum(status=='graduated'),pfoi=sum(status=='final_or_incomplete'),
+              pcp=sum(status=='changed placement'),pprom=sum(status=='promoted'))%>%
+    melt(measure.vars=c('pgrad','pfoi','pcp','pprom'))
+statusStateYr2b <- statusStateYr2%>%
+    summarize(pgrad=mean(status=='graduated'),pfoi=mean(status=='final_or_incomplete'),
+              pcp=mean(status=='changed placement'),pprom=mean(status=='promoted'))%>%
+    melt(measure.vars=c('pgrad','pfoi','pcp','pprom'))
 
-tab1 <- dcast(subset(statusStateYr,Yr=='Yr 1'&state!='NJ'),variable~state)
-tab2 <- dcast(subset(statusStateYr,Yr=='Yr 2'&state!='NJ'),variable~state)
+
+levels(statusStateYr2a$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='pprom',Mastered='pgrad')
+levels(statusStateYr2b$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='pprom',Mastered='pgrad')
+
+tab1 <- dcast(subset(statusStateYr2a,Yr=='Yr 1'&state!='NJ'),variable~state)
+tab2 <- dcast(subset(statusStateYr2a,Yr=='Yr 2'&state!='NJ'),variable~state)
 tab <- cbind(tab1,tab2[-1])
+
+tab1b <- dcast(subset(statusStateYr2b,Yr=='Yr 1'&state!='NJ'),variable~state)
+tab2b <- dcast(subset(statusStateYr2b,Yr=='Yr 2'&state!='NJ'),variable~state)
+
 
 tab$variable <- as.character(tab$variable)
 cat('&')
 cat(names(tab)[-1],sep='&')
 cat('\\\\')
 for(i in 1:nrow(tab)){
-    cat(tab[i,1],round(unlist(tab[i,-1])*100),sep='&')
+    cat(tab[i,1],round(unlist(tab[i,-1])),sep='&')
     cat('\\\\')
 }
 
 rownames(tab1) <- rownames(tab2) <- tab1$variable
 tab1 <- as.matrix(tab1[,-1])
 tab2 <- as.matrix(tab2[,-1])
+
+rownames(tab1b) <- rownames(tab2b) <- tab1b$variable
+tab1b <- as.matrix(tab1b[,-1])
+tab2b <- as.matrix(tab2b[,-1])
+
+
 
 @
 
@@ -684,48 +707,116 @@ the proportions of worked sections in each state and study year that
 ended with mastery, promotion, or reassignment, or which were the
 student's final section.
 In the first year, about
-\Sexpr{round(mean(tab1['Mastered',c('TX','KY','MI','LA')])*100)}\% of
+\Sexpr{round(mean(tab1b['Mastered',c('TX','KY','MI','LA')])*100)}\% of
 worked sections are mastered in every
 state other than Connecticut.
 Other than in Texas, about
-\Sexpr{paste(round(range(tab1['Promoted',c('CT','KY','MI','LA')])*100),collapse='--')}\%
+\Sexpr{paste(round(range(tab1b['Promoted',c('CT','KY','MI','LA')])*100),collapse='--')}\%
 of sections end in promotion.
-About \Sexpr{round(tab1['Reassigned','TX']*100)}
-and \Sexpr{round(tab1['Reassigned','CT']*100)}\% of sections in Texas
+About \Sexpr{round(tab1b['Reassigned','TX']*100)}
+and \Sexpr{round(tab1b['Reassigned','CT']*100)}\% of sections in Texas
 and Connecticut end in reassignment, which is even rarer in the other states.
 
 With the exception of Texas, sections in the second year tend to be
 completed as they were in year 1.
 In Texas, however, the percentage of sections ending in reassignment increased by a factor
 of about about
-\Sexpr{round(tab2['Reassigned','TX']/tab1['Reassigned','TX'])},
-to about \Sexpr{round(tab2['Reassigned','TX']*100)}\%.
+\Sexpr{round(tab2b['Reassigned','TX']/tab1b['Reassigned','TX'])},
+to about \Sexpr{round(tab2b['Reassigned','TX']*100)}\%.
 The proportion of Texas sections labeled ``Final'' increased as well,
 most likely due to the decrease in usage.
 
 Across states, just under
-\Sexpr{round(tab1['Reassigned','Overall']*100)}\% of sections in year
+\Sexpr{round(tab1b['Reassigned','Overall']*100)}\% of sections in year
 1 eneded in reassignment, as did roughly
-\Sexpr{round(tab2['Reassigned','Overall']*100)}\% in year 2.
+\Sexpr{round(tab2b['Reassigned','Overall']*100)}\% in year 2.
 
 \subsection{Section Mastery and Curriculum}
 \begin{figure}
 <<statusCur,dependson='overallStatus',fig.height=3,fig.width=6>>=
-statusCurr <- statusOverall%>%filter(!is.na(Curriculum))%>% group_by(Curriculum,overall)%>%
+statusOverall$Curr2 <- with(statusOverall,
+                        ifelse(Curriculum=='Algebra I',
+                                     ifelse(overall=='Standard','Algebra I','Algebra I (Cust.)'),
+                                     as.character(Curriculum)))
+statusCurr <- statusOverall%>%filter(!is.na(Curriculum))%>% group_by(Curr2,Yr)%>%
     summarize(pgrad=mean(status=='graduated'),pfoi=mean(status=='final_or_incomplete'),
               pcp=mean(status=='changed placement'),pprom=mean(status=='promoted'))%>%
     melt(measure.vars=c('pgrad','pfoi','pcp','pprom'))
 levels(statusCurr$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='pprom',Graduated='pgrad')
-statusCurr$Curriculum <- factor(statusCurr$Curriculum,levels=rev(levels(statusCurr$Curriculum)))
-print(ggplot(statusCurr,aes(overall,value,fill=variable))+geom_col()+facet_grid(~Curriculum)+labs(y='% of Sections Worked',x='',fill='Exit Status')+scale_y_continuous(labels=percent))
+statusCurr$Curr2 <- factor(statusCurr$Curr2,levels=c('Bridge-to-Algebra','Algebra I','Algebra I (Cust.)','>Algebra I'))
+print(ggplot(statusCurr,aes(Yr,value,fill=variable))+geom_col()+facet_grid(~Curr2)+
+      labs(y='% of Sections Worked',x='',fill='Exit Status')+scale_y_continuous(labels=percent))
 
 @
-\caption{The distributions of outcomes of worked sections, by curriculum, in the two study years.}
+\caption{The distributions of outcomes of worked sections, by
+  curriculum, in the two study years. (There were no Bridge-to-Algebra
+sections in customized curricula in our dataset.)}
 \label{fig:statusCur}
 \end{figure}
 
+A well-designed curriculum, can, in theory, play an important role in
+students' attainment of mastery.
+Students who work on appropriate problems that build on their current
+set of skills should be more likely to master new skills than students
+working on problems above their level.
+What role did curriculum play in mastery during the CTAI effectiveness trial?
+
+Figure \ref{fig:statusCur} shows the proportions of worked sections
+that were mastered or ended in promotion, reassignment, or finality, in
+standard and customized versions of each CT curriculum.
+Mastery proportions do, indeed, depend on curriculum.
+Specifically, students mastered sections from more advanced curriculua
+less frequently.
+Sections from the most basic curriculum, Bridge to Algebra, were
+mastered
+\Sexpr{round(statusCurr[['value']][statusCurr[['Curriculum']]=='Bridge-to-Algebra'
+  & statusCurr[['variable']]=='Graduated']*100)}\% of the time;
+those from Algebra I were mastered
+\Sexpr{round(
+  mean(statusOverall$status[statusOverall$Curriculum=='Algebra I']=='graduated',na.rm=T)*100)}\%
+of the time, and those from more advanced curriculua were mastered
+at a rate of
+\Sexpr{round(
+  mean(statusOverall$status[statusOverall$Curriculum=='>Algebra I']=='graduated',na.rm=T)*100)}\%.
+This is unsurprising, since more advanced curriculua may be expected
+to be more challenging.
+However, it may suggest that some students studying advanced topics
+would fair better in more standard curricula.
+
+Algebra I sections from customized curricula tended to end in
+reassignment more often than sections from the standard Algebra I
+curriculum (\Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I (Cust.)' &
+  variable=='Reassigned')[['value']])}\% vs.
+\Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I' & variable=='Reassigned')[['value']])}\%).
+This may an overall skepticism towards the Carnegie Learning standards
+among certain schools and teachers.
+
+% A somewhat lower proportion of Algebra I sections from customized
+% curricula were mastered
+% (\Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I (Cust.)' & variable=='Graduated')[['value']])}\%)
+% than from the standard Algebra I curriculum
+% (\Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I' & variable=='Graduated')[['value']])}\%).
+% This difference must be interpreted with caution, since a greater
+% proportion of sections of the customized curriculum ended in
+% reassignment
+
+% or were final
+% (\Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I (Cust.)' &   variable=='Final')[['value']])}\% vs.
+% \Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I' & variable=='Final')[['value']])}\%)
+% , as well.
+% The proportion of sections ending in promotion was almost identical:
+% (\Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I (Cust.)' &variable=='Promoted')[['value']])}\% vs.
+% \Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I' & variable=='Promoted')[['value']])}\%).
+
 
 \section{Digging Deeper into Section Reassignment}
+The proportion of worked sections in our dataset ending in
+reassignment was small.
+Nevertheless, since reassignement represents the only mechanism by
+which individual teachers can affect their students' progress through
+the Cognitive Tutor, exploring patterns of reassignment can provide
+insight into how CT was used.
+
 <<cpDat,dependson=c('data','setup'),include=FALSE>>=
 secLev <- data%>%filter(is.finite(status) & is.finite(timestamp) &is.finite(date))%>%
     group_by(field_id,unit,section,Year,Yr,classid2,schoolid2)%>%
@@ -737,6 +828,79 @@ secLev <- data%>%filter(is.finite(status) & is.finite(timestamp) &is.finite(date
 secLev <- within(secLev,endMonth <- factor(month(secLev$endDate,TRUE,TRUE),levels=c('Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul')))
 
 @
+
+\subsection{How Do Reassignment Patterns Vary?}
+Teachers alone control reassignment.
+Nevertheless, the factors influencing student reassignment vary at a
+number of levels.
+For instance, state and district standards may prod teachers into
+reassigning students to particular units.
+Some prinicpals may encourage teachers to adhere to the official
+curriculum and avoid reassignment.
+Some students may be more prone to reassignment than others.
+Certain units in the CTAI curriculum may be harder than others,
+causing students to tarry and teachers to reassign.
+Finally, a host of other factors, at these levels and others, may spur reassignment.
+
+Figure \ref{fig:vc}
+
+\begin{figure}
+<<vcs,fig.height=3,fig.width=6.5,dependson=c('data','setup')>>=
+load('vcMods.RData')
+library(lme4)
+
+vcFun <- function(nm){
+    mod <- vcMods[[nm]]
+    out <- unlist(summary(mod)$varcor)
+    out <- data.frame(sig2=out,comp=names(out),stringsAsFactors=FALSE)
+    out <- rbind(out,data.frame(sig2=pi^2/3,comp='resid'))
+    out$state <- strsplit(nm,'_')[[1]][1]
+    out$year <- strsplit(nm,'_')[[1]][2]
+    out$sig2 <- out$sig2/sum(out$sig2)
+    out
+}
+
+vcDat <- do.call('rbind',lapply(names(vcMods),vcFun))
+
+yr1 <- data.frame(sig2=c(unlist(summary(vcModYr[[1]])$varcor),pi^2/3),
+                          comp=c(names(summary(vcModYr[[1]])$varcor),'resid'),
+                          state='Overall',
+                  year='1')
+yr1$sig2 <- yr1$sig2/sum(yr1$sig2)
+
+yr2 <- data.frame(sig2=c(unlist(summary(vcModYr[[2]])$varcor),pi^2/3),
+                          comp=c(names(summary(vcModYr[[2]])$varcor),'resid'),
+                          state='Overall',
+                  year='2')
+yr2$sig2 <- yr2$sig2/sum(yr2$sig2)
+
+vcDat <- rbind(vcDat,yr1,yr2)
+
+vcDat$comp <- factor(vcDat$comp)
+levels(vcDat$comp)=list(State='state',School='schoolid2',Class='classid2',Student='field_id',Unit='unit',Residual='resid')
+
+
+vcDat$state <- factor(vcDat$state,levels=c('TX','KY','MI','Overall'))
+
+ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_manual(values=rev(c('white','grey','#e41a1c','#377eb8','#4daf4a','#984ea3')))+labs(x='',y='% Variance Explained',fill='',title='Model: Multilevel Logistic Unconditional')+scale_y_continuous(labels=percent)
+
+
+
+@
+\caption{Results from a set of eight multilevel logistic regressions
+  predicting section reassignment. For each year, in the entire sample (``Overall'')
+  and in the three states with the largest numbers of reassignments (Texas,
+  Kentucky, and Michigan), we regressed a binary variable indicating
+  whether a section ended in reassignment on random intercepts for
+  school, class, student, and unit, and in the overall case, for state
+  as well, and recorded their variance. The residual variance was set
+  as the variance of the standard logistic distribution,
+  $\pi/3$. These bar charts give the proportion of the total variance
+  attributable to each random effect.}
+\label{fig:vc}
+\end{figure}
+
+
 \subsection{When are Students Reassigned?}
 
 \begin{figure}
@@ -844,8 +1008,8 @@ ggplot(filter(aaa,state%in%c('TX','KY','MI')),aes(as.factor(cpid),value,fill=var
 \end{figure}
 
 \subsection{Where To?}
-\begin{figure}
-<<transition,fig.height=7,fig.width=6.5,dependson=c('data','setup')>>=
+
+<<secOrder,include=FALSE,dependson=c('data','setup')>>=
 #### what's the next section each student works?
 secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]),nextUnit=c(unit[-1],NA))
 
@@ -867,13 +1031,19 @@ secOrderCP$nextUnit[grep('unit-conversions',secOrderCP$nextUnit)] <- 'unit-conve
 secOrderCP$nextUnitName <- factor(secOrderCP$nextUnit,levels=units)
 levels(secOrderCP$nextUnitName) <- UnitName
 
-trans <- with(secOrderCP,table(unitName,nextUnitName))
+@
+
+
+\begin{figure}
+<<transition1,fig.height=3,fig.width=6.5,dependson='secOrder'>>=
+
+trans <- with(filter(secOrderCP,year==1),table(unitName,nextUnitName))
 
 trans <- trans[rowSums(trans)>50,colSums(trans)>10]
 trans <- trans[rowSums(trans)>50,colSums(trans)>10]
 trans <- trans[rowSums(trans)>50,colSums(trans)>10]
 
-
+propTotCP <- sum(trans)/sum(secOrderCP$year==1)
 #transitionPlot(trans)
 
 nsec <- nrow(trans)
@@ -898,45 +1068,90 @@ for(rr in rownames(trans))
 \end{figure}
 
 \begin{figure}
-<<vcs,fig.height=7,fig.width=6.5,dependson=c('data','setup')>>=
-load('vcMods.RData')
-library(lme4)
+<<transition2,fig.height=7,fig.width=6.5,dependson='secOrder'>>=
 
-vcFun <- function(nm){
-    mod <- vcMods[[nm]]
-    out <- unlist(summary(mod)$varcor)
-    out <- data.frame(sig2=out,comp=names(out),stringsAsFactors=FALSE)
-    out <- rbind(out,data.frame(sig2=pi^2/3,comp='resid'))
-    out$state <- strsplit(nm,'_')[[1]][1]
-    out$year <- strsplit(nm,'_')[[1]][2]
-    out$sig2 <- out$sig2/sum(out$sig2)
-    out
+trans <- with(filter(secOrderCP,year==2),table(unitName,nextUnitName))
+
+trans <- trans[rowSums(trans)>50,colSums(trans)>10]
+trans <- trans[rowSums(trans)>50,colSums(trans)>10]
+trans <- trans[rowSums(trans)>50,colSums(trans)>10]
+
+propTotCP <- sum(trans)/sum(secOrderCP$year==2)
+
+#transitionPlot(trans)
+
+nsec <- nrow(trans)
+uuu <- levels(secOrderCP$unitName)
+uuu <- uuu[uuu%in%c(colnames(trans),rownames(trans))]
+nsec <- length(uuu)
+
+par(mar=c(.1,.1,.1,.1))
+plot(1,1,xlim=c(-.5,4),ylim=c(0,nsec),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
+for(i in 1:nsec) if(uuu[i]%in%rownames(trans)) text(1,nsec-i+1,uuu[i],adj=c(1,NA))
+for(i in 1:nsec) if(uuu[i]%in%colnames(trans)) text(2,nsec-i+1,uuu[i],adj=c(0,NA))
+
+for(rr in rownames(trans))
+ for(cc in colnames(trans))
+     if(trans[rr,cc]>20){
+      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans[rr,cc]/sum(trans[rr,]),
+       col=rgb(0,0,0,alpha=ifelse(trans[rr,cc]>100,1,trans[rr,cc]/100)))
 }
 
-vcDat <- do.call('rbind',lapply(names(vcMods),vcFun))
 
-yr1 <- data.frame(sig2=c(unlist(summary(vcModYr[[1]])$varcor),pi^2/3),
-                          comp=c(names(summary(vcModYr[[1]])$varcor),'resid'),
-                          state='Overall',
-                  year='1')
-yr1$sig2 <- yr1$sig2/sum(yr1$sig2)
+@
+\end{figure}
 
-yr2 <- data.frame(sig2=c(unlist(summary(vcModYr[[2]])$varcor),pi^2/3),
-                          comp=c(names(summary(vcModYr[[2]])$varcor),'resid'),
-                          state='Overall',
-                  year='2')
-yr2$sig2 <- yr2$sig2/sum(yr2$sig2)
+\subsection{Does Reassignment Depend on Student Ability?}
 
-vcDat <- rbind(vcDat,yr1,yr2)
+<<xirtMods,include=FALSE,dependson=c('data','setup')>>=
+## don't worry about nesting, etc--we aren't reporting standard errors anyway
+cpDat <- data%>%filter(!is.na(status))%>%group_by(field_id,unit,section,state,year,classid2,schoolid2)%>%
+    summarize(cp=max(status)=='changed placement')
 
-vcDat$comp <- factor(vcDat$comp)
-levels(vcDat$comp)=list(State='state',School='schoolid2',Class='classid2',Student='field_id',Unit='unit',Residual='resid')
+### get imputed xirt
+##
+h1 <- read.csv('~/Box Sync/CT/data/RANDstudyData/H1_algebra_rcal_20121119_fieldid.csv')
+h2 <- read.csv('~/Box Sync/CT/data/RANDstudyData/H2_algebra_rcal_20121119_fieldid.csv')
+
+h2 <- h2[!h2$field_id%in%h1$field_id,]
+
+stud <- rbind(h1[,c(174:194)],h2[,c(176:196)])
+stud <- stud[stud$field_id%in%cpDat$field_id,]
+stud <- stud[order(stud$field_id),]
+stud$xirt <- rowMeans(stud[,grep('Exirt2_',names(stud))],na.rm=TRUE)
+
+cpDat$xirt <- stud$xirt[match(cpDat$field_id,stud$field_id)]
+
+cpModSimp <- glm(cp~splines::ns(xirt,5)*year,data=cpDat)
+
+cpModSt <- list()
+for(st in c('TX','KY','MI','LA','CT')){
+    cpModSt[[st]] <- update(cpModSimp,data=subset(cpDat,state==st))
+}
 
 
-vcDat$state <- factor(vcDat$state,levels=c('TX','KY','MI','Overall'))
+@
 
-ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_manual(values=rev(c('white','grey','#e41a1c','#377eb8','#4daf4a','#984ea3')))+labs(x='',y='% Variance Explained',fill='',title='Model: Multilevel Logistic Unconditional')+scale_y_continuous(labels=percent)
+\begin{figure}
+<<xirtCP,fig.height=7,fig.width=6.5,dependson=c('data','setup','xirtMods')>>=
+#load('cpXirtMods.RData')
 
+
+xirtDat <- cpDat%>%group_by(field_id,state,year,classid2,schoolid2,xirt)%>%
+    summarize(nsec=n_distinct(section,unit),propCP=mean(cp,na.rm=TRUE))
+
+for(st in names(cpModSt)) xirtDat$fitted[xirtDat$state==st] <-
+                                  predict(cpModSt[[st]],xirtDat[xirtDat$state==st,],
+                                         type='response')
+
+
+xirtDat <- addOverallState(xirtDat)
+
+xirtDat$fitted[xirtDat$state=='Overall'] <-
+    predict(cpModSimp,xirtDat[xirtDat$state=='Overall',],
+            type='response')
+
+ggplot(subset(xirtDat,state!='NJ'),aes(xirt,propCP,size=nsec))+geom_point()+geom_line(aes(xirt,fitted),col='red',size=1)+facet_grid(year~state)+coord_cartesian(ylim=c(0,0.5))
 
 
 @
@@ -944,29 +1159,37 @@ ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_
 
 
 \begin{figure}
-<<xirtCP,fig.height=7,fig.width=6.5,dependson=c('data','setup')>>=
-load('cpXirtMods.RData')
+<<cp-xirtClassroom1,dependson='xirtCP',fig.height=7,fig.width=6.5>>=
+bbb2 <- data%>%filter(status=='changed placement')%>%group_by(classid2,year,state)%>%summarize(ncp=n_distinct(field_id,section,unit),nstud=n_distinct(field_id),nsec=n_distinct(section))
 
-xirtDat <- data%>%filter(!is.na(status) & !is.na(xirt))%>%
-    group_by(field_id,classid2,schoolid2,xirt,year,spec_gifted,spec_speced,state,unit,section)%>%
-    summarize(status=max(status,na.rm=TRUE),nprob=n())%>%
-    group_by(field_id,classid2,schoolid2,xirt,year,spec_gifted,spec_speced,state)%>%
-    summarize(nprob=sum(nprob),nsec=n_distinct(section,unit),propMast=mean(status=='graduated'),
-              propCP=mean(status=='changed placement'))%>%arrange(state)
+cpcls1 <- xirtDat%>%
+    filter(classid2%in%bbb2$classid2[bbb2$year==1 & bbb2$ncp>=20] & state!='Overall')%>%
+    arrange(state)
+cpcls1$classid2 <- factor(cpcls1$classid2,levels=unique(cpcls1$classid2))
 
-xirtDat$fitted <- NA
-for(st in names(cpModSt)) xirtDat$fitted[xirtDat$state==st] <-
-                                  predict(cpModSt[[st]],xirtDat[xirtDat$state==st,],
-                                          allow.new.levels=TRUE,re.form=~0,type='response')
+cpcls1 <- cpcls1%>%group_by(classid2)%>%mutate(maxCP=max(propCP,na.rm=TRUE),propCP=propCP/maxCP)%>%ungroup()
+
+ggplot(cpcls1,aes(xirt,propCP,size=nsec,color=state))+
+    geom_point()+geom_smooth(size=1,method='lm')+facet_wrap('classid2')+scale_size_continuous(range=c(0.2,1))+
+    ylim(0,1)
 
 
-xirtDat <- addOverallState(xirtDat)
+@
+\end{figure}
 
-xirtDat$fitted[xirtDat$state=='Overall'] <-
-    predict(cpModSimp,xirtDat[xirtDat$state=='Overall',],
-            allow.new.levels=TRUE,re.form=~0,type='response')
+\begin{figure}
+<<cp-xirtClassroom2,dependson='cp-xirtClassroom1',fig.height=7,fig.width=6.5>>=
 
-ggplot(subset(xirtDat,state!='NJ'),aes(xirt,propCP,size=nsec))+geom_point()+geom_line(aes(xirt,fitted),col='red',size=1)+facet_grid(year~state)+coord_cartesian(ylim=c(0,0.05))
+cpcls2 <- xirtDat%>%
+    filter(classid2%in%bbb2$classid2[bbb2$year==2 & bbb2$ncp>=20] & state!='Overall')%>%
+    arrange(state)
+cpcls2$classid2 <- factor(cpcls2$classid2,levels=unique(cpcls2$classid2))
+
+cpcls2 <- cpcls2%>%group_by(classid2)%>%mutate(maxCP=max(propCP,na.rm=TRUE),propCP=propCP/maxCP)%>%ungroup()
+
+ggplot(cpcls2,aes(xirt,propCP,size=nsec,color=state))+
+    geom_point()+geom_smooth(size=1,method='lm')+facet_wrap('classid2')+scale_size_continuous(range=c(0.2,1))+
+    ylim(0,1)
 
 
 @
