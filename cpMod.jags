@@ -1,7 +1,7 @@
 model{
  for(j in 1:nWS){
   cp[j] ~ dbern(prob[j])
-  logit(prob[j]) <- alpha0+ability[stud[j]]+difficulty[section[j]]
+  logit(prob[j]) <- ability[stud[j]]+difficulty[section[j]]
  }
  for(i in 1:nstud){
   ability[i] ~ dnorm(classEffAb[class[i]]+schoolEffAb[school[i],year[i]]+stateEffAb[state[i],year[i]],tauAb)
