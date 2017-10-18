@@ -45,3 +45,5 @@ mod4.1 <- update(mod4,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
 save(list=grep('mod',ls()),file='outcomeMods.RData')
 
 
+library(optmatch)
+propScore <- glm(everCP~(race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)*schoolid2,family=binomial,da
