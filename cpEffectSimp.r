@@ -86,7 +86,7 @@ mi <- function(mod){
     miPool(miMod(mod))
 }
 
-ggplot(filter(cpDat,state%in%c('TX','KY','MI')),aes(ncp,gainScore))+geom_jitter()+geom_boxplot(aes(group=ncp),alpha=0.5)+geom_smooth(method='loess')+facet_grid(year~.)
+ggplot(filter(cpDat,state%in%c('TX')),aes(ncpCat,gainScore))+geom_jitter()+geom_boxplot(aes(group=ncp),alpha=0.5)+geom_smooth(method='loess')+facet_grid(year~.)
 
 library(optmatch)
 propScore <- glm(everCP~(race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)*schoolid2,family=binomial,da

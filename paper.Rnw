@@ -262,7 +262,7 @@ tab <- as.data.frame(tab)
 rownames(tab) <- c('Year 1','Year 2')
 names(tab) <- c('Hours','Problems','Sections','Units')
 
-xtable(tab,caption='Median numbers of hours, problems, sections, and units worked by each student in the dataset in the two years of the study. Students with no usage data were excluded',label='tab:medUsage',digits=c(1,2,0,1,0))
+xtable(tab,caption='Median numbers of hours, problems, sections, and units worked by each student in the dataset in the two years of the study. Students with no usage data were excluded.',label='tab:medUsage',digits=c(1,2,0,1,0))
 @
 
 
@@ -388,7 +388,9 @@ print(unitsStateYear <- ggplot(filter(secByStud2,state!='NJ'),aes(Yr,numUnit))+g
 @
 \caption{Boxplots of the number of units of Cognitive Tutor
   software each student worked, by year and state. Students
-  working more than 55 units (\Sexpr{sum(secByStud[['numUnit']]>55,na.rm=TRUE)}) of \Sexpr{nrow(secByStud)}) and students
+  working more than 55 units (
+  \Sexpr{sum(secByStud[['numUnit']]>55,na.rm=TRUE)} of
+  \Sexpr{nrow(secByStud)}) and students
   with no usage data (\Sexpr{sum(is.na(secByStud[['numUnit']]))})
   were excluded.}
 \label{fig:unitsByStud}
@@ -836,6 +838,71 @@ secLev <- within(secLev,endMonth <- factor(month(secLev$endDate,TRUE,TRUE),level
 @
 
 \subsection{How Do Reassignment Patterns Vary?}
+
+\begin{figure}
+<<vcs,fig.height=3,fig.width=6.5,dependson=c('data','setup')>>=
+load('vcMods.RData')
+library(lme4)
+
+vcFun <- function(nm){
+    mod <- vcMods[[nm]]
+    out <- unlist(summary(mod)$varcor)
+    out <- data.frame(sig2=out,comp=names(out),stringsAsFactors=FALSE)
+    out <- rbind(out,data.frame(sig2=pi^2/3,comp='resid'))
+    out$state <- strsplit(nm,'_')[[1]][1]
+    out$year <- strsplit(nm,'_')[[1]][2]
+    out$sig2 <- out$sig2/sum(out$sig2)
+    out
+}
+
+vcDat <- do.call('rbind',lapply(names(vcMods),vcFun))
+
+yr1 <- data.frame(sig2=c(unlist(summary(vcModYr[[1]])$varcor),pi^2/3),
+                          comp=c(names(summary(vcModYr[[1]])$varcor),'resid'),
+                          state='Overall',
+                  year='1')
+yr1$sig2 <- yr1$sig2/sum(yr1$sig2)
+
+yr2 <- data.frame(sig2=c(unlist(summary(vcModYr[[2]])$varcor),pi^2/3),
+                          comp=c(names(summary(vcModYr[[2]])$varcor),'resid'),
+                          state='Overall',
+                  year='2')
+yr2$sig2 <- yr2$sig2/sum(yr2$sig2)
+
+vcDat <- rbind(vcDat,yr1,yr2)
+
+vcDat$comp <- factor(vcDat$comp)
+levels(vcDat$comp)=list(State='state',School='schoolid2',Class='classid2',Student='field_id',Unit='unit',Residual='resid')
+
+
+vcDat$state <- factor(vcDat$state,levels=c('TX','KY','MI','Overall'))
+
+vcs <- list()
+for(s in unique(vcDat$state)) for(y in 1:2){
+ ddd <- round(subset(vcDat,state==s&year==y,select=c(sig2))*100)
+ rownames(ddd) <- gsub('\\d','',rownames(ddd))
+ rownames(ddd)[nrow(ddd)] <- 'resid'
+ vcs[[paste0(s,'_',y)]] <- ddd
+}
+
+
+ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_manual(values=rev(c('white','grey','#e41a1c','#377eb8','#4daf4a','#984ea3')))+labs(x='',y='% Variance Explained',fill='',title='Model: Multilevel Logistic Unconditional')+scale_y_continuous(labels=percent)
+
+
+
+@
+\caption{Results from a set of eight multilevel logistic regressions
+  predicting section reassignment. For each year, in the entire sample (``Overall'')
+  and in the three states with the largest numbers of reassignments (Texas,
+  Kentucky, and Michigan), we regressed a binary variable indicating
+  whether a section ended in reassignment on random intercepts for
+  school, class, student, and unit, and in the overall case, for state
+  as well, and recorded their variance. The residual variance was set
+  as the variance of the standard logistic distribution,
+  $\pi/3$. These bar charts give the proportion of the total variance
+  attributable to each random effect.}
+\label{fig:vc}
+\end{figure}
 Teachers alone control reassignment.
 Nevertheless, the factors influencing student reassignment vary at a
 number of levels.
@@ -910,71 +977,6 @@ the variation.
 
 Although teachers control reassignment, their decisions are largely
 dictated by broader policies, ocurring at the state or school level.
-
-\begin{figure}
-<<vcs,fig.height=3,fig.width=6.5,dependson=c('data','setup')>>=
-load('vcMods.RData')
-library(lme4)
-
-vcFun <- function(nm){
-    mod <- vcMods[[nm]]
-    out <- unlist(summary(mod)$varcor)
-    out <- data.frame(sig2=out,comp=names(out),stringsAsFactors=FALSE)
-    out <- rbind(out,data.frame(sig2=pi^2/3,comp='resid'))
-    out$state <- strsplit(nm,'_')[[1]][1]
-    out$year <- strsplit(nm,'_')[[1]][2]
-    out$sig2 <- out$sig2/sum(out$sig2)
-    out
-}
-
-vcDat <- do.call('rbind',lapply(names(vcMods),vcFun))
-
-yr1 <- data.frame(sig2=c(unlist(summary(vcModYr[[1]])$varcor),pi^2/3),
-                          comp=c(names(summary(vcModYr[[1]])$varcor),'resid'),
-                          state='Overall',
-                  year='1')
-yr1$sig2 <- yr1$sig2/sum(yr1$sig2)
-
-yr2 <- data.frame(sig2=c(unlist(summary(vcModYr[[2]])$varcor),pi^2/3),
-                          comp=c(names(summary(vcModYr[[2]])$varcor),'resid'),
-                          state='Overall',
-                  year='2')
-yr2$sig2 <- yr2$sig2/sum(yr2$sig2)
-
-vcDat <- rbind(vcDat,yr1,yr2)
-
-vcDat$comp <- factor(vcDat$comp)
-levels(vcDat$comp)=list(State='state',School='schoolid2',Class='classid2',Student='field_id',Unit='unit',Residual='resid')
-
-
-vcDat$state <- factor(vcDat$state,levels=c('TX','KY','MI','Overall'))
-
-vcs <- list()
-for(s in unique(vcDat$state)) for(y in 1:2){
- ddd <- round(subset(vcDat,state==s&year==y,select=c(sig2))*100)
- rownames(ddd) <- gsub('\\d','',rownames(ddd))
- rownames(ddd)[nrow(ddd)] <- 'resid'
- vcs[[paste0(s,'_',y)]] <- ddd
-}
-
-
-ggplot(vcDat,aes(year,sig2,fill=comp))+geom_col()+facet_grid(~state)+scale_fill_manual(values=rev(c('white','grey','#e41a1c','#377eb8','#4daf4a','#984ea3')))+labs(x='',y='% Variance Explained',fill='',title='Model: Multilevel Logistic Unconditional')+scale_y_continuous(labels=percent)
-
-
-
-@
-\caption{Results from a set of eight multilevel logistic regressions
-  predicting section reassignment. For each year, in the entire sample (``Overall'')
-  and in the three states with the largest numbers of reassignments (Texas,
-  Kentucky, and Michigan), we regressed a binary variable indicating
-  whether a section ended in reassignment on random intercepts for
-  school, class, student, and unit, and in the overall case, for state
-  as well, and recorded their variance. The residual variance was set
-  as the variance of the standard logistic distribution,
-  $\pi/3$. These bar charts give the proportion of the total variance
-  attributable to each random effect.}
-\label{fig:vc}
-\end{figure}
 
 
 \subsection{When are Students Reassigned?}
@@ -1306,6 +1308,9 @@ For completeness, each of the top two receivers for each sending unit,
 and each of the top two senders for each receiving unit were also included.
 Finally, all of the sending units were also listed on the left, in the
 receiving column.
+All in all, \Sexpr{round(propTotCP1*100)}\% of the first-year reassignments and
+\Sexpr{round(propTotCP1*100)}\% of the second-year reassignments are
+captured in the figures.
 
 The arrows in the plot represent reassignments.
 An arrow from a sending unit to a receiving unit indicates
@@ -1313,9 +1318,17 @@ reassignment from the former to the latter.
 The thickness of the arrows represents the proportion of reassignments
 originating in the sending unit whose destination was the receiving unit.
 The darkness of the arrows represents the number of such reassignments.
-For instance, in Figure \ref{fig:trans1}, the thick line from
+For instance, in Figure \ref{fig:trans1}, the arrow from
 ``4−Quadrant Linear Graphs'' on the left to ``4−Quadrant Linear
 Graphs'' on the right is fairly thick, since
+\Sexpr{round(trans1['4-Quadrant Linear Graphs','4-Quadrant Linear Graphs']/
+  sum(trans1['4-Quadrant Linear Graphs',])*100)}\%
+of the reassignments begun in ``4-Quadrante Linear Graphs'' end in the
+same unit.
+Yet it is also fairly faint, since it only represents
+\Sexpr{trans1['4-Quadrant Linear Graphs','4-Quadrant Linear Graphs']}
+reassignments.
+
 
 <<secOrder,include=FALSE,dependson=c('data','setup')>>=
 #### what's the next section each student works?
@@ -1342,9 +1355,10 @@ levels(secOrderCP$nextUnitName) <- UnitName
 @
 
 
+
 \begin{figure}
-  \begin{subfigure}{.7\textwidth}
-<<transition1,fig.height=3,fig.width=4.5,dependson='secOrder'>>=
+  \begin{subfigure}{5in}
+<<transition1,fig.height=3,fig.width=5,dependson='secOrder'>>=
 
 trans1 <- with(filter(secOrderCP,year==1),table(unitName,nextUnitName))
 
@@ -1375,10 +1389,8 @@ rows <- sort(unique(rows2))
 
 trans1 <- trans1[rows,cols]
 
-propTotCP <- sum(trans1)/sum(secOrderCP$year==1)
-#trans1itionPlot(trans1)
+propTotCP1 <- sum(trans1)/sum(secOrderCP$year==1)
 
-nsec <- nrow(trans1)
 uuu <- levels(secOrderCP$unitName)
 uuu <- uuu[uuu%in%c(colnames(trans1),rownames(trans1))]
 nsec <- length(uuu)
@@ -1388,8 +1400,8 @@ plot(1,1,xlim=c(-.5,3.5),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='
 text(1,nsec+1.5,expression(underline(bold(paste(From)))),adj=c(1,NA))
 text(2,nsec+1.5,expression(underline(bold(paste(To)))),adj=c(0,NA))
 
-for(i in 1:nsec) if(uuu[i]%in%rownames(trans1)) text(1,nsec-i+1,uuu[i],adj=c(1,NA))
-for(i in 1:nsec) if(uuu[i]%in%colnames(trans1)) text(2,nsec-i+1,uuu[i],adj=c(0,NA))
+for(i in 1:nsec) if(uuu[i]%in%rownames(trans1)) text(1,nsec-i+1,uuu[i],adj=c(1,NA),cex=0.8)
+for(i in 1:nsec) if(uuu[i]%in%colnames(trans1)) text(2,nsec-i+1,uuu[i],adj=c(0,NA),cex=0.8)
 
 for(rr in rownames(trans1))
  for(cc in colnames(trans1)){
@@ -1401,23 +1413,25 @@ for(rr in rownames(trans1))
 
 @
 \end{subfigure}
-\begin{subfigure}{.25\textwidth}
-<<trans1legend,fig.width=1.6,fig.height=3>>=
+\begin{subfigure}{1in}
+<<trans1legend,fig.width=1,fig.height=3,dependson='transition1'>>=
 par(mar=c(.1,.1,.1,.1))
-plot(1,1,xlim=c(0,2),ylim=c(0,11),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
-text(1,10,expression(underline(bold(paste(Legend)))))
-text(1,8,'Thickness: Percent')
-text(.5,7,'25%')
-text(.5,6,'50%')
-text(.5,5,'75%')
-arrows(c(1.5,1.5,1.5),c(7,6,5),c(2,2,2),lwd=5*c(.25,.5,.75))
-text(1,4,'Darkness: Number')
-text(.5,3,'10')
-text(.5,2,'25')
-text(.5,1,'50+')
-arrows(c(1.5,1.5,1.5),c(3,2,1),c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
+plot(1,1,xlim=c(0,2),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
+conv <- (nsec+2)/11
+text(1,nsec+1.5,expression(underline(bold(paste(Legend)))))
+text(1,9*conv,'Thickness:\n Percent',cex=0.8)
+text(.5,7.5*conv,'25%')
+text(.5,6.5*conv,'50%')
+text(.5,5.5*conv,'75%')
+arrows(c(1,1,1),c(7.5,6.5,5.5)*conv,c(2,2,2),lwd=5*c(.25,.5,.75))
+text(1,4.2*conv,'Darkness:\n Number',cex=0.8)
+text(.5,3*conv,'10')
+text(.5,2*conv,'25')
+text(.5,1*conv,'50+')
+arrows(c(1,1,1),c(3,2,1)*conv,c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
 
 @
+\end{subfigure}
 \caption{Reassignment transition plot for study year 1. The units on
   the left of the plot are the Algebra I units that ended in reassignment at
   least 30 times in year 1. The units on the right are those that were
@@ -1435,10 +1449,13 @@ arrows(c(1.5,1.5,1.5),c(3,2,1),c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
 \label{fig:trans1}
 \end{figure}
 
-
+Inspecting the figures shows that the most common pattern is for
+students to be reassigned to the next unit in the curriculum.
+On the other hand, it is rare for students to be reassigned
 
 \begin{figure}
-<<transition2,fig.height=5,fig.width=6.5,dependson='secOrder'>>=
+  \begin{subfigure}{5in}
+<<transition2,fig.height=5,fig.width=5,dependson='secOrder'>>=
 
 trans2 <- with(filter(secOrderCP,year==2),table(unitName,nextUnitName))
 
@@ -1472,7 +1489,7 @@ rows <- sort(unique(rows2))
 trans2 <- trans2[rows,cols]
 
 
-propTotCP <- sum(trans2)/sum(secOrderCP$year==1)
+propTotCP2 <- sum(trans2)/sum(secOrderCP$year==1)
 
 nsec <- nrow(trans2)
 uuu <- levels(secOrderCP$unitName)
@@ -1484,8 +1501,8 @@ plot(1,1,xlim=c(-.5,3.5),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='
 text(1,nsec+1.5,expression(underline(bold(paste(From)))),adj=c(1,NA))
 text(2,nsec+1.5,expression(underline(bold(paste(To)))),adj=c(0,NA))
 
-for(i in 1:nsec) if(uuu[i]%in%rownames(trans2)) text(1,nsec-i+1,uuu[i],adj=c(1,NA))
-for(i in 1:nsec) if(uuu[i]%in%colnames(trans2)) text(2,nsec-i+1,uuu[i],adj=c(0,NA))
+for(i in 1:nsec) if(uuu[i]%in%rownames(trans2)) text(1,nsec-i+1,uuu[i],adj=c(1,NA),cex=0.8)
+for(i in 1:nsec) if(uuu[i]%in%colnames(trans2)) text(2,nsec-i+1,uuu[i],adj=c(0,NA),cex=0.8)
 
 for(rr in rownames(trans2))
  for(cc in colnames(trans2)){
@@ -1494,103 +1511,61 @@ for(rr in rownames(trans2))
        col=rgb(0,0,0,alpha=ifelse(trans2[rr,cc]>50,1,trans2[rr,cc]/50)))
 }
 @
+\end{subfigure}
+\begin{subfigure}{1in}
+<<trans2legend,fig.width=1,fig.height=3,dependson='transition2'>>=
+par(mar=c(.1,.1,.1,.1))
+plot(1,1,xlim=c(0,2),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
+conv <- (nsec+2)/11
+text(1,nsec+1.5,expression(underline(bold(paste(Legend)))))
+text(1,9*conv,'Thickness:\n Percent',cex=0.8)
+text(.5,7.5*conv,'25%')
+text(.5,6.5*conv,'50%')
+text(.5,5.5*conv,'75%')
+arrows(c(1,1,1),c(7.5,6.5,5.5)*conv,c(2,2,2),lwd=5*c(.25,.5,.75))
+text(1,4.2*conv,'Darkness:\n Number',cex=0.8)
+text(.5,3*conv,'10')
+text(.5,2*conv,'25')
+text(.5,1*conv,'50+')
+arrows(c(1,1,1),c(3,2,1)*conv,c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
+
+@
+\end{subfigure}
 \caption{Reassignment transition plot for study year 2.}
 \label{fig:trans2}
 \end{figure}
 
-\subsection{Does Reassignment Depend on Student Ability?}
 
-<<xirtMods,include=FALSE,dependson=c('data','setup')>>=
-## don't worry about nesting, etc--we aren't reporting standard errors anyway
-cpDat <- data%>%filter(!is.na(status))%>%group_by(field_id,unit,section,state,year,classid2,schoolid2)%>%
-    summarize(cp=max(status)=='changed placement')
+\section{Effects of Reassignment}
+The goal of CTAI is to help students learn Algebra, so
+the most important questions about reassignment are about its effect on learning.
+Although the data from this study came from a randomized trial, it was
+CTAI as a whole that was randomized, not individual behaviors within CTAI.
+Specifically, student reassignment was not randomized.
+Therefore, claims regarding the causal effects of reassignment on
+learning require strong untestable assumptions that are unlikely to be
+true.
+As in all observational studies, this includes the assumption that all
+counfounding variables---variables that predict both reassignment and
+learning---have been measured well and modeled correctly.
+Further complicating matters, although reassignment itself is a
+well-defined process, in practice it can take many forms, as we have
+endevoured to show.
+There is no reason to expect the effects of reassignment to be
+the same regardless of wheather the teacher used it to help lagging
+students catch up, to allocate time to important topics, or for some
+other reason.
 
-### get imputed xirt
-##
-h1 <- read.csv('~/Box Sync/CT/data/RANDstudyData/H1_algebra_rcal_20121119_fieldid.csv')
-h2 <- read.csv('~/Box Sync/CT/data/RANDstudyData/H2_algebra_rcal_20121119_fieldid.csv')
-
-h2 <- h2[!h2$field_id%in%h1$field_id,]
-
-stud <- rbind(h1[,c(174:194)],h2[,c(176:196)])
-stud <- stud[stud$field_id%in%cpDat$field_id,]
-stud <- stud[order(stud$field_id),]
-stud$xirt <- rowMeans(stud[,grep('Exirt2_',names(stud))],na.rm=TRUE)
-
-cpDat$xirt <- stud$xirt[match(cpDat$field_id,stud$field_id)]
-
-cpModSimp <- glm(cp~splines::ns(xirt,5)*year,data=cpDat)
-
-cpModSt <- list()
-for(st in c('TX','KY','MI','LA','CT')){
-    cpModSt[[st]] <- update(cpModSimp,data=subset(cpDat,state==st))
-}
+All that said, observational estimates of reassignment's average
+effects can be valuable, if interpreted cautiously.
+They may help guide research
 
 
+\subsection{Effects on Subsequent Mastery}
+<<>>=
 @
 
-\begin{figure}
-<<xirtCP,fig.height=7,fig.width=6.5,dependson=c('data','setup','xirtMods')>>=
-#load('cpXirtMods.RData')
-
-
-xirtDat <- cpDat%>%group_by(field_id,state,year,classid2,schoolid2,xirt)%>%
-    summarize(nsec=n_distinct(section,unit),propCP=mean(cp,na.rm=TRUE))
-
-for(st in names(cpModSt)) xirtDat$fitted[xirtDat$state==st] <-
-                                  predict(cpModSt[[st]],xirtDat[xirtDat$state==st,],
-                                         type='response')
-
-
-xirtDat <- addOverallState(xirtDat)
-
-xirtDat$fitted[xirtDat$state=='Overall'] <-
-    predict(cpModSimp,xirtDat[xirtDat$state=='Overall',],
-            type='response')
-
-ggplot(subset(xirtDat,state!='NJ'),aes(xirt,propCP,size=nsec))+geom_point()+geom_line(aes(xirt,fitted),col='red',size=1)+facet_grid(year~state)+coord_cartesian(ylim=c(0,0.5))
-
-
-@
-\end{figure}
-
-
-\begin{figure}
-<<cp-xirtClassroom1,dependson='xirtCP',fig.height=7,fig.width=6.5>>=
-bbb2 <- data%>%filter(status=='changed placement')%>%group_by(classid2,year,state)%>%summarize(ncp=n_distinct(field_id,section,unit),nstud=n_distinct(field_id),nsec=n_distinct(section))
-
-cpcls1 <- xirtDat%>%
-    filter(classid2%in%bbb2$classid2[bbb2$year==1 & bbb2$ncp>=20] & state!='Overall')%>%
-    arrange(state)
-cpcls1$classid2 <- factor(cpcls1$classid2,levels=unique(cpcls1$classid2))
-
-cpcls1 <- cpcls1%>%group_by(classid2)%>%mutate(maxCP=max(propCP,na.rm=TRUE),propCP=propCP/maxCP)%>%ungroup()
-
-ggplot(cpcls1,aes(xirt,propCP,size=nsec,color=state))+
-    geom_point()+geom_smooth(size=1,method='lm')+facet_wrap('classid2')+scale_size_continuous(range=c(0.2,1))+
-    ylim(0,1)
-
-
-@
-\end{figure}
-
-\begin{figure}
-<<cp-xirtClassroom2,dependson='cp-xirtClassroom1',fig.height=7,fig.width=6.5>>=
-
-cpcls2 <- xirtDat%>%
-    filter(classid2%in%bbb2$classid2[bbb2$year==2 & bbb2$ncp>=20] & state!='Overall')%>%
-    arrange(state)
-cpcls2$classid2 <- factor(cpcls2$classid2,levels=unique(cpcls2$classid2))
-
-cpcls2 <- cpcls2%>%group_by(classid2)%>%mutate(maxCP=max(propCP,na.rm=TRUE),propCP=propCP/maxCP)%>%ungroup()
-
-ggplot(cpcls2,aes(xirt,propCP,size=nsec,color=state))+
-    geom_point()+geom_smooth(size=1,method='lm')+facet_wrap('classid2')+scale_size_continuous(range=c(0.2,1))+
-    ylim(0,1)
-
-
-@
-\end{figure}
+\subsection{Effects on Post-Test Scores}
 
 \section{Notes}
 [[don't forget to include these]]
@@ -1605,3 +1580,31 @@ ggplot(cpcls2,aes(xirt,propCP,size=nsec,color=state))+
 \end{itemize}
 
 \end{document}
+<<eval=FALSE>>=
+
+ nextDat <- secOrder%>%filter(!is.na(status))%>%group_by(field_id,classid2,year,state)%>%
+  summarize(naf=sum(is.na(prevStatus) & status=='final_or_incomplete')/sum(is.na(prevStatus)),
+   nacp=sum(is.na(prevStatus) & status=='changed placement')/sum(is.na(prevStatus)),
+   naprom=sum(is.na(prevStatus) & status=='promoted')/sum(is.na(prevStatus)),
+   nagrad=sum(is.na(prevStatus) & status=='graduated')/sum(is.na(prevStatus)),
+   ff=sum(prevStatus==1 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
+   fcp=sum(prevStatus==1 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
+   fprom=sum(prevStatus==1 & status=='promoted',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
+   fgrad=sum(prevStatus==1 & status=='graduated',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
+   cpf=sum(prevStatus==2 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
+   cpcp=sum(prevStatus==2 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
+   cpprom=sum(prevStatus==2 & status=='promoted',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
+   cpgrad=sum(prevStatus==2 & status=='graduated',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
+   promf=sum(prevStatus==3 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
+   promcp=sum(prevStatus==3 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
+   promprom=sum(prevStatus==3 & status=='promoted',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
+   promgrad=sum(prevStatus==3 & status=='graduated',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
+   gradf=sum(prevStatus==4 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
+   gradcp=sum(prevStatus==4 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
+   gradprom=sum(prevStatus==4 & status=='promoted',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
+   gradgrad=sum(prevStatus==4 & status=='graduated',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
+   npna=sum(is.na(prevStatus)),npf=sum(prevStatus==1,na.rm=TRUE),npcp=sum(prevStatus==2,na.rm=TRUE),
+    npprom=sum(prevStatus==3,na.rm=TRUE),npgrad=sum(prevStatus==4,na.rm=TRUE))
+
+@
+
