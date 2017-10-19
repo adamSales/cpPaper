@@ -30,20 +30,66 @@ cpDat <- mutate(cpDat,totalTime=totalTime/3600000,totalTime=ifelse(totalTime<0,N
 cpDat$ncpCat <- factor(ifelse(cpDat$ncp>=3,'3+',cpDat$ncp))
 cpDat$everCP <- cpDat$ncp>0
 
+exirt <- stud[match(cpDat$field_id,stud$field_id),grep('Exirt2',names(stud))]
+names(exirt) <- gsub('_0','_',names(exirt))
+for(n in names(exirt)) cpDat[[n]] <- exirt[[n]]
+
+
 #### models!!
-mod1 <- lmer(gainScore~ncp+nsec+state+year+(1|classid2)+(1|schoolid2),data=cpDat)
+mod1 <- lmer(gainScore~ncp+state+year+(1|classid2)+(1|schoolid2),data=cpDat)
 mod1.1 <- update(mod1,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
-mod2 <- lmer(gainScore~year*(ncp+nsec)+state+(1|classid2)+(1|schoolid2),data=cpDat)
+mod2 <- lmer(gainScore~year*(ncp)+state+(1|classid2)+(1|schoolid2),data=cpDat)
 mod2.1 <- update(mod2,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
 mod3 <- lmer(gainScore~everCP+state+year+(1|classid2)+(1|schoolid2),data=cpDat)
-mod3.1 <- update(mod3,.~.+nsec)
-mod3.1.1 <- update(mod3.1,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
-mod3.2 <- update(mod3,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
-mod4 <- lmer(gainScore~ncpCat+nsec+state+year+(1|classid2)+(1|schoolid2),data=cpDat)
+mod3.1 <- update(mod3,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
+mod4 <- lmer(gainScore~ncpCat+state+year+(1|classid2)+(1|schoolid2),data=cpDat)
 mod4.1 <- update(mod4,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
+cpDat$Year=as.factor(cpDat$year)
+mod5 <- lmer(gainScore~everCP*Year+state+(1|classid2)+(1|schoolid2),data=cpDat)
+mod5.1 <- update(mod5,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
+mod6 <- lmer(gainScore~everCP*Year+state+(1|classid2)+(everCP|schoolid2),data=cpDat)
+mod6.1 <- update(mod6,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
+mod7 <- lmer(gainScore~everCP+year+state+(everCP|classid2)+(1|schoolid2),data=cpDat)
+mod7.1 <- update(mod7,.~.+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)
 
-save(list=grep('mod',ls()),file='outcomeMods.RData')
+for(mm in grep('mod',ls(),value=TRUE))
+    print(summary(assign(paste0(mm,'Y'),update(get(mm),y_yirt~.+pretest))))
 
+save(list=grep('mod',ls(),value=TRUE),file='outcomeMods.RData')
+
+
+
+
+
+miMod <- function(mod){
+    ests <- NULL
+    covs <- list()
+    for(i in 1:20){
+        formNew <- as.formula(paste0('.~.-pretest+Exirt2_',i))
+        modNew <- update(mod,formNew)
+        ests <- cbind(ests,fixef(modNew))
+        covs[[i]] <- vcov(modNew)
+    }
+    return(list(ests=ests,covs=covs))
+}
+miPool <- function(fitMods){
+    ests <- fitMods$ests
+    covs <- fitMods$covs
+    interest <- grep('CP',rownames(ests),ignore.case=TRUE)
+    SEs <- sqrt(rowMeans(do.call('cbind',lapply(covs,function(cc) diag(cc[interest,interest]))))+
+                1.05*apply(ests[interest,],1,var))
+    ests <- rowMeans(ests[interest,])
+    cbind(ests,SEs)
+}
+
+mi <- function(mod){
+    miPool(miMod(mod))
+}
+
+ggplot(filter(cpDat,state%in%c('TX','KY','MI')),aes(ncp,gainScore))+geom_jitter()+geom_boxplot(aes(group=ncp),alpha=0.5)+geom_smooth(method='loess')+facet_grid(year~.)
 
 library(optmatch)
 propScore <- glm(everCP~(race+sex+grade+spec_speced+spec_gifted+spec_esl+frl)*schoolid2,family=binomial,da
+
+
+

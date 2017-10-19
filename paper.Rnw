@@ -1271,6 +1271,52 @@ years.
 
 \subsection{Where To?}
 
+Teachers who reassign students may simply move them to the next
+section within the same unit.
+Say that a teacher believes that a particular student had already mastered
+the skills in one of the CTAI sections, or is wheel-spinning---working
+problems without learning.
+Still, the teacher wants the student to learn as much as possible from
+the student's current unit.
+Then moving the student to the next section within the same unit would
+make sense.
+Alternatively, teachers who believe that some of their students are
+not progressing quickly enough may reassign them out of their current
+units entirely, and into the next unit in the sequence---whatever that
+may be.
+Finally, a teacher who wanted his or her students to focus on a
+particular topic might reassign them all to the appropriate section
+when the time is appropriate.
+
+Which of these patterns is most prevelant?
+More generally, when teachers reassign their students, where in the
+curriculum do they send them?
+
+To address these questions, we focus on the units in the standard
+Algebra I sequence.
+Figures \ref{fig:trans1} and \ref{fig:trans2} give transition plots
+for reassignment in the two study years.
+On the left of each figure, marked ``From,'' are the top ``sending''
+units: the units that students were reassigned \emph{from} at least 30
+times.
+They are listed in the order they appear in the standard Algebra I curriculum.
+On the right, under ``To,'' are the top ``receiving'' units: the units
+that students were reassigned \emph{to} at least 30 times.
+For completeness, each of the top two receivers for each sending unit,
+and each of the top two senders for each receiving unit were also included.
+Finally, all of the sending units were also listed on the left, in the
+receiving column.
+
+The arrows in the plot represent reassignments.
+An arrow from a sending unit to a receiving unit indicates
+reassignment from the former to the latter.
+The thickness of the arrows represents the proportion of reassignments
+originating in the sending unit whose destination was the receiving unit.
+The darkness of the arrows represents the number of such reassignments.
+For instance, in Figure \ref{fig:trans1}, the thick line from
+``4−Quadrant Linear Graphs'' on the left to ``4−Quadrant Linear
+Graphs'' on the right is fairly thick, since
+
 <<secOrder,include=FALSE,dependson=c('data','setup')>>=
 #### what's the next section each student works?
 secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp))%>%group_by(field_id,section,unit,Curriculum,overall,year,Year,Yr,state,classid2,schoolid2)%>%summarize(time=max(timestamp),status=max(status))%>%arrange(time)%>%group_by(field_id,year,Year,Yr,state,classid2,schoolid2)%>%mutate(prevSec=c(NA,section[-n()]),prevStatus=c(NA,status[-n()]),prevUnit=c(NA,unit[-n()]),nextUnit=c(unit[-1],NA))
@@ -1297,30 +1343,29 @@ levels(secOrderCP$nextUnitName) <- UnitName
 
 
 \begin{figure}
-<<transition1,fig.height=3,fig.width=6.5,dependson='secOrder'>>=
+  \begin{subfigure}{.7\textwidth}
+<<transition1,fig.height=3,fig.width=4.5,dependson='secOrder'>>=
 
-trans <- with(filter(secOrderCP,year==1),table(unitName,nextUnitName))
+trans1 <- with(filter(secOrderCP,year==1),table(unitName,nextUnitName))
 
 ## top senders and receivers
-cols <- which(colSums(trans)>30)
-rows <- which(rowSums(trans)>30)
+cols <- which(colSums(trans1)>30)
+rows <- which(rowSums(trans1)>30)
 
 cols2 <- cols
 rows2 <- rows
 
 ## top 2 receivers for each sender, vice versa
 for(r in rows)
-    while(sum(trans[r,cols2])/sum(trans[r,])<0.75){
-    nextBest <- which.max(trans[r,seq(ncol(trans))[-cols2]])
-    cols2 <- c(cols2,which(colnames(trans)==names(nextBest)))
+    while(sum(trans1[r,cols2])/sum(trans1[r,])<0.75){
+    nextBest <- which.max(trans1[r,seq(ncol(trans1))[-cols2]])
+    cols2 <- c(cols2,which(colnames(trans1)==names(nextBest)))
 }
 
 for(cc in cols){
- #   print('new col')
-  #  print(cc)
-    while(sum(trans[rows2,cc])/sum(trans[,cc])<0.75){
-        nextBest <- which.max(trans[seq(nrow(trans))[-rows2],cc])
-        rows2 <- c(rows2,which(rownames(trans)==names(nextBest)))
+    while(sum(trans1[rows2,cc])/sum(trans1[,cc])<0.75){
+        nextBest <- which.max(trans1[seq(nrow(trans1))[-rows2],cc])
+        rows2 <- c(rows2,which(rownames(trans1)==names(nextBest)))
     }
 
 }
@@ -1328,18 +1373,14 @@ for(cc in cols){
 cols <- sort(unique(c(cols2,rows2)))
 rows <- sort(unique(rows2))
 
-trans <- trans[rows,cols]
-## trans <- trans[rowSums(trans)>50,colSums(trans)>10]
-## trans <- trans[rowSums(trans)>50,colSums(trans)>10]
-## trans <- trans[rowSums(trans)>50,colSums(trans)>10]
+trans1 <- trans1[rows,cols]
 
+propTotCP <- sum(trans1)/sum(secOrderCP$year==1)
+#trans1itionPlot(trans1)
 
-propTotCP <- sum(trans)/sum(secOrderCP$year==1)
-#transitionPlot(trans)
-
-nsec <- nrow(trans)
+nsec <- nrow(trans1)
 uuu <- levels(secOrderCP$unitName)
-uuu <- uuu[uuu%in%c(colnames(trans),rownames(trans))]
+uuu <- uuu[uuu%in%c(colnames(trans1),rownames(trans1))]
 nsec <- length(uuu)
 
 par(mar=c(.1,.1,.1,.1))
@@ -1347,45 +1388,80 @@ plot(1,1,xlim=c(-.5,3.5),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='
 text(1,nsec+1.5,expression(underline(bold(paste(From)))),adj=c(1,NA))
 text(2,nsec+1.5,expression(underline(bold(paste(To)))),adj=c(0,NA))
 
-for(i in 1:nsec) if(uuu[i]%in%rownames(trans)) text(1,nsec-i+1,uuu[i],adj=c(1,NA))
-for(i in 1:nsec) if(uuu[i]%in%colnames(trans)) text(2,nsec-i+1,uuu[i],adj=c(0,NA))
+for(i in 1:nsec) if(uuu[i]%in%rownames(trans1)) text(1,nsec-i+1,uuu[i],adj=c(1,NA))
+for(i in 1:nsec) if(uuu[i]%in%colnames(trans1)) text(2,nsec-i+1,uuu[i],adj=c(0,NA))
 
-for(rr in rownames(trans))
- for(cc in colnames(trans)){
-#     if(trans[rr,cc]>20){
-      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans[rr,cc]/sum(trans[rr,]),
-       col=rgb(0,0,0,alpha=ifelse(trans[rr,cc]>50,1,trans[rr,cc]/50)))
+for(rr in rownames(trans1))
+ for(cc in colnames(trans1)){
+#     if(trans1[rr,cc]>20){
+      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans1[rr,cc]/sum(trans1[rr,]),
+       col=rgb(0,0,0,alpha=ifelse(trans1[rr,cc]>50,1,trans1[rr,cc]/50)))
 }
 
 
 @
+\end{subfigure}
+\begin{subfigure}{.25\textwidth}
+<<trans1legend,fig.width=1.6,fig.height=3>>=
+par(mar=c(.1,.1,.1,.1))
+plot(1,1,xlim=c(0,2),ylim=c(0,11),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
+text(1,10,expression(underline(bold(paste(Legend)))))
+text(1,8,'Thickness: Percent')
+text(.5,7,'25%')
+text(.5,6,'50%')
+text(.5,5,'75%')
+arrows(c(1.5,1.5,1.5),c(7,6,5),c(2,2,2),lwd=5*c(.25,.5,.75))
+text(1,4,'Darkness: Number')
+text(.5,3,'10')
+text(.5,2,'25')
+text(.5,1,'50+')
+arrows(c(1.5,1.5,1.5),c(3,2,1),c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
+
+@
+\caption{Reassignment transition plot for study year 1. The units on
+  the left of the plot are the Algebra I units that ended in reassignment at
+  least 30 times in year 1. The units on the right are those that were
+  the destination of at least 30 reassignments. Also included on the
+  left are the top two sending units for each of the units on the
+  right, and also included on the right are all the units on the left,
+  along with their top two receiving units. The units are listed
+  following their order in the standard Algebra I curriculum. There is an arrow from a
+  unit on the left to a unit on the right if a student was assigned
+  from the unit on the left to the one on the right. The thickness of
+  the arrows is proportional to the percentage of all reassignments from
+  the sending unit that ended in that receiving unit. The darkness of
+  the arrows is proportional to the number of reassignments from the
+  sending unit to the receiving unit.}
+\label{fig:trans1}
 \end{figure}
+
+
 
 \begin{figure}
 <<transition2,fig.height=5,fig.width=6.5,dependson='secOrder'>>=
 
-trans <- with(filter(secOrderCP,year==2),table(unitName,nextUnitName))
+trans2 <- with(filter(secOrderCP,year==2),table(unitName,nextUnitName))
 
 ## top senders and receivers
-cols <- which(colSums(trans)>30)
-rows <- which(rowSums(trans)>30)
+cols <- which(colSums(trans2)>30)
+rows <- which(rowSums(trans2)>30)
 
 cols2 <- cols
 rows2 <- rows
 
 ## top 2 receivers for each sender, vice versa
 for(r in rows)
-    while(sum(trans[r,cols2])/sum(trans[r,])<0.75){
-    nextBest <- which.max(trans[r,seq(ncol(trans))[-cols2]])
-    cols2 <- c(cols2,which(colnames(trans)==names(nextBest)))
+    while(sum(trans2[r,cols2])/sum(trans2[r,])<0.75){
+    nextBest <- which.max(trans2[r,seq(ncol(trans2))[-cols2]])
+    cols2 <- c(cols2,which(colnames(trans2)==names(nextBest)))
 }
 
 for(cc in cols){
  #   print('new col')
   #  print(cc)
-    while(sum(trans[rows2,cc])/sum(trans[,cc])<0.75){
-        nextBest <- which.max(trans[seq(nrow(trans))[-rows2],cc])
-        rows2 <- c(rows2,which(rownames(trans)==names(nextBest)))
+    while(sum(trans2[rows2,cc])/sum(trans2[,cc])<0.75){
+        nextBest <- which.max(trans2[seq(nrow(trans2))[-rows2],cc])
+        rows2 <- c(rows2,which(rownames(trans2)==names(nextBest)))
     }
 
 }
@@ -1393,18 +1469,14 @@ for(cc in cols){
 cols <- sort(unique(c(cols2,rows2)))
 rows <- sort(unique(rows2))
 
-trans <- trans[rows,cols]
-## trans <- trans[rowSums(trans)>50,colSums(trans)>10]
-## trans <- trans[rowSums(trans)>50,colSums(trans)>10]
-## trans <- trans[rowSums(trans)>50,colSums(trans)>10]
+trans2 <- trans2[rows,cols]
 
 
-propTotCP <- sum(trans)/sum(secOrderCP$year==1)
-#transitionPlot(trans)
+propTotCP <- sum(trans2)/sum(secOrderCP$year==1)
 
-nsec <- nrow(trans)
+nsec <- nrow(trans2)
 uuu <- levels(secOrderCP$unitName)
-uuu <- uuu[uuu%in%c(colnames(trans),rownames(trans))]
+uuu <- uuu[uuu%in%c(colnames(trans2),rownames(trans2))]
 nsec <- length(uuu)
 
 par(mar=c(.1,.1,.1,.1))
@@ -1412,21 +1484,18 @@ plot(1,1,xlim=c(-.5,3.5),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='
 text(1,nsec+1.5,expression(underline(bold(paste(From)))),adj=c(1,NA))
 text(2,nsec+1.5,expression(underline(bold(paste(To)))),adj=c(0,NA))
 
-for(i in 1:nsec) if(uuu[i]%in%rownames(trans)) text(1,nsec-i+1,uuu[i],adj=c(1,NA))
-for(i in 1:nsec) if(uuu[i]%in%colnames(trans)) text(2,nsec-i+1,uuu[i],adj=c(0,NA))
+for(i in 1:nsec) if(uuu[i]%in%rownames(trans2)) text(1,nsec-i+1,uuu[i],adj=c(1,NA))
+for(i in 1:nsec) if(uuu[i]%in%colnames(trans2)) text(2,nsec-i+1,uuu[i],adj=c(0,NA))
 
-for(rr in rownames(trans))
- for(cc in colnames(trans)){
-#     if(trans[rr,cc]>20){
-      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans[rr,cc]/sum(trans[rr,]),
-       col=rgb(0,0,0,alpha=ifelse(trans[rr,cc]>50,1,trans[rr,cc]/50)))
+for(rr in rownames(trans2))
+ for(cc in colnames(trans2)){
+#     if(trans2[rr,cc]>20){
+      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans2[rr,cc]/sum(trans2[rr,]),
+       col=rgb(0,0,0,alpha=ifelse(trans2[rr,cc]>50,1,trans2[rr,cc]/50)))
 }
-
-
-
-
-
 @
+\caption{Reassignment transition plot for study year 2.}
+\label{fig:trans2}
 \end{figure}
 
 \subsection{Does Reassignment Depend on Student Ability?}

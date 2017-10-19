@@ -99,7 +99,8 @@ currWorkedYr <- within(currWorkedYr,p <- n/ifelse(Year=='Year 1',nByYr$n[nByYr$Y
 ggplot(currWorkedYr,aes(Year,p,fill=Curriculum,shape=overall))+geom_col()
 
 
-cwy <- currWorkedYr%>%group_by(Curriculum,overall)%>%summarize(`Year 1`=p[Year=='Year 1'],`Year 2`=p[Year=='Year 2'])%>%arrange(Curriculum,overall)
+##cwy <- currWorkedYr%>%group_by(Curriculum,overall)%>%summarize(`Year 1`=p[Year=='Year 1'],`Year 2`=p[Year=='Year 2'])%>%arrange(Curriculum,overall)
+cwy <- dcast(currWorkedYr,Curriculum+overall~Year,value.var='p')
 COLS <- c('#1b9e77','#d95f02','#7570b3')
 
 cwy <- data%>%filter(!is.na(Curriculum))%>%group_by(Curriculum,overall)%>%
