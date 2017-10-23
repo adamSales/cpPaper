@@ -1276,8 +1276,8 @@ years.
 Teachers who reassign students may simply move them to the next
 section within the same unit.
 Say that a teacher believes that a particular student had already mastered
-the skills in one of the CTAI sections, or is wheel-spinning---working
-problems without learning.
+the skills in one of the CTAI sections or is wheel-spinning---working
+problems without learning---or dislikes one of the sections in a CT unit.
 Still, the teacher wants the student to learn as much as possible from
 the student's current unit.
 Then moving the student to the next section within the same unit would
@@ -1294,40 +1294,6 @@ Which of these patterns is most prevelant?
 More generally, when teachers reassign their students, where in the
 curriculum do they send them?
 
-To address these questions, we focus on the units in the standard
-Algebra I sequence.
-Figures \ref{fig:trans1} and \ref{fig:trans2} give transition plots
-for reassignment in the two study years.
-On the left of each figure, marked ``From,'' are the top ``sending''
-units: the units that students were reassigned \emph{from} at least 30
-times.
-They are listed in the order they appear in the standard Algebra I curriculum.
-On the right, under ``To,'' are the top ``receiving'' units: the units
-that students were reassigned \emph{to} at least 30 times.
-For completeness, each of the top two receivers for each sending unit,
-and each of the top two senders for each receiving unit were also included.
-Finally, all of the sending units were also listed on the left, in the
-receiving column.
-All in all, \Sexpr{round(propTotCP1*100)}\% of the first-year reassignments and
-\Sexpr{round(propTotCP1*100)}\% of the second-year reassignments are
-captured in the figures.
-
-The arrows in the plot represent reassignments.
-An arrow from a sending unit to a receiving unit indicates
-reassignment from the former to the latter.
-The thickness of the arrows represents the proportion of reassignments
-originating in the sending unit whose destination was the receiving unit.
-The darkness of the arrows represents the number of such reassignments.
-For instance, in Figure \ref{fig:trans1}, the arrow from
-``4−Quadrant Linear Graphs'' on the left to ``4−Quadrant Linear
-Graphs'' on the right is fairly thick, since
-\Sexpr{round(trans1['4-Quadrant Linear Graphs','4-Quadrant Linear Graphs']/
-  sum(trans1['4-Quadrant Linear Graphs',])*100)}\%
-of the reassignments begun in ``4-Quadrante Linear Graphs'' end in the
-same unit.
-Yet it is also fairly faint, since it only represents
-\Sexpr{trans1['4-Quadrant Linear Graphs','4-Quadrant Linear Graphs']}
-reassignments.
 
 
 <<secOrder,include=FALSE,dependson=c('data','setup')>>=
@@ -1361,6 +1327,7 @@ levels(secOrderCP$nextUnitName) <- UnitName
 <<transition1,fig.height=3,fig.width=5,dependson='secOrder'>>=
 
 trans1 <- with(filter(secOrderCP,year==1),table(unitName,nextUnitName))
+trans1o <- trans1
 
 ## top senders and receivers
 cols <- which(colSums(trans1)>30)
@@ -1400,13 +1367,15 @@ plot(1,1,xlim=c(-.5,3.5),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='
 text(1,nsec+1.5,expression(underline(bold(paste(From)))),adj=c(1,NA))
 text(2,nsec+1.5,expression(underline(bold(paste(To)))),adj=c(0,NA))
 
-for(i in 1:nsec) if(uuu[i]%in%rownames(trans1)) text(1,nsec-i+1,uuu[i],adj=c(1,NA),cex=0.8)
-for(i in 1:nsec) if(uuu[i]%in%colnames(trans1)) text(2,nsec-i+1,uuu[i],adj=c(0,NA),cex=0.8)
+for(i in 1:nsec) if(uuu[i]%in%rownames(trans1))
+  text(1,nsec-i+1,paste0(uuu[i],' (',which(levels(secOrderCP$unitName)==uuu[i]),')'),adj=c(1,NA),cex=0.75)
+for(i in 1:nsec) if(uuu[i]%in%colnames(trans1))
+  text(2,nsec-i+1,paste0(uuu[i],' (',which(levels(secOrderCP$unitName)==uuu[i]),')'),adj=c(0,NA),cex=0.75)
 
 for(rr in rownames(trans1))
  for(cc in colnames(trans1)){
 #     if(trans1[rr,cc]>20){
-      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans1[rr,cc]/sum(trans1[rr,]),
+      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans1[rr,cc]/sum(trans1o[rr,]),
        col=rgb(0,0,0,alpha=ifelse(trans1[rr,cc]>50,1,trans1[rr,cc]/50)))
 }
 
@@ -1419,12 +1388,12 @@ par(mar=c(.1,.1,.1,.1))
 plot(1,1,xlim=c(0,2),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
 conv <- (nsec+2)/11
 text(1,nsec+1.5,expression(underline(bold(paste(Legend)))))
-text(1,9*conv,'Thickness:\n Percent',cex=0.8)
+text(1,9*conv,'Thickness:\n Percent',cex=0.75)
 text(.5,7.5*conv,'25%')
 text(.5,6.5*conv,'50%')
 text(.5,5.5*conv,'75%')
 arrows(c(1,1,1),c(7.5,6.5,5.5)*conv,c(2,2,2),lwd=5*c(.25,.5,.75))
-text(1,4.2*conv,'Darkness:\n Number',cex=0.8)
+text(1,4.2*conv,'Darkness:\n Number',cex=0.75)
 text(.5,3*conv,'10')
 text(.5,2*conv,'25')
 text(.5,1*conv,'50+')
@@ -1438,8 +1407,8 @@ arrows(c(1,1,1),c(3,2,1)*conv,c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
   the destination of at least 30 reassignments. Also included on the
   left are the top two sending units for each of the units on the
   right, and also included on the right are all the units on the left,
-  along with their top two receiving units. The units are listed
-  following their order in the standard Algebra I curriculum. There is an arrow from a
+  along with their top two receiving units. The units are numbered
+  according their order in the standard Algebra I curriculum. There is an arrow from a
   unit on the left to a unit on the right if a student was assigned
   from the unit on the left to the one on the right. The thickness of
   the arrows is proportional to the percentage of all reassignments from
@@ -1449,15 +1418,13 @@ arrows(c(1,1,1),c(3,2,1)*conv,c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
 \label{fig:trans1}
 \end{figure}
 
-Inspecting the figures shows that the most common pattern is for
-students to be reassigned to the next unit in the curriculum.
-On the other hand, it is rare for students to be reassigned
 
 \begin{figure}
   \begin{subfigure}{5in}
 <<transition2,fig.height=5,fig.width=5,dependson='secOrder'>>=
 
 trans2 <- with(filter(secOrderCP,year==2),table(unitName,nextUnitName))
+trans2o <- trans2
 
 ## top senders and receivers
 cols <- which(colSums(trans2)>30)
@@ -1501,13 +1468,15 @@ plot(1,1,xlim=c(-.5,3.5),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='
 text(1,nsec+1.5,expression(underline(bold(paste(From)))),adj=c(1,NA))
 text(2,nsec+1.5,expression(underline(bold(paste(To)))),adj=c(0,NA))
 
-for(i in 1:nsec) if(uuu[i]%in%rownames(trans2)) text(1,nsec-i+1,uuu[i],adj=c(1,NA),cex=0.8)
-for(i in 1:nsec) if(uuu[i]%in%colnames(trans2)) text(2,nsec-i+1,uuu[i],adj=c(0,NA),cex=0.8)
+for(i in 1:nsec) if(uuu[i]%in%rownames(trans2))
+  text(1,nsec-i+1,paste0(uuu[i],' (',which(levels(secOrderCP$unitName)==uuu[i]),')'),adj=c(1,NA),cex=0.75)
+for(i in 1:nsec) if(uuu[i]%in%colnames(trans2))
+  text(2,nsec-i+1,paste0(uuu[i],' (',which(levels(secOrderCP$unitName)==uuu[i]),')'),adj=c(0,NA),cex=0.75)
 
 for(rr in rownames(trans2))
  for(cc in colnames(trans2)){
 #     if(trans2[rr,cc]>20){
-      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans2[rr,cc]/sum(trans2[rr,]),
+      arrows(1.1,nsec-which(uuu==rr)+1,1.9,nsec-which(uuu==cc)+1,lwd=5*trans2[rr,cc]/sum(trans2o[rr,]),
        col=rgb(0,0,0,alpha=ifelse(trans2[rr,cc]>50,1,trans2[rr,cc]/50)))
 }
 @
@@ -1518,22 +1487,89 @@ par(mar=c(.1,.1,.1,.1))
 plot(1,1,xlim=c(0,2),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
 conv <- (nsec+2)/11
 text(1,nsec+1.5,expression(underline(bold(paste(Legend)))))
-text(1,9*conv,'Thickness:\n Percent',cex=0.8)
+text(1,9*conv,'Thickness:\n Percent',cex=0.75)
 text(.5,7.5*conv,'25%')
 text(.5,6.5*conv,'50%')
 text(.5,5.5*conv,'75%')
 arrows(c(1,1,1),c(7.5,6.5,5.5)*conv,c(2,2,2),lwd=5*c(.25,.5,.75))
-text(1,4.2*conv,'Darkness:\n Number',cex=0.8)
+text(1,4.2*conv,'Darkness:\n Number',cex=0.75)
 text(.5,3*conv,'10')
 text(.5,2*conv,'25')
 text(.5,1*conv,'50+')
-arrows(c(1,1,1),c(3,2,1)*conv,c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
+arrows(c(1,1,1),c(3,2,1)*conv,c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)),lwd=2.5)
 
 @
 \end{subfigure}
 \caption{Reassignment transition plot for study year 2.}
 \label{fig:trans2}
 \end{figure}
+
+To address these questions, we focus on the units in the standard
+Algebra I sequence.
+Figures \ref{fig:trans1} and \ref{fig:trans2} give transition plots
+for reassignment in the two study years.
+On the left of each figure, marked ``From,'' are the top ``sending''
+units: the units that students were reassigned \emph{from} at least 30
+times.
+They are numbered according to the order they appear in the standard Algebra I curriculum.
+On the right, under ``To,'' are the top ``receiving'' units: the units
+that students were reassigned \emph{to} at least 30 times.
+For completeness, each of the top two receivers for each sending unit,
+and each of the top two senders for each receiving unit were also included.
+Finally, all of the sending units were also listed on the left, in the
+receiving column.
+All in all, \Sexpr{round(propTotCP1*100)}\% of the first-year reassignments and
+\Sexpr{round(propTotCP1*100)}\% of the second-year reassignments are
+captured in the figures.
+
+The arrows in the plot represent reassignments.
+An arrow from a sending unit to a receiving unit indicates
+reassignment from the former to the latter.
+The thickness of the arrows represents the proportion of reassignments
+originating in the sending unit whose destination was the receiving unit.
+The darkness of the arrows represents the number of such reassignments.
+For instance, in Figure \ref{fig:trans1}, the arrow from
+``4-Quadrant Linear Graphs'' on the left to ``4-Quadrant Linear
+Graphs'' on the right is fairly thick, since
+\Sexpr{round(trans1o['4-Quadrant Linear Graphs','4-Quadrant Linear Graphs']/
+  sum(trans1o['4-Quadrant Linear Graphs',])*100)}\%
+of the reassignments begun in ``4-Quadrant Linear Graphs'' end in the
+same unit.
+Yet it is also fairly faint, since it only represents
+\Sexpr{trans1o['4-Quadrant Linear Graphs','4-Quadrant Linear Graphs']}
+reassignments.
+
+Inspecting the figures shows that the most common pattern is for
+students to be reassigned to the next unit in the curriculum---this pattern comprises 
+\Sexpr{round(sum(diag(trans1o[,-1]))/sum(trans1o)*100)}\% of the reassignments in year 1 and 
+\Sexpr{round(sum(diag(trans2o[,-1]))/sum(trans2o)*100)}\% of those in year2.
+On the other hand, it is rare for students to be reassigned within the same unit 
+(these reassignments account for \Sexpr{round(sum(diag(trans1o))/sum(trans1o)*100)}\% and \Sexpr{round(sum(diag(trans2o))/sum(trans2o)*100)}\% in the two years).
+It is also rare for students to be reassigned to units earlier in the curriculum (comprising 
+\Sexpr{round(sum(trans1o[lower.tri(trans1o)])/sum(trans1o)*100)}\% and
+\Sexpr{round(sum(trans2o[lower.tri(trans2o)])/sum(trans2o)*100)}\%).
+
+The transition plots also reveal some interesting cases worth highlighting.
+In year 1 (Figure \ref{fig:trans1}), students reassigned from the first unit, ``Linear Patterns'', were primarily placed two units ahead, in ``1st Quadrant Linear Graphs,'' skipping ``Unit Conversions,'' perhaps suggesting a disinterest in ``Unit Conversions.'' on the part of the reassigning teachers. 
+Similarly, 
+\Sexpr{trans1o['Ind. Variables in Lin. Mod.','Systems of Lin. Eq.']} students 
+(\Sexpr{round(trans1o['Ind. Variables in Lin. Mod.','Systems of Lin. Eq.']/sum(trans1o['Ind. Variables in Lin. Mod.',])*100)}\%)
+of the students reassigned from the section ``Ind. Variables in Lin. Mod.'' were placed 13 units later in ``Systems of Lin. Eq.''
+and all \Sexpr{trans1o['Quad. Mod. & Area','Exponents']} of students reassigned from ``Quad. Mod. \& Area'' were placed in ``Exponents.''
+This suggests that some teachers may have considered these units, ``Systems of Lin. Eq.'' and ``Exponents'' to contain particularly important material.
+
+Since the total number of reassignments was higher in year 2, the corresponding plot (Figure \ref{fig:trans2}) is larger and more complex. 
+It is also more common for students to be reassigned to units other than the next unit in the sequences.
+This may be partly due to the proliferation of customized curricula. 
+Two units, ``4-Quadrant Linear Graphs'' and ``Lin. Eq. w/ Var's Both Sides,'' were common destinations from a wide variety of earlier units, suggesting a strong interest in those units. 
+The majority (\Sexpr{round(trans2o['Probability','Probability']/sum(trans2o['Probability',])*100)}\%)
+of the students reassigned from ``Probability'' were placed in another section of the same unit, perhaps suggesting problems with some of that unit's sections; in fact, all of the students reassigned within the ``Probability'' unit were reassigned from one its first three sections (of seven).
+Finally, \Sexpr{trans2['Pythagorean Theorem','Product Rule for Exponents']} 
+(\Sexpr{round(trans2['Pythagorean Theorem','Product Rule for Exponents']/sum(trans2o['Pythagorean Theorem',])*100)}\%) of the reassignements from sections in the ``Pythagorean Theorem'' unit ended in the earliear ``Product Rule for Exponents'' sections. 
+
+In sum, the most prevalent pattern was for students to be reassigned to the following unit, suggesting that teachers are mostly interested in helping lagging students progress.
+On the other hand, a number of examples of other patterns---students moving within the same unit, or to units out of sequence---appear as well, suggesting that some teachers may be finely manipulating their students' curricula. 
+
 
 
 \section{Effects of Reassignment}
@@ -1558,14 +1594,208 @@ other reason.
 
 All that said, observational estimates of reassignment's average
 effects can be valuable, if interpreted cautiously.
-They may help guide research
+In the absence of evidence from randomized trials, observational
+studies can help guide intuition, future research, and even---when
+combined with other relevent information and theory---practice.
+
+<<effects,include=FALSE,dependson=c('data','setup')>>=
+cpDat <- data%>%filter(!is.na(status)& status!='final_or_incomplete')%>%
+ group_by(field_id,year,state,section,unit,race,sex,grade,spec_speced,xirt,spec_gifted,
+  spec_esl,frl,pretest,y_yirt,classid2,schoolid2)%>%
+ summarize(status=max(status,na.rm=TRUE),date=max(date),totalTime=sum(total_t1,na.rm=TRUE),
+  ttNA=sum(is.na(total_t1)),nprob=n(),probNA=sum(is.na(Prob1)))%>%ungroup()%>%
+ group_by(field_id,year,state,race,sex,grade,spec_speced,xirt,spec_gifted,spec_esl,frl,pretest,y_yirt,
+  classid2,schoolid2)%>%
+ summarize(nsec=n(),nprob=sum(nprob,na.rm=TRUE),totalTime=sum(totalTime,na.rm=TRUE),
+  timeNA=sum(ttNA>0),probNA=sum(probNA>0),ncp=sum(status=='changed placement'),
+  nprom=sum(status=='promoted'))%>%mutate(gainScore=y_yirt-pretest)%>%droplevels()
 
 
-\subsection{Effects on Subsequent Mastery}
-<<>>=
+
+## mode imputation:
+for(vv in c('race','sex','grade','spec_speced','spec_gifted','spec_esl','frl')){
+    num <- is.numeric(cpDat[[vv]])
+    cpDat[[paste0(vv,'MIS')]] <- is.na(cpDat[[vv]])
+    cpDat[[vv]][is.na(cpDat[[vv]])] <- names(which.max(table(cpDat[[vv]])))
+    if(num) cpDat[[vv]] <- as.numeric(cpDat[[vv]])
+
+}
+
+cpDat$grade <- factor(ifelse(cpDat$grade==9,'9','10+'))
+levels(cpDat$race) <- list(White=c('WHITE NON-HISPANIC','ASIAN / PACIFIC ISLANDER'),Black=c('BLACK NON-HISPANIC','OTHER RACE / MULTI-RACIAL'),Hispanic=c('HISPANIC','AMERICAN INDIAN / ALASKAN NATIVE'))
+
+cpDat <- mutate(cpDat,totalTime=totalTime/3600000,totalTime=ifelse(totalTime<0,NA,totalTime),
+                totalTime=ifelse(totalTime>360,NA,totalTime))
+
+cpDat$ncpCat <- factor(ifelse(cpDat$ncp>=4,'4+',cpDat$ncp))
+cpDat$everCP <- cpDat$ncp>0
+
+exirt <- data[match(cpDat$field_id,data$field_id),grep('Exirt2',names(data))]
+names(exirt) <- gsub('_0','_',names(exirt))
+for(n in names(exirt)) cpDat[[n]] <- exirt[[n]]
+
+@
+<<models,include=FALSE,dependson='effects'>>=
+#### models!!
+## ind var: ncp
+addCovs <- .~.+pretest+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl+frlMIS
+mod1 <- lm(y_yirt~ncp+classid2,data=cpDat)
+mod1.1 <- update(mod1,addCovs)
+
+## ind var: ncpCat
+mod2 <- lm(y_yirt~ncpCat+classid2,data=cpDat)
+mod2.1 <- update(mod2,addCovs)
+
+## ind var: everCP
+mod3 <- lm(y_yirt~everCP+classid2,data=cpDat)
+mod3.1 <- update(mod3,addCovs)
+
+
+miMod <- function(mod){
+  if(inherits(mod,'lm')) CCC <- coef
+  if(inherits(mod,'lmerMod')) CCC <- fixef
+    ests <- NULL
+    covs <- list()
+    for(i in 1:20){
+        formNew <- as.formula(paste0('.~.-pretest+Exirt2_',i))
+        modNew <- update(mod,formNew)
+        ests <- cbind(ests,CCC(modNew))
+        covs[[i]] <- vcov(modNew)
+    }
+    return(list(ests=ests,covs=covs))
+}
+miPool <- function(fitMods){
+    ests <- fitMods$ests
+    covs <- fitMods$covs
+    interest <- grep('CP',rownames(ests),ignore.case=TRUE)
+    SEs <- sqrt(rowMeans(do.call('cbind',lapply(covs,function(cc) diag(as.matrix(cc[interest,interest])))))+
+                1.05*apply(rbind(ests[interest,]),1,var))
+    ests <- rowMeans(rbind(ests[interest,]))
+    cbind(ests,SEs)
+}
+
+mi <- function(mod){
+    miPool(miMod(mod))
+}
+
+adjustedEsts1 <- list()
+for(i in 1:3){
+  mm <- paste0('mod',i)
+  mm1 <- paste0('mod',i,'.1')
+  adjustedEsts1[[mm]] <- mi(get(mm))
+  adjustedEsts1[[mm1]] <- mi(get(mm1))
+}
+@
+<<heterogeneityMods,include=FALSE,dependson='models'>>=
+### heterogeneity
+## year
+cpDat$Year=as.factor(cpDat$year)
+mod4 <- lmer(y_yirt~everCP*Year+state+(1|classid2)+(1|schoolid2),data=cpDat)
+mod4.1 <- update(mod4,addCovs)
+
+## classroom
+mod5 <- lmer(y_yirt~everCP+year+state+(everCP|classid2)+(1|schoolid2),data=cpDat)
+mod5.1 <- update(mod5,addCovs)
 @
 
-\subsection{Effects on Post-Test Scores}
+\begin{figure}
+<<cpYyear,fig.width=6,fig.height=4,dependson='effects'>>=
+levels(cpDat$Year) <- list(`Year 1`='1',`Year 2`='2')
+ggplot(cpDat,aes(ncp,gainScore))+geom_jitter(height = 0,width=.3)+geom_boxplot(aes(group=ncp),alpha=0.5)+geom_smooth(method='loess')+facet_grid(Year~.)+labs(x='# of Reassignments',y='Gain Score (posttest - pretest)') + scale_x_continuous(breaks=seq(0,max(cpDat$ncp)))
+@
+\caption{Students' Gain scores (post-test minus pre-test) versus the number of times the were reassigned over the course of the year (jittered), with a Loess smoother added.}
+\label{fig:cpYyear}
+\end{figure}
+
+\subsection{Average Effects}
+Figure \ref{fig:cpYyear} shows students gain scores---the difference between their post-test and pre-test scores---as a function of the number of times they were reassigned.
+(The number of reassignments was jittered---random noise was added---to avoid overplotting.)
+Overall, the relationship between the two variables is positive.
+Nevertheless, some non-linearity seems to be present, especially in year 2.
+Further, the distribution of the number of reassignments is right-skewed---again, especially in year 2. 
+Care in modeling the number of reassignments, then, is especially important---observations from students reassigned an unusually large number of times can exert undo influence on a regression model and generate misleading results, particularly in the presence of non-monotonic relationships. 
+We settled on three different strategies: first, the variable $R^{bin}$ dichotomizes reassignment---$R^{bin}=0$ for students who were never reassigned, and $R^{bin}=1$ for stundents who were. 
+Next, $R^{cat}$ defines a categorical variable taking the values $R^{cat}=0,1,2,3,4+$ for students who were reassigned 0, 1, 2, 3 or four or more times, respectively. 
+Finally, $R^{num}$ is the raw number of reassignments, which we include for completeness. 
+
+We used linear models to estimate the effect of reassignment, regressing post-test scores on $R^{bin}$, $R^{cat}$, or $R^{num}$ along with fixed effects for classroom, essentially modeling reassignment as randomly assigned within classroom.
+Since this is unlikely to be the case (even approximately), we ran a second set of models including student level covariates: 
+pretest scores,\footnote{These are measured with error, and missing at a relatively high rate (
+\Sexpr{round(mean(is.na(cpDat$xirt))*100)}\%). To account for this, we used regression calibration based on the 20 ``multiple imputations'' used in the original CTAI study, \citet{pane2013effectiveness}.} race, sex, grade, special education and gifted status, English as a second language, and free and reduced-price lunch eligability.
+
+
+\begin{table}
+\begin{tabular}{r|c|c|c|}
+&\multicolumn{3}{c}{Parametrization}\\
+&$R^{bin}$&$R^{cat}$&$R^{num}$\\
+&\makecell[c]{Effect of\\ $\ge 1$ Reassignment}&\makecell[l]{Effect of\\  \# Reassignments:}& \makecell[c]{Effect per\\ Reassignment:}\\
+\hline
+<<effectResults,results='asis',dependson='models'>>=
+## model 3
+cat('\\makecell[r]{No\\\\Covariates}&')
+cat(round(adjustedEsts1[['mod3']][1,'ests'],2),'$\\pm$',round(2*adjustedEsts1[['mod3']][1,'SEs'],2),'&')  
+## model 2
+res <- adjustedEsts1[['mod2']]
+cat('\\makecell[l]{')
+for(rr in 1:(nrow(res)-1)) 
+  cat(rr,':  ',round(res[rr,1],2),'$\\pm$',round(2*res[rr,'SEs'],2),'\\\\')
+cat(nrow(res),'+: ',round(res[nrow(res),1],2),'$\\pm$',round(2*res[nrow(res),'SEs'],2),'}&')
+## model 1
+    cat(round(adjustedEsts1[['mod1']][1,'ests'],2),'$\\pm$',round(2*adjustedEsts1[['mod1']][1,'SEs'],2),'\\\\')
+cat('\n')
+cat('\\hline')
+###################################
+cat('\\makecell[r]{Covariate\\\\ Adjusted}&')
+cat(    round(adjustedEsts1[['mod3.1']][1,'ests'],2),'$\\pm$',round(2*adjustedEsts1[['mod3.1']][1,'SEs'],2),'&')
+## model 2
+cat('\\makecell[l]{')
+res <- adjustedEsts1[['mod2.1']]
+for(rr in 1:(nrow(res)-1)) cat(rr,': ',round(res[rr,1],2),'$\\pm$',round(2*res[rr,'SEs'],2),'\\\\')
+cat(nrow(res),'+: ',round(res[nrow(res),1],2),'$\\pm$',round(2*res[nrow(res),'SEs'],2),'}&')
+## model 1
+cat(
+    round(adjustedEsts1[['mod1.1']][1,'ests'],2),'$\\pm$',round(2*adjustedEsts1[['mod1.1']][1,'SEs'],2),'\\\\')
+
+@
+\hline
+\end{tabular}
+\caption{Estimates of effects of reassignment on posttests, with 95\% margins of error.}
+\label{effectResults}
+\end{table}
+
+The results are reported in Table \ref{effectResults}.
+All the effect estimates are negative, indicating that reassigning students may hurt their algebra learning.
+The estimated effects decrease in magnitude for three or four reassignments, but these estimates are very noisy---very few students were reassigned more than two times. 
+The magnitudes of the effects are rather large: \citet{pane2013effectiveness} reported an effect, in year 2, of about 0.2; the estimated effect of at least one reassignment is \Sexpr{round(adjustedEsts1[['mod3.1']][1,'ests']*100)}\% of that.
+
+But what of unmeasured confounding?
+\citet{hhh} suggest a method of estimating the sensitivity of a regression to an omitted confounder based on benchmarking from observed confounders.
+In order to confound the causal relationship between reassignment and post-tests, a confounder would have to predict both.
+Roughly speaking, the idea is to widen the confidence interval from a causal linear model to account for the possibility of a hypothetical unmeasured confounder that predicts reassignment and posttests to the same extent as one of the observed covariates.
+These ``sensitivity intervals'' account for uncertainty from two sources: random error, and systematic error due to the omssion of a confounder.
+As is typical, the pretest is our most important measured covariate, both in terms of its prediction of reassignment and of post-test scores.
+The sensitivity interval for the effect of being reassigned at least once on post-test scores, 
+\begin{table}
+\begin{tabular}{rrl}
+Benchmark&\multicolumn{2}{c}{Sensitivity Interval}\\
+<<sens,dependson='models'>>=
+source('hhh.r')
+X <- as.data.frame(model.matrix(mod3.1)[,-1])
+Ts <- Tz(X = X,treatment = 'everCPTRUE')
+Rhos <- vapply(names(X)[-grep('classid2',names(X))],
+               function(nn) partialCor(cpDat$y_yirt,X,nn),1)[-1]^2
+se <- adjustedEsts1[['mod3.1']][1,2]
+cat(names(Rhos)[1],'&',round(adjustedEsts1[['mod3.1']][1,'ests'],2),'&$\\pm$',
+    round(se*MEmult(abs(Ts[names(Rhos)[1]]),R = Rhos[1],df = mod3.1$df.residual,1.96),2),'\\\\')
+for(i in 2:length(Rhos))
+  cat(gsub('_','',names(Rhos)[i]),'&&$\\pm$',round(se*MEmult(T=abs(Ts[names(Rhos)[i]]),R = Rhos[i],df = mod3.1$df.residual,1.96),2),'\\\\')
+@
+\end{tabular}
+\caption{Sensitivity intervals for the $R^{bin}$ model.}
+\label{tab:sens}
+\end{table}
+
+
 
 \section{Notes}
 [[don't forget to include these]]

@@ -1,5 +1,7 @@
 library(lme4)
 library(dplyr)
+library(lubridate)
+library(sandwich)
 
 load('cpPaper.RData')
 
@@ -9,6 +11,9 @@ secOrder <- data%>%filter(is.finite(status) & is.finite(timestamp) )%>%group_by(
 
 secOrder$cp <- secOrder$status=='changed placement'
 secOrder$mast <- secOrder$status=='graduated'
+secOrder$month <- months(secOrder$date)
+
+secOrder$prevCP <- secOrder$prevStatus=='changed placement'
 
 cpdStuds <- unique(data$field_id[!is.na(data$status) & data$status=='changed placement'])
 
@@ -23,47 +28,36 @@ mnDat25 <- subset(mnDat,mnDat$secUnit%in%names(table(mnDat$secUnit))[table(mnDat
 mnDat50 <- subset(mnDat,mnDat$secUnit%in%names(table(mnDat$secUnit))[table(mnDat$secUnit)>50])
 mnDat100 <- subset(mnDat,mnDat$secUnit%in%names(table(mnDat$secUnit))[table(mnDat$secUnit)>100])
 
-mn1ols25 <- lm(mast~prevStatus+as.factor(field_id)+as.factor(secUnit),data=mnDat25,subset=year==1)
-mn1ols50 <- lm(mast~prevStatus+as.factor(field_id)+as.factor(secUnit),data=mnDat50,subset=year==1)
-mn1ols100 <- lm(mast~prevStatus+as.factor(field_id)+as.factor(secUnit),data=mnDat100,subset=year==1)
+mn1ols25 <- lm(mast~prevCP+as.factor(field_id)+as.factor(secUnit),data=mnDat25,subset=year==1)
+mn1ols50 <- lm(mast~prevCP+as.factor(field_id)+as.factor(secUnit),data=mnDat50,subset=year==1)
+mn1ols100 <- lm(mast~prevCP+as.factor(field_id)+as.factor(secUnit),data=mnDat100,subset=year==1)
 
 print(head(coef(mn1ols25)))
 print(head(coef(mn1ols50)))
 print(head(coef(mn1ols100)))
 
-mn2ols25 <- lm(mast~prevStatus+as.factor(field_id)+as.factor(secUnit),data=mnDat25,subset=year==2)
+mn1ols25.1 <- update(mn1ols25,.~.+month)
 
+mn2ols25 <- lm(mast~prevCP+as.factor(field_id)+as.factor(secUnit),data=mnDat25,subset=year==2)
+mn2ols25.1 <- update(mn2ols25,.~.+month)
+
+m1ols25Split <- lm(mast~as.factor(prevStatus)+as.factor(field_id)+as.factor(secUnit),data=mnDat25,subset=year==1)
+m2ols25Split <- lm(mast~as.factor(prevStatus)+as.factor(field_id)+as.factor(secUnit),data=mnDat25,subset=year==2)
+m1ols25Split.1 <- update(m1ols25Split,.~.+month)
+m2ols25Split.1 <- update(m2ols25Split,.~.+month)
 
 library(sandwich)
 mn1vcov <- vcovHC(mn1ols25,'HC')
 mn2vcov <- vcovHC(mn2ols25,'HC')
-
-
-### what if remove cp?
-mn1olsNoCP <- update(mn1ols25,subset=status!='changed placement')
-mn2olsNoCP <- update(mn2ols25,subset=status!='changed placement')
-
-mn1vcovNoCP <- vcovHC(mn1olsNoCP,'HC')
-mn2vcovNoCP <- vcovHC(mn2olsNoCP,'HC')
-
-save(mn1ols25,mn2ols25,mn1vcov,mn2vcov,mn1olsNoCP,mn2olsNoCP,mn1vcovNoCP,mn2vocvNoCP,file='mastNextOLS.RData')
-
-mn1ols <- lm(mast~prevStatus+as.factor(field_id)+as.factor(secUnit),data=mnDat,subset=year==1)
-mn2ols <- lm(mast~prevStatus+as.factor(field_id)+as.factor(secUnit),data=mnDat,subset=year==2)
-
-
-
-mn1 <- glm(mast~prevStatus+as.factor(field_id)+as.factor(secUnit),data=mnDat,family=binomial,subset=year==1)
+mn1vcov.1 <- vcovHC(mn1ols25.1,'HC')
+mn2vcov.1 <- vcovHC(mn2ols25.1,'HC')
+m1Splitvcov <- vcovHC(m1ols25Split,'HC')
+m2Splitvcov <- vcovHC(m2ols25Split,'HC')
+m1Splitvcov.1 <- vcovHC(m1ols25Split.1,'HC')
+m2Splitvcov.1 <- vcovHC(m2ols25Split.1,'HC')
 
 
 
 
-mn2 <- glm(mast~prevStatus+as.factor(field_id)+as.factor(secUnit),data=mnDat,family=binomial,subset=year==2)
-
-mastNext <- glmer(mast~(1|field_id/classid2)+(1|section/unit)+as.factor(prevStatus),data=mnDat,family=binomial)
-
-mastNext2 <- update(mastNext,data=subset(mnDat,status!='changed placement' & status!='final_or_incomplete'))
-
-mnDat$month <- months(mnDat$date)
-
-mastNext3 <- update(mastNext,.~.+Year+month+schoolid2)
+save(list=ls(),
+     file='mastNextols.RData')
