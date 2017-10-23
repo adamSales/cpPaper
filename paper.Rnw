@@ -35,7 +35,7 @@
 
 
 \title{Mastery Learning in Practice:\\
-A Descriptive Analysis of Data from the  Cognitive Tutor Algebra I Effectiveness Trial}
+A (Mostly) Descriptive Analysis Based on the Cognitive Tutor Algebra I Effectiveness Trial}
 
 \author{Anita Israni \and Adam C Sales \and John F Pane}
 
@@ -72,7 +72,7 @@ addOverallState <- function(dat){
 
 
 <<data,include=FALSE>>=
-if(file.info('cpPaper.RData')$mtime>file.info('dataMerge.r')$mtime){
+if('cpPaper.RData'%in%list.files() & file.info('cpPaper.RData')$mtime>file.info('dataMerge.r')$mtime){
     load('cpPaper.RData')
 } else source('dataMerge.r')
 @
@@ -92,22 +92,119 @@ if(file.info('dataMerge.r')$mtime>file.info(paste0('cache/',dataCache))$mtime){
 \maketitle
 
 \section{Introduction}
-Mastery learning sits at the foundation of intelligent tutoring systems. The philosophy of mastery learning assumes a well-structured curriculum, and posits that students progress within the curriculum as they master its skills. The Cognitive Tutor Algebra I (CTAI) system, developed by Carnegie Learning, Inc., is one of the best studied and best regarded examples of modern educational software. It is a blended learning system for teaching algebraic concepts and principles, to middle and high school students, including both textbook materials and software. The software component of the curriculum allows students to progress at their own pace and receive individualized feedback on their performance. A large-scale randomized effectiveness trial conducted by the RAND corporation showed that, in some circumstances, CTAI boosts students’ scores on an Algebra-I post-test by about one fifth of a standard deviation (Pane, et al.  2013). CTAI’s success in this experiment would seem to vindicate its pedagogy: mastery learning, and the algebra I curriculum on which it is based.
+Mastery learning sits at the foundation of intelligent tutoring
+systems \citep[e.g.][]{corbett2001cognitive,wenger2014artificial}.
+The philosophy of mastery learning assumes a well-structured
+curriculum, and posits that students progress within the curriculum as
+they master its skills
+\citep{bloom1968learning,kulik1990effectiveness}. The Cognitive Tutor
+Algebra I (CTAI) system, developed by Carnegie Learning, Inc., is one of the best studied and best regarded examples of modern educational software. It is a blended learning system for teaching algebraic concepts and principles, to middle and high school students, including both textbook materials and software. The software component of the curriculum allows students to progress at their own pace and receive individualized feedback on their performance. A large-scale randomized effectiveness trial conducted by the RAND corporation showed that, in some circumstances, CTAI boosts students' scores on an Algebra-I posttest by about one fifth of a standard deviation \citep{pane2014effectiveness}. CTAI's success in this experiment would seem to vindicate its pedagogy: mastery learning, and the algebra I curriculum on which it is based.
 
-However, the theory underlying CTAI does not always determine its use. To be sure, the software has a standard set of algebra topics, divided into units and further into sections; and a standard sequence for presenting them. But this precise curriculum is not mandatory. At the request of educators, it can be customized by altering what units or sections are included (including, possibly, material from a different standard curriculum such as geometry), as well as their sequence, to conform to local or state standards. Further, teachers have the option of moving students within the curriculum, regardless of the software’s estimate of their skill mastery.
+However, the theory underlying CTAI does not always determine its use. To be sure, the software has a standard set of algebra topics, divided into units and further into sections; and a standard sequence for presenting them. But this precise curriculum is not mandatory. At the request of educators, it can be customized by altering what units or sections are included (including, possibly, material from a different standard curriculum such as geometry), as well as their sequence, to conform to local or state standards. Further, teachers have the option of moving students within the curriculum, regardless of the software's estimate of their skill mastery.
 
-This article examines teachers’ and schools’ non-adherence to the standard, mastery-based CTAI curriculum, using data from the RAND study, a seven-state randomized controlled trial of CTAI in high schools and middle schools. The study found a significant positive effect of CTAI in high schools, during their second year of implementation but not the first. Students in the treatment group of the study were enrolled in one or more of the standard or customized curriculum during their participation in the study, and the software logged aspects of their usage, including time spent, sections encountered, and whether the software judged the students to have mastered the sections. Both Carnegie Learning and the researchers running the study restricted their software support and oversight to what is typically provided outside of an experimental context. Thus, the data from the study reflect typical software usage. Secondary data analyses used principal stratification to show that students who attempted more sections experienced larger treatment effects, and students who had high or low assistance levels, as opposed to an average level, experienced smaller treatment effects (Sales \& Pane, 2015, Sales et al. 2016).
+This article examines teachers' and schools' non-adherence to the standard, mastery-based CTAI curriculum, using data from the RAND study, a seven-state randomized controlled trial of CTAI in high schools and middle schools. The study found a significant positive effect of CTAI in high schools, during their second year of implementation but not the first. Students in the treatment group of the study were enrolled in one or more of the standard or customized curriculum during their participation in the study, and the software logged aspects of their usage, including time spent, sections encountered, and whether the software judged the students to have mastered the sections. Both Carnegie Learning and the researchers running the study restricted their software support and oversight to what is typically provided outside of an experimental context. Thus, the data from the study reflect typical software usage. Secondary data analyses used principal stratification to show that students who attempted more sections experienced larger treatment effects, and students who had high or low assistance levels, as opposed to an average level, experienced smaller treatment effects \citep{sales2015exploring,sales2016student}.
+\citet{sales2017role} found that students more likely to master worked
+sections of the CTAI software may experience \emph{smaller} effects
+than those less likely to achieve mastery, casting doubt on the role
+of mastery learning as a mechanism for the treatment effect.
 
-Here we extend the previous findings to investigate patterns of change in the sequence of topics presented to students. As noted earlier, schools could use a standard curriculum, a customized curriculum, or switch from one curriculum to another. Each curriculum consisted of a sequence of units, which was comprised of a sequence of sections. For example, the standard CTAI Algebra I curriculum in Year 1 comprised of 40 units covering approximately 170 sections. The
-number of sections within each unit varied.
-This study attempts to elucidate teachers' goals in reassigning students. One hypothesis is the need for teachers push ahead students who were falling behind, i.e. to reassign them from sections on which they were struggling, to allow them catch up with the rest of the class. Another hypothesis is that teachers sought to push students past easier sections to begin working on more relevant topics for them. A third hypothesis is that teachers needed to cover certain topics in preparation for an upcoming state exams, and might have reassigned groups of students all at the same time to cover topics that might otherwise not have been covered. This hypothesis may lead to an increase in reassignments as the exam approaches. Overall, understanding patterns of reassignment is the focus of this paper, along with insights into how teachers were using the software component of CTAI.
+Here we extend the previous findings to describe, in detail, the ways
+in which schools, teachers, and students violate mastery learning.
+We will begin with short discussions of the RAND effectiveness trial and the usage
+data it produced.
+Sections \ref{sec:curricula}---\ref{sec:order} will describe overall
+patterns of usage.
+First, we will discuss standard and customized CTAI curricula used in the study (\ref{sec:curricula}).
+Next, in Section\ref{sec:usage}, we will describe patterns in the amount CTAI usage, showing that
+it varied widely between states, between years, and between students.
+In particular, the amount of usage decreased from years 1 to
+2---though more in some states than others.
+Then in section \ref{sec:order} we will describe how the amount of usage
+changed---which units of the CTAI curriculum were worked more and less
+from years 1 to 2---and find that order in which students worked
+CTAI's units varied across years. We show that this change is due
+mostly, but not completely, to the presence of customized curricula in
+year 2.
 
-\section{The RAND Effectiveness Trial}
-The study to measure the effectiveness of CTAI included 7 states, 73 high schools, and 74 middle schools with nearly 18,700 high school students and 6,800 middle school students. Schools were enrolled in a total of 52 school districts that were distributed between urban, suburban, and rural areas. Schools were matched on a set of covariates, and then randomly assigned to the treatment or control group. Schools in the control group continued with their current algebra curriculum, and schools in the treatment group used Carnegie Learning’s curriculum which includes textbook materials as well as CTAI. Each school participated for two years, with a different cohort of students taking algebra the second year (with a small fraction of students present in the study both years because they repeated algebra). It should be noted that this study did not include statewide implementations; the study results cannot be generalized to all schools within the state. In some states, one large school district participated, while in other states, a set of smaller school districts participated. The states included Alabama (AL), Connecticut (CT), Kentucky (KY), Louisiana (LA), Michigan (MI), New Jersey (NJ), and Texas (TX). Each state participated in both the middle school and high school arms of the study, except AL, which participated only in the middle school arm. The current study focuses on high school students only, due to the large number of students in this cohort and the significant positive treatment effect previously found for this cohort. All discussion that follows refers exclusively to the high school data.
+In Section \ref{sec:mastery} we will describe patterns of mastery in general,
+and in Section \ref{sec:cp} we will delve deeply into ``reassignment'': the process in which a
+teacher moves a student out of a section he or she has not (yet)
+mastered into a new section.
+In particular, we will attempt to elucidate teachers' goals in reassigning students. One hypothesis is the need for teachers push ahead students who were falling behind, i.e. to reassign them from sections on which they were struggling, to allow them catch up with the rest of the class. Another hypothesis is that teachers sought to push students past easier sections to begin working on more relevant topics for them. A third hypothesis is that teachers needed to cover certain topics in preparation for an upcoming state exams, and might have reassigned groups of students all at the same time to cover topics that might otherwise not have been covered. This hypothesis may lead to an increase in reassignments as the exam approaches.
+We find evidence of all three motivations for reassignment, varying
+across classrooms, schools, states, and study  years.
 
-There are some limitations to the available data for this study. In particular, the developer was able to provide the intended sequence of units/sections for only a subset of the customized curricula. Data from some schools, and some students within schools, were missing either because the log files were not retrievable, or because of an imperfect ability to link log data to other study data files. In addition, there was missing completion dates for many customized curricula; making it difficult to analyze the customized curricula when any sort of date was needed, such as time to complete a section.
+Finally, in Section \ref{sec:effects} will will give
+quasi-experimental estimates of the effects of reassignment on
+students' posttest scores.
+We find that reassignment probably decreases student learning,
+though the effects vary widely across classrooms.
+Section \ref{sec:discussion} will conclude.
 
-\section{Standard and Customized Curricula}
+\section{The RAND Effectiveness Trial}\label{sec:RANDtrial}
+The study to measure the effectiveness of CTAI included 7 states, 73
+high schools, and 74 middle schools with nearly 18,700 high school
+students and 6,800 middle school students. Schools were enrolled in a
+total of 52 school districts that were distributed between urban,
+suburban, and rural areas. Schools were matched on a set of
+covariates, and then randomly assigned to the treatment or control
+group. Schools in the control group continued with their current
+algebra curriculum, and schools in the treatment group used Carnegie
+Learning's curriculum which includes textbook materials as well as
+CTAI. Each school participated for two years, with a different cohort
+of students taking algebra the second year (with a small fraction of
+students present in the study both years because they repeated
+algebra). It should be noted that this study did not include statewide
+implementations; the study results cannot be generalized to all
+schools within the state. In some states, one large school district
+participated, while in other states, a set of smaller school districts
+participated. The states included Alabama (AL), Connecticut (CT),
+Kentucky (KY), Louisiana (LA), Michigan (MI), New Jersey (NJ), and
+Texas (TX). Each state participated in both the middle school and high
+school arms of the study, except AL, which participated only in the
+middle school arm. The current study focuses on high school students
+only. %, due to the large number of students in this cohort and the
+% significant positive treatment effect previously found for this
+% cohort. All discussion that follows refers exclusively to the high
+% school data.
+
+There are some limitations to the available data for this study.
+Log data from some schools, and some students within schools, were
+missing either because the log files were not retrievable, or because
+of an imperfect ability to link log data to other study data files.
+For this reason, this study uses only data from on the
+\Sexpr{n_distinct(data[['schoolid2']])} schools for which at least 80\%
+students in both study years appear in the log data file.
+This sample includes \Sexpr{n_distinct(data[['field_id']])} students, around
+\Sexpr{round(n_distinct(data[['field_id']])/n_distinct(stud[['field_id']]))*100}\%
+of the total high-school sample.
+Table \ref{tab:nByState} gives the number of students in each state of
+the sample in each year.
+The states in the table are ordered by the total number of students
+they represent in the sample; they will appear in this order in
+all of the forthcoming tables and figures.
+Some figures will only show data from a subset of states; since so few
+students were in New Jersey, it will be excluded from almost all
+state-by-state comparisons (but included analyses that pool across states).
+<<nByState,dependson='data'>>=
+xtable(data%>%group_by(state,year)%>%summarize(n=n_distinct(field_id))%>%dcast(year~state),
+       caption='Numbers of students in the sample by state and study year',label='tab:nByState')
+@
+
+In this smaller sample, \Sexpr{sum(data[['obsUsage']]==FALSE)}
+students do not appear in the log data; they may have not used the CTAI
+software at all, or may have been excluded from the log data for other
+reasons.
+Since we don't know which is true, we exclude these students from most
+analyses.
+
+It is likely that some usage data were missing, even for students who
+appear in the usage dataset.
+However, it is impossible to know in which cases these data were
+missing or why; for the most part, we ignore this problem, but it
+should be kept in mind nonetheless.
+
+\section{Standard and Customized Curricula}\label{sec:curricula}
 
 \begin{figure}
   \centering
@@ -163,14 +260,14 @@ ggplot(bbb,aes(Yr,n,fill=Curriculum,alpha=overall))+geom_col()+facet_grid(~state
 \label{fig:curricula}
 \end{figure}
 
-Students' automatic progress throught the Cognitive Tutor (CT) software is governed by
+Students' automatic progress through the Cognitive Tutor (CT) software is governed by
 curricula---sequences of sections and units embedded in the software.
 Without external meddling, the curriculum a student works on
 determines what section he or she will be directed towards next after
 mastering (or exhausting the problems) from a previous section.
 In the CTAI effectiveness trial, the most common curriculum was,
 naturally, Algebra I.
-This came with three closely related varients, due to software releases.
+This came with three closely related variants, due to software releases.
 Students requiring more remediation were able to work on a less
 advanced curriculum, called ``Bridge to Algebra,'' and more advanced
 students could work on Algebra II or Geometry.
@@ -193,7 +290,7 @@ Michigan and Louisiana.
 Secondly, note the rise in ``customized curricula'' in year 2 in
 Texas, Kentucky, and Michigan, the three states with the most students
 in our dataset.
-In particular, Texas shifted almost entirely to customized curriclua
+In particular, Texas shifted almost entirely to customized curricula
 from years 1 to 2.
 
 
@@ -225,7 +322,7 @@ throughout the entire year.  In TX mostly, with some instances in MI,
 there were teachers who exclusively used customized curricula the
 whole year.
 
-\section{Student Usage Across States and Years}
+\section{Student Usage Across States and Years}\label{sec:usage}
 
 <<usageMedians,dependson=c('data','setup'),results='asis'>>=
 secByStud <- data%>%group_by(state,Yr,field_id) %>% summarize(numSec=n_distinct(section,na.rm=TRUE),
@@ -256,7 +353,7 @@ secByStud2 <-
   ungroup
 
 
-tab <- secByStud%>%group_by(Yr)%>%select(time,nprob,numSec,numUnit)%>%summarize_all(median,na.rm=TRUE)
+tab <- ungroup(secByStud)%>%group_by(Yr)%>%dplyr::select(time,nprob,numSec,numUnit)%>%summarize_all(median,na.rm=TRUE)
 tab$Yr <- NULL
 tab <- as.data.frame(tab)
 rownames(tab) <- c('Year 1','Year 2')
@@ -266,7 +363,7 @@ xtable(tab,caption='Median numbers of hours, problems, sections, and units worke
 @
 
 
-Table \ref{tab:tab:medUsage} shows the median numbers of hours,
+Table \ref{tab:medUsage} shows the median numbers of hours,
 problems, sections, and units worked on by each student in the dataset
 in the two years of the study.
 Apparently, usage decreased markedly in the second year: the median
@@ -343,7 +440,7 @@ Kentucky, Louisiana, and Michigan.
 Not every state reduced its usage from years 1 to 2---while students
 in Texas, Kentucky and New Jersey used the software less in the second
 year than in the first, students in Michigan, Louisiana, and
-Connectuct increased their usage.
+Connecticut increased their usage.
 
 Overall, usage varied a bit more in year 2 than in year
 1---the median absolute deviation of time spent was \Sexpr{round(mad(secByStud[['time']][secByStud[['Yr']]=='Yr 1'],na.rm=TRUE,constant=1),1)} hours in the first year, compared to \Sexpr{round(mad(secByStud[['time']][secByStud[['Yr']]=='Yr 2'],na.rm=TRUE,constant=1),1)} in  the second year.
@@ -364,14 +461,14 @@ slightly wider range of topics.
 Figure \ref{fig:unitsByStud} shows boxplots of the numbers of units
 worked by state and year.
 The geographic variation in units worked mirrors the pattern in Figure
-\ref{fig:timeByStud}, with more usage in Kentudky, Michigan, and
+\ref{fig:timeByStud}, with more usage in Kentucky, Michigan, and
 Louisiana but less in Texas, Connecticut, and New Jersey.
 However, in every state the median Year 2 student worked at least as
 many different units as the median Year 1 student.
 Variation in the number of units worked also increased slightly
 from years 1 to 2---the interquartile range increased in every state
 except for Kentucky, where a decrease in IQR was accompanied by an
-incrase in the number of outliers.
+increase in the number of outliers.
 
 
 
@@ -404,19 +501,20 @@ slightly wider range of topics, and varied somewhat more in their usage.
 \begin{comment}
 Of course, more worked sections does not necessarily mean better worked sections. For instance, students might attempt fewer sections in year two, but graduate a higher percentage. Thus we investigated whether, on average, there were more graduated sections per students the second year, and how this related to whether they were enrolled in the standard versus customized curricula. Overall, the number of graduated sections per student increased in Year 2. The number of graduated sections per student was 17.94 in Year 1 and 25.66 in Year 2 in standard curricula. However, the customized curricula had fewer average graduated sections per student enrolled compared to the standard curricula; these numbers were 5.64 in Year 1 and 11.47 in Year 2. The percentages of average graduated sections to the average total worked sections were: 33.33% in Year 1 and 48.92% in Year 2 in the standard curricula, and 57.55% in Year 2 for the customized curricula. The average number of promoted sections per student also increased from Year 1 to Year 2, though only slightly. In Year 1, the average number of promotions were 1.20 for the customized curricula versus 3.64 for the standard curricula; in Year 2, those numbers were 2.20 and 4.95, respectively.
 
-We also evaluated the time spent per section across different curricula and states.  Some records were omitted from this analysis: sections missing information on date of completion, as well as each student’s last section attempted because there is no completion date recorded for those sections. As presented in Figures 2 and 3 for Year 1 and 2, respectively, students in NJ increased the time spent per section from Year 1 to Year 2; however, there were relatively few students in the study from NJ. From Figure 1, it was shown that CT and TX completed, on average, fewer sections per student. From the information presented in Figures 2 and 3, these states spent the highest average number of days per section. TX, with the largest enrollment of students and the greatest use of customized curricula in Year 2, had students spending slightly more days completing sections in customized curricula relative to the standard curricula.
+We also evaluated the time spent per section across different curricula and states.  Some records were omitted from this analysis: sections missing information on date of completion, as well as each student's last section attempted because there is no completion date recorded for those sections. As presented in Figures 2 and 3 for Year 1 and 2, respectively, students in NJ increased the time spent per section from Year 1 to Year 2; however, there were relatively few students in the study from NJ. From Figure 1, it was shown that CT and TX completed, on average, fewer sections per student. From the information presented in Figures 2 and 3, these states spent the highest average number of days per section. TX, with the largest enrollment of students and the greatest use of customized curricula in Year 2, had students spending slightly more days completing sections in customized curricula relative to the standard curricula.
 
-Figures 4 and 5 present information for only sections that were “graduated” by students, that is, cases in which a student was judged by the software to have mastered the material in the section. Results are similar to the data presented in Figures 2 and 3. However, in Year 2, TX students in customized curricula spent fewer days on a section they mastered, compared to the time TX students spent mastering sections in the standard curricula. This difference is also seen in KY and LA. If customized curriculum are more aligned with teachers’ instruction, graduating from a section may require fewer days than sections in the standard curricula, possibly because students are working on the same topics in class as they are in the software. Figures 4 and 5 also show that, on average, CT and TX spent more days graduating from sections, regardless whether the section was part of a standard curricula or customized curricula. One explanation for the longer time periods in these states may be due to a teacher’s use of the software simultaneously with the textbook instruction. In this case, the teachers could have switched back-and-forth as they instructed, hence extending the time worked by their students. For the states with shorter time periods, teachers may have followed a more sequential process where they first completed one component, e.g. textbook material, and then allowed students to focus on and complete the second component, e.g. software.
+Figures 4 and 5 present information for only sections that were mastered by students, that is, cases in which a student was judged by the software to have mastered the material in the section. Results are similar to the data presented in Figures 2 and 3. However, in Year 2, TX students in customized curricula spent fewer days on a section they mastered, compared to the time TX students spent mastering sections in the standard curricula. This difference is also seen in KY and LA. If customized curriculum are more aligned with teachers' instruction, graduating from a section may require fewer days than sections in the standard curricula, possibly because students are working on the same topics in class as they are in the software. Figures 4 and 5 also show that, on average, CT and TX spent more days graduating from sections, regardless whether the section was part of a standard curricula or customized curricula. One explanation for the longer time periods in these states may be due to a teacher's use of the software simultaneously with the textbook instruction. In this case, the teachers could have switched back-and-forth as they instructed, hence extending the time worked by their students. For the states with shorter time periods, teachers may have followed a more sequential process where they first completed one component, e.g. textbook material, and then allowed students to focus on and complete the second component, e.g. software.
 \end{comment}
 
 
-\section{Working Units in Order---Or Not}
+\section{Working Units in Order---Or Not}\label{sec:order}
 
-Overally, students used CT less in the second year than in the
+Overall, students used CT less in the second year than in the
 first.
 How was this difference distributed between CTAI units?
 
 \begin{figure}
+  \centering
 <<whichUnits,fig.height=4,fig.width=6,dependson=c('data','setup')>>=
 
 curricula <- read.csv('~/Box Sync/CT/data/sectionLevelUsageData/RAND_study_curricula.csv',stringsAsFactors=FALSE)
@@ -463,7 +561,7 @@ usage data who worked each section from the standard CTAI curriculum.
 The units are ordered, from left to right, as the are prescribed in
 the standard CTAI curriculum.
 
-In year 1, the curve is almost monontonically decreasing, as one would
+In year 1, the curve is almost monotonically decreasing, as one would
 expect if students adhered to the curriculum.
 Students varied in how many units they worked---with the variation due
 to both student ability and the amount of time allocated to CTAI
@@ -477,17 +575,17 @@ In contrast, in year 2 students were much more likely to buck the
 standard unit order.
 For instance, Figure \ref{fig:unitsWorked} suggests that students
 skipped ``Unit Conversions'' and ``1 step Lin. Eq.'' for ``1st
-Quadrent Linear Graphs'' and ``Ind. Variables in Lin. Mod.''
+Quadrant Linear Graphs'' and ``Ind. Variables in Lin. Mod.''
 Both of the latter sections were worked by a greater proportion of
 students than the former sections that preceded them in the CTAI
 curriculum.
 Most strikingly, ``Lin. Eq. w/ Var's Both Sides'' was worked by a
 greater proportion of students in Year 2 than in Year 1, and by a
 greater proportion of students than any of the previous six sections.
-Presumeably teachers and administrators wanted students to focus on
+Presumably teachers and administrators wanted students to focus on
 that unit, perhaps because they found it to be particularly effective,
 because students tend to struggle with its main topic, or because its
-topic may figure prominantly in an upcoming standardized test.
+topic may figure prominently in an upcoming standardized test.
 
 \begin{figure}
   \centering
@@ -509,7 +607,7 @@ ggplot(unitLevelCust,aes(x=Unit,y=perWorked,color=cust,group=cust))+geom_point()
   least one problem from each unit in the Algebra I curriculum. The
   units are arranged in order for the standard curriculum. Students
   are divided between those attending schools using primarily a customized
-  curriculum and those using primariy the standard Algebra I curriculum.}
+  curriculum and those using primarily the standard Algebra I curriculum.}
 \label{fig:unitsWorkedCust}
 \end{figure}
 
@@ -533,7 +631,7 @@ Linear Graphs'' and ``Exponents'' than worked the preceding sections;
 this suggests that some teachers used the reassignment tool to
 prioritize particular topics.
 Of course, this may have occurred in schools with customized
-curriculua as well---a possibility we will discuss in the next
+curricula as well---a possibility we will discuss in the next
 section.
 
 \begin{figure}
@@ -577,7 +675,7 @@ prioritize some of the same units, for instance, ``Linear Patterns,''
 These topics might be emphasized on Texas standardized tests.
 On the other hand, there was also variance between schools.
 For instance, one school prioritized units ``2 Step Lin. Eq.''
-and ``4−Quadrant Linear Graphs'' while nearly eliminating ``Linear Patterns.''
+and ``4-Quadrant Linear Graphs'' while nearly eliminating ``Linear Patterns.''
 
 Between-school variation is evident in the other states, as well.
 In four of the five Kentucky schools, nearly every student worked on
@@ -598,7 +696,7 @@ year of the study, when CTAI was effective, than in the first year,
 when it wasn't, suggests that the standard curriculum may play a
 smaller role than one might otherwise imagine.
 
-\section{Mastering the Material---Or Not}
+\section{Mastering the Material---Or Not}\label{sec:mastery}
 The central idea behind mastery learning is that students progress
 through the curriculum as they master skills.
 In the context of CT, skills are clustered within sections, which are
@@ -615,10 +713,10 @@ software-controlled sequencing, students ideally spend the time
 necessary to learn the material of a section, are judged by the
 software to have mastered the material, and then ``graduate'' to the
 next section. Students who exhaust a section's material without
-mastering its skills are “promoted” to the next section.
+mastering its skills are ``promoted'' to the next section.
 Students left uninterrupted follow the sequence of topics defined by
 their curriculum, ideally graduating from topics by showing mastery.
-However, teachers could modify a student’s path within the curriculum.
+However, teachers could modify a student's path within the curriculum.
 They could ``reassign'' students from their current sections to other
 sections earlier or later in the intended sequence, including sections
 they had worked on previously.
@@ -657,9 +755,10 @@ levels(statusStateYr$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='p
 \end{figure}
 
 \begin{table}
- \begin{tabular}{rllllll|llllll}
+  \centering
+ \begin{tabular}{rllllll}%|llllll}
 
-&   \multicolumn{6}{c}{Year 1}&\multicolumn{6}{c}{Year 2}\\
+&   \multicolumn{6}{c}{Year 1}\\%&\multicolumn{6}{c}{Year 2}\\
 <<statusTab,dependson='overallStatus',results='asis'>>=
 statusStateYr2 <- addOverallState(statusOverall)
 statusStateYr2a <- statusStateYr2%>%group_by(state,Yr)%>%
@@ -677,21 +776,26 @@ levels(statusStateYr2b$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted=
 
 tab1 <- dcast(subset(statusStateYr2a,Yr=='Yr 1'&state!='NJ'),variable~state)
 tab2 <- dcast(subset(statusStateYr2a,Yr=='Yr 2'&state!='NJ'),variable~state)
-tab <- cbind(tab1,tab2[-1])
+#tab <- cbind(tab1,tab2[-1])
 
 tab1b <- dcast(subset(statusStateYr2b,Yr=='Yr 1'&state!='NJ'),variable~state)
 tab2b <- dcast(subset(statusStateYr2b,Yr=='Yr 2'&state!='NJ'),variable~state)
 
 
-tab$variable <- as.character(tab$variable)
+tab1$variable <- as.character(tab1$variable)
+tab2$variable <- as.character(tab2$variable)
 cat('&')
-cat(names(tab)[-1],sep='&')
+cat(names(tab1)[-1],sep='&')
 cat('\\\\')
-for(i in 1:nrow(tab)){
-    cat(tab[i,1],round(unlist(tab[i,-1])),sep='&')
+for(i in 1:nrow(tab1)){
+    cat(tab1[i,1],round(unlist(tab1[i,-1])),sep='&')
     cat('\\\\')
 }
-
+cat('&\\multicolumn{6}{c}{Year 2}\\\\ \n')
+for(i in 1:nrow(tab2)){
+    cat(tab2[i,1],round(unlist(tab2[i,-1])),sep='&')
+    cat('\\\\')
+}
 rownames(tab1) <- rownames(tab2) <- tab1$variable
 tab1 <- as.matrix(tab1[,-1])
 tab2 <- as.matrix(tab2[,-1])
@@ -705,7 +809,7 @@ tab2b <- as.matrix(tab2b[,-1])
 @
 
 \end{tabular}
-\caption{Percentages of worked sections that ended in each of the
+\caption{Numbers of worked sections that ended in each of the
   four possible outcomes, across states and study years.}
 \label{tab:overallStatus}
 \end{table}
@@ -736,11 +840,12 @@ most likely due to the decrease in usage.
 
 Across states, just under
 \Sexpr{round(tab1b['Reassigned','Overall']*100)}\% of sections in year
-1 eneded in reassignment, as did roughly
+1 ended in reassignment, as did roughly
 \Sexpr{round(tab2b['Reassigned','Overall']*100)}\% in year 2.
 
 \subsection{Section Mastery and Curriculum}
 \begin{figure}
+  \centering
 <<statusCur,dependson='overallStatus',fig.height=3,fig.width=6>>=
 statusOverall$Curr2 <- with(statusOverall,
                         ifelse(Curriculum=='Algebra I',
@@ -751,7 +856,9 @@ statusCurr <- statusOverall%>%filter(!is.na(Curriculum))%>% group_by(Curr2,Yr)%>
               pcp=mean(status=='changed placement'),pprom=mean(status=='promoted'))%>%
     melt(measure.vars=c('pgrad','pfoi','pcp','pprom'))
 levels(statusCurr$variable) <- list(Final='pfoi',Reassigned='pcp',Promoted='pprom',Graduated='pgrad')
-statusCurr$Curr2 <- factor(statusCurr$Curr2,levels=c('Bridge-to-Algebra','Algebra I','Algebra I (Cust.)','>Algebra I'))
+statusCurr$Curr2 <-
+    factor(statusCurr$Curr2,levels=c('Bridge-to-Algebra','Algebra I','Algebra I (Cust.)','>Algebra I'))
+levels(statusCurr$Curr2)[1] <- 'Bridge-to-Alg.'
 print(ggplot(statusCurr,aes(Yr,value,fill=variable))+geom_col()+facet_grid(~Curr2)+
       labs(y='% of Sections Worked',x='',fill='Exit Status')+scale_y_continuous(labels=percent))
 
@@ -773,7 +880,7 @@ Figure \ref{fig:statusCur} shows the proportions of worked sections
 that were mastered or ended in promotion, reassignment, or finality, in
 standard and customized versions of each CT curriculum.
 Mastery proportions do, indeed, depend on curriculum.
-Specifically, students mastered sections from more advanced curriculua
+Specifically, students mastered sections from more advanced curricula
 less frequently.
 Sections from the most basic curriculum, Bridge to Algebra, were
 mastered
@@ -782,11 +889,11 @@ mastered
 those from Algebra I were mastered
 \Sexpr{round(
   mean(statusOverall$status[statusOverall$Curriculum=='Algebra I']=='graduated',na.rm=T)*100)}\%
-of the time, and those from more advanced curriculua were mastered
+of the time, and those from more advanced curricula were mastered
 at a rate of
 \Sexpr{round(
   mean(statusOverall$status[statusOverall$Curriculum=='>Algebra I']=='graduated',na.rm=T)*100)}\%.
-This is unsurprising, since more advanced curriculua may be expected
+This is unsurprising, since more advanced curricula may be expected
 to be more challenging.
 However, it may suggest that some students studying advanced topics
 would fair better in more standard curricula.
@@ -817,10 +924,10 @@ among certain schools and teachers.
 % \Sexpr{round(100*subset(statusCurr,Curr2=='Algebra I' & variable=='Promoted')[['value']])}\%).
 
 
-\section{Digging Deeper into Section Reassignment}
+\section{Digging Deeper into Section Reassignment}\label{sec:cp}
 The proportion of worked sections in our dataset ending in
 reassignment was small.
-Nevertheless, since reassignement represents the only mechanism by
+Nevertheless, since reassignment represents the only mechanism by
 which individual teachers can affect their students' progress through
 the Cognitive Tutor, exploring patterns of reassignment can provide
 insight into how CT was used.
@@ -840,9 +947,26 @@ secLev <- within(secLev,endMonth <- factor(month(secLev$endDate,TRUE,TRUE),level
 \subsection{How Do Reassignment Patterns Vary?}
 
 \begin{figure}
+  \centering
 <<vcs,fig.height=3,fig.width=6.5,dependson=c('data','setup')>>=
-load('vcMods.RData')
+#load('vcMods.RData')
 library(lme4)
+
+vcDat <- data%>%filter(unit%in%unique(data$unit[data$curriculum=='Algebra I']))%>%group_by(field_id,unit,section,classid2,state)%>%summarize(status=max(status,na.rm=TRUE),startDate=min(date,na.rm=TRUE))
+vcDat <- merge(vcDat,stud,all.x=TRUE,all.y=FALSE)
+
+vcDat$month <- months(vcDat$startDate,TRUE)
+
+vcDat$cp <- vcDat$status=='changed placement'
+vcDat$mast <- vcDat$status=='graduated'
+
+vcModYr <- list(yr1=glmer(cp~(1|field_id)+(1|classid2)+(1|schoolid2)+(1|state)+(1|unit),family=binomial,data=subset(vcDat,year==1)),yr2=glmer(cp~(1|field_id)+(1|classid2)+(1|schoolid2)+(1|state)+(1|unit),family=binomial,data=subset(vcDat,year==2)))
+
+vcMods <- list()
+for(st in c('TX','KY','MI'))
+ for(yr in c(1,2))
+     vcMods[[paste0(st,'_',yr)]] <- glmer(cp~(1|field_id)+(1|classid2)+(1|schoolid2)+(1|unit),family=binomial,data=subset(vcDat,state==st & year==yr))
+
 
 vcFun <- function(nm){
     mod <- vcMods[[nm]]
@@ -908,7 +1032,7 @@ Nevertheless, the factors influencing student reassignment vary at a
 number of levels.
 For instance, state and district standards may prod teachers into
 reassigning students to particular units.
-Some prinicpals may encourage teachers to adhere to the official
+Some principals may encourage teachers to adhere to the official
 curriculum and avoid reassignment.
 Some students may be more prone to reassignment than others.
 Certain units in the CTAI curriculum may be harder than others,
@@ -976,7 +1100,7 @@ than \Sexpr{sort(sapply(vcs,function(x) x['classid',1]),dec=T)}\%  of
 the variation.
 
 Although teachers control reassignment, their decisions are largely
-dictated by broader policies, ocurring at the state or school level.
+dictated by broader policies, occurring at the state or school level.
 
 
 \subsection{When are Students Reassigned?}
@@ -990,7 +1114,7 @@ of the school year than in the first.
 This may be the result of teachers learning how to use the software as
 the year progresses, or responding the pressure of upcoming
 standardized tests by accelerating students' progress and reassigning
-students to relevent sections.
+students to relevant sections.
 
 As we've seen, reassignment was more common in year 2 than in year 1.
 In fact, reassignment increases fairly steadily over the entire length
@@ -1001,7 +1125,7 @@ ended in reassignment.
 Year 2 begin where year 1 left off, with one to two percent of
 sections reassigned.
 Finally, from February through May of the second year, the rate of
-reassignment incrased again.
+reassignment increased again.
 
 
 
@@ -1019,7 +1143,7 @@ ggplot(filter(secLevMonth,nsec>100),aes(endMonth,CPper,group=Year,color=Year,siz
                                         #            show.legend=FALSE)+
 scale_y_continuous(breaks=seq(0,0.05,.01),labels=percent)+
     coord_cartesian(ylim=c(0,0.05))+
-    labs(x='Month',y='% of Sections Ending in Reassignment',size='# Worked \\Sections')
+    labs(x='Month',y='% of Sections Ending in Reassignment',size='# Worked\nSections',color='')
 
 
 @
@@ -1030,6 +1154,7 @@ scale_y_continuous(breaks=seq(0,0.05,.01),labels=percent)+
 
 
 \begin{table}
+  \centering
   \begin{tabular}{rll|ll}
     &\multicolumn{2}{c}{Year 1}&\multicolumn{2}{c}{Year 2}\\
     &Aug--Dec&Jan--Jun&Aug--Dec&Jan--Jun\\
@@ -1078,7 +1203,7 @@ state's reassignments the occurred in each month of the school year.
 show proportions for each month, the denominators are not the same:
 Figure \ref{fig:byMonth} gives the proportion of each month's worked
 sections that ended in reassignment, and Figure \ref{fig:byMonthState}
-gives the proportion of all of each state's reassignmens over the
+gives the proportion of all of each state's reassignments over the
 course of the year, that occurred in each month.)
 
 The pattern in Figure \ref{fig:byMonth} seems largely driven by Texas.
@@ -1108,13 +1233,13 @@ for(st in c('TX','KY','MI')) for(yr in c('Year 1','Year 2'))
 ggplot(secLevMonthSt,aes(endMonth,cpPer,group=state,color=state))+geom_point()+facet_grid(Year~.)+
     geom_line(size=1)+
     scale_y_continuous(labels=percent)+
-    labs(x='Month',y='% of State\'s Total Reassignments')
+    labs(x='Month',y='% of State\'s Total Reassignments',color='')
 
 
 @
 \caption{The proportion of a state's reassignments that occurred in
   each month of the year.}
-\ref{fig:byMonthState}
+\label{fig:byMonthState}
 \end{figure}
 
 \subsection{Does Reassignment Depend on Classmates?}
@@ -1135,6 +1260,7 @@ in the CTAI study?
 
 
 \begin{figure}
+  \centering
 <<classmates,dependson='cpDat',fig.height=6,fig.width=7>>=
 secLev$unitSectionClass <- paste(secLev$unit,secLev$section,secLev$classid2)
 cpDat <- subset(secLev,status=='changed placement' & Curriculum=='Algebra I')
@@ -1147,7 +1273,7 @@ secLevCPsplit <- split(secLevCP[,c('field_id','endDate','status')],secLevCP$unit
 ncp <- nrow(cpDat)
 seqDat <- matrix(NA,nrow=ncp,ncol=6)
 for(i in 1:ncp){
-    if(i%%100==0) cat(round(i/ncp*100,2),'% ',sep='')
+    #if(i%%100==0) cat(round(i/ncp*100,2),'% ',sep='')
     cls <- secLevCPsplit[[cpDat$unitSectionClass[i]]]
     if(nrow(cls)==1){
         seqDat[i,] <- 0
@@ -1259,7 +1385,7 @@ That is, \Sexpr{mi2cp}\% of the instances in which year-two Michigan
 students were reassigned from a section, at least 75\% of their
 classmates were, at some point, reassigned from the same section, or
 never worked it.
-Accross all three states and both years, it is exceedingly rare for
+Across all three states and both years, it is exceedingly rare for
 students to master or be promoted from a section after someone in
 their class has been reassigned from the same section.
 
@@ -1290,7 +1416,7 @@ Finally, a teacher who wanted his or her students to focus on a
 particular topic might reassign them all to the appropriate section
 when the time is appropriate.
 
-Which of these patterns is most prevelant?
+Which of these patterns is most prevalent?
 More generally, when teachers reassign their students, where in the
 curriculum do they send them?
 
@@ -1323,6 +1449,7 @@ levels(secOrderCP$nextUnitName) <- UnitName
 
 
 \begin{figure}
+  \centering
   \begin{subfigure}{5in}
 <<transition1,fig.height=3,fig.width=5,dependson='secOrder'>>=
 
@@ -1383,6 +1510,7 @@ for(rr in rownames(trans1))
 @
 \end{subfigure}
 \begin{subfigure}{1in}
+  \centering
 <<trans1legend,fig.width=1,fig.height=3,dependson='transition1'>>=
 par(mar=c(.1,.1,.1,.1))
 plot(1,1,xlim=c(0,2),ylim=c(0,nsec+2),cex=0,xaxt='n',yaxt='n',xlab='',ylab='')
@@ -1420,6 +1548,7 @@ arrows(c(1,1,1),c(3,2,1)*conv,c(2,2,2),col=rgb(0,0,0,alpha=c(1/5,.5,1)))
 
 
 \begin{figure}
+  \centering
   \begin{subfigure}{5in}
 <<transition2,fig.height=5,fig.width=5,dependson='secOrder'>>=
 
@@ -1540,39 +1669,39 @@ Yet it is also fairly faint, since it only represents
 reassignments.
 
 Inspecting the figures shows that the most common pattern is for
-students to be reassigned to the next unit in the curriculum---this pattern comprises 
-\Sexpr{round(sum(diag(trans1o[,-1]))/sum(trans1o)*100)}\% of the reassignments in year 1 and 
+students to be reassigned to the next unit in the curriculum---this pattern comprises
+\Sexpr{round(sum(diag(trans1o[,-1]))/sum(trans1o)*100)}\% of the reassignments in year 1 and
 \Sexpr{round(sum(diag(trans2o[,-1]))/sum(trans2o)*100)}\% of those in year2.
-On the other hand, it is rare for students to be reassigned within the same unit 
+On the other hand, it is rare for students to be reassigned within the same unit
 (these reassignments account for \Sexpr{round(sum(diag(trans1o))/sum(trans1o)*100)}\% and \Sexpr{round(sum(diag(trans2o))/sum(trans2o)*100)}\% in the two years).
-It is also rare for students to be reassigned to units earlier in the curriculum (comprising 
+It is also rare for students to be reassigned to units earlier in the curriculum (comprising
 \Sexpr{round(sum(trans1o[lower.tri(trans1o)])/sum(trans1o)*100)}\% and
 \Sexpr{round(sum(trans2o[lower.tri(trans2o)])/sum(trans2o)*100)}\%).
 
 The transition plots also reveal some interesting cases worth highlighting.
-In year 1 (Figure \ref{fig:trans1}), students reassigned from the first unit, ``Linear Patterns'', were primarily placed two units ahead, in ``1st Quadrant Linear Graphs,'' skipping ``Unit Conversions,'' perhaps suggesting a disinterest in ``Unit Conversions.'' on the part of the reassigning teachers. 
-Similarly, 
-\Sexpr{trans1o['Ind. Variables in Lin. Mod.','Systems of Lin. Eq.']} students 
+In year 1 (Figure \ref{fig:trans1}), students reassigned from the first unit, ``Linear Patterns'', were primarily placed two units ahead, in ``1st Quadrant Linear Graphs,'' skipping ``Unit Conversions,'' perhaps suggesting a disinterest in ``Unit Conversions.'' on the part of the reassigning teachers.
+Similarly,
+\Sexpr{trans1o['Ind. Variables in Lin. Mod.','Systems of Lin. Eq.']} students
 (\Sexpr{round(trans1o['Ind. Variables in Lin. Mod.','Systems of Lin. Eq.']/sum(trans1o['Ind. Variables in Lin. Mod.',])*100)}\%)
 of the students reassigned from the section ``Ind. Variables in Lin. Mod.'' were placed 13 units later in ``Systems of Lin. Eq.''
 and all \Sexpr{trans1o['Quad. Mod. & Area','Exponents']} of students reassigned from ``Quad. Mod. \& Area'' were placed in ``Exponents.''
 This suggests that some teachers may have considered these units, ``Systems of Lin. Eq.'' and ``Exponents'' to contain particularly important material.
 
-Since the total number of reassignments was higher in year 2, the corresponding plot (Figure \ref{fig:trans2}) is larger and more complex. 
+Since the total number of reassignments was higher in year 2, the corresponding plot (Figure \ref{fig:trans2}) is larger and more complex.
 It is also more common for students to be reassigned to units other than the next unit in the sequences.
-This may be partly due to the proliferation of customized curricula. 
-Two units, ``4-Quadrant Linear Graphs'' and ``Lin. Eq. w/ Var's Both Sides,'' were common destinations from a wide variety of earlier units, suggesting a strong interest in those units. 
+This may be partly due to the proliferation of customized curricula.
+Two units, ``4-Quadrant Linear Graphs'' and ``Lin. Eq. w/ Var's Both Sides,'' were common destinations from a wide variety of earlier units, suggesting a strong interest in those units.
 The majority (\Sexpr{round(trans2o['Probability','Probability']/sum(trans2o['Probability',])*100)}\%)
 of the students reassigned from ``Probability'' were placed in another section of the same unit, perhaps suggesting problems with some of that unit's sections; in fact, all of the students reassigned within the ``Probability'' unit were reassigned from one its first three sections (of seven).
-Finally, \Sexpr{trans2['Pythagorean Theorem','Product Rule for Exponents']} 
-(\Sexpr{round(trans2['Pythagorean Theorem','Product Rule for Exponents']/sum(trans2o['Pythagorean Theorem',])*100)}\%) of the reassignements from sections in the ``Pythagorean Theorem'' unit ended in the earliear ``Product Rule for Exponents'' sections. 
+Finally, \Sexpr{trans2['Pythagorean Theorem','Product Rule for Exponents']}
+(\Sexpr{round(trans2['Pythagorean Theorem','Product Rule for Exponents']/sum(trans2o['Pythagorean Theorem',])*100)}\%) of the reassignments from sections in the ``Pythagorean Theorem'' unit ended in the earlier ``Product Rule for Exponents'' sections.
 
 In sum, the most prevalent pattern was for students to be reassigned to the following unit, suggesting that teachers are mostly interested in helping lagging students progress.
-On the other hand, a number of examples of other patterns---students moving within the same unit, or to units out of sequence---appear as well, suggesting that some teachers may be finely manipulating their students' curricula. 
+On the other hand, a number of examples of other patterns---students moving within the same unit, or to units out of sequence---appear as well, suggesting that some teachers may be finely manipulating their students' curricula.
 
 
 
-\section{Effects of Reassignment}
+\section{Effects of Reassignment}\label{sec:effects}
 The goal of CTAI is to help students learn Algebra, so
 the most important questions about reassignment are about its effect on learning.
 Although the data from this study came from a randomized trial, it was
@@ -1582,13 +1711,13 @@ Therefore, claims regarding the causal effects of reassignment on
 learning require strong untestable assumptions that are unlikely to be
 true.
 As in all observational studies, this includes the assumption that all
-counfounding variables---variables that predict both reassignment and
+confounding variables---variables that predict both reassignment and
 learning---have been measured well and modeled correctly.
 Further complicating matters, although reassignment itself is a
 well-defined process, in practice it can take many forms, as we have
-endevoured to show.
+endeavored to show.
 There is no reason to expect the effects of reassignment to be
-the same regardless of wheather the teacher used it to help lagging
+the same regardless of whether the teacher used it to help lagging
 students catch up, to allocate time to important topics, or for some
 other reason.
 
@@ -1596,7 +1725,7 @@ All that said, observational estimates of reassignment's average
 effects can be valuable, if interpreted cautiously.
 In the absence of evidence from randomized trials, observational
 studies can help guide intuition, future research, and even---when
-combined with other relevent information and theory---practice.
+combined with other relevant information and theory---practice.
 
 <<effects,include=FALSE,dependson=c('data','setup')>>=
 cpDat <- data%>%filter(!is.na(status)& status!='final_or_incomplete')%>%
@@ -1686,6 +1815,21 @@ for(i in 1:3){
   adjustedEsts1[[mm1]] <- mi(get(mm1))
 }
 @
+<<sensitivity,include=FALSE,dependson='models'>>=
+source('hhh.r')
+### we're only computing sensitivity for omitting pretest
+X <- as.data.frame(model.matrix(mod3.1)[,-1])
+Ts <- Tz(X = X,treatment = 'everCPTRUE')
+X$everCPTRUE <- NULL
+R <-  partialCor(cpDat$y_yirt,X,'pretest')^2
+multPre <- MEmult(T=Ts['pretest'],R=R,df=mod3.1$df,q=1.96)
+
+Rhos <- vapply(names(X)[-grep('classid2|pretest',names(X))],
+               function(nn) partialCor(cpDat$y_yirt,X,nn),1)^2
+multOth <- MEmult(T=max(abs(Ts[names(Rhos)])),max(Rhos),df=mod3.1$df,q=1.96)
+
+@
+
 <<heterogeneityMods,include=FALSE,dependson='models'>>=
 ### heterogeneity
 ## year
@@ -1699,32 +1843,35 @@ mod5.1 <- update(mod5,addCovs)
 @
 
 \begin{figure}
+  \centering
 <<cpYyear,fig.width=6,fig.height=4,dependson='effects'>>=
 levels(cpDat$Year) <- list(`Year 1`='1',`Year 2`='2')
 ggplot(cpDat,aes(ncp,gainScore))+geom_jitter(height = 0,width=.3)+geom_boxplot(aes(group=ncp),alpha=0.5)+geom_smooth(method='loess')+facet_grid(Year~.)+labs(x='# of Reassignments',y='Gain Score (posttest - pretest)') + scale_x_continuous(breaks=seq(0,max(cpDat$ncp)))
 @
-\caption{Students' Gain scores (post-test minus pre-test) versus the number of times the were reassigned over the course of the year (jittered), with a Loess smoother added.}
+\caption{Students' Gain scores (posttest minus pre-test) versus the number of times the were reassigned over the course of the year (jittered), with a Loess smoother added.}
 \label{fig:cpYyear}
 \end{figure}
 
-\subsection{Average Effects}
-Figure \ref{fig:cpYyear} shows students gain scores---the difference between their post-test and pre-test scores---as a function of the number of times they were reassigned.
+%\subsection{Average Effects}
+Figure \ref{fig:cpYyear} shows students gain scores---the difference between their posttest and pre-test scores---as a function of the number of times they were reassigned.
 (The number of reassignments was jittered---random noise was added---to avoid overplotting.)
 Overall, the relationship between the two variables is positive.
 Nevertheless, some non-linearity seems to be present, especially in year 2.
-Further, the distribution of the number of reassignments is right-skewed---again, especially in year 2. 
-Care in modeling the number of reassignments, then, is especially important---observations from students reassigned an unusually large number of times can exert undo influence on a regression model and generate misleading results, particularly in the presence of non-monotonic relationships. 
-We settled on three different strategies: first, the variable $R^{bin}$ dichotomizes reassignment---$R^{bin}=0$ for students who were never reassigned, and $R^{bin}=1$ for stundents who were. 
-Next, $R^{cat}$ defines a categorical variable taking the values $R^{cat}=0,1,2,3,4+$ for students who were reassigned 0, 1, 2, 3 or four or more times, respectively. 
-Finally, $R^{num}$ is the raw number of reassignments, which we include for completeness. 
+Further, the distribution of the number of reassignments is right-skewed---again, especially in year 2.
+Care in modeling the number of reassignments, then, is especially important---observations from students reassigned an unusually large number of times can exert undo influence on a regression model and generate misleading results, particularly in the presence of non-monotonic relationships.
+We settled on three different strategies: first, the variable $R^{bin}$ dichotomizes reassignment---$R^{bin}=0$ for students who were never reassigned, and $R^{bin}=1$ for students who were.
+Next, $R^{cat}$ defines a categorical variable taking the values $R^{cat}=0,1,2,3,4+$ for students who were reassigned 0, 1, 2, 3 or four or more times, respectively.
+Finally, $R^{num}$ is the raw number of reassignments, which we include for completeness.
 
-We used linear models to estimate the effect of reassignment, regressing post-test scores on $R^{bin}$, $R^{cat}$, or $R^{num}$ along with fixed effects for classroom, essentially modeling reassignment as randomly assigned within classroom.
-Since this is unlikely to be the case (even approximately), we ran a second set of models including student level covariates: 
+We used linear models to estimate the effect of reassignment, regressing posttest scores on $R^{bin}$, $R^{cat}$, or $R^{num}$ along with fixed effects for classroom, essentially modeling reassignment as randomly assigned within classroom.
+Since this is unlikely to be the case (even approximately), we ran a
+second set of models including student level covariates as well:
 pretest scores,\footnote{These are measured with error, and missing at a relatively high rate (
-\Sexpr{round(mean(is.na(cpDat$xirt))*100)}\%). To account for this, we used regression calibration based on the 20 ``multiple imputations'' used in the original CTAI study, \citet{pane2013effectiveness}.} race, sex, grade, special education and gifted status, English as a second language, and free and reduced-price lunch eligability.
+\Sexpr{round(mean(is.na(cpDat[['xirt']]))*100)}\%). To account for this, we used regression calibration based on the 20 ``multiple imputations'' used in the original CTAI study, \citet{pane2014effectiveness}.} race, sex, grade, special education and gifted status, English as a second language, and free and reduced-price lunch eligibility.
 
 
 \begin{table}
+  \centering
 \begin{tabular}{r|c|c|c|}
 &\multicolumn{3}{c}{Parametrization}\\
 &$R^{bin}$&$R^{cat}$&$R^{num}$\\
@@ -1733,11 +1880,11 @@ pretest scores,\footnote{These are measured with error, and missing at a relativ
 <<effectResults,results='asis',dependson='models'>>=
 ## model 3
 cat('\\makecell[r]{No\\\\Covariates}&')
-cat(round(adjustedEsts1[['mod3']][1,'ests'],2),'$\\pm$',round(2*adjustedEsts1[['mod3']][1,'SEs'],2),'&')  
+cat(round(adjustedEsts1[['mod3']][1,'ests'],2),'$\\pm$',round(2*adjustedEsts1[['mod3']][1,'SEs'],2),'&')
 ## model 2
 res <- adjustedEsts1[['mod2']]
 cat('\\makecell[l]{')
-for(rr in 1:(nrow(res)-1)) 
+for(rr in 1:(nrow(res)-1))
   cat(rr,':  ',round(res[rr,1],2),'$\\pm$',round(2*res[rr,'SEs'],2),'\\\\')
 cat(nrow(res),'+: ',round(res[nrow(res),1],2),'$\\pm$',round(2*res[nrow(res),'SEs'],2),'}&')
 ## model 1
@@ -1765,76 +1912,104 @@ cat(
 
 The results are reported in Table \ref{effectResults}.
 All the effect estimates are negative, indicating that reassigning students may hurt their algebra learning.
-The estimated effects decrease in magnitude for three or four reassignments, but these estimates are very noisy---very few students were reassigned more than two times. 
-The magnitudes of the effects are rather large: \citet{pane2013effectiveness} reported an effect, in year 2, of about 0.2; the estimated effect of at least one reassignment is \Sexpr{round(adjustedEsts1[['mod3.1']][1,'ests']*100)}\% of that.
+The estimated effects decrease in magnitude for three or four reassignments, but these estimates are very noisy---very few students were reassigned more than two times.
+The magnitudes of the effects are rather large: \citet{pane2014effectiveness} reported an effect, in year 2, of about 0.2; the estimated effect of at least one reassignment is \Sexpr{round(adjustedEsts1[['mod3.1']][1,'ests']*100)}\% of that.
 
 But what of unmeasured confounding?
-\citet{hhh} suggest a method of estimating the sensitivity of a regression to an omitted confounder based on benchmarking from observed confounders.
-In order to confound the causal relationship between reassignment and post-tests, a confounder would have to predict both.
+\citet{hhh} suggest a method of estimating the sensitivity of a regression to an omitted confounder based on bench-marking from observed confounders.
+In order to confound the causal relationship between reassignment and posttests, a confounder would have to predict both.
 Roughly speaking, the idea is to widen the confidence interval from a causal linear model to account for the possibility of a hypothetical unmeasured confounder that predicts reassignment and posttests to the same extent as one of the observed covariates.
-These ``sensitivity intervals'' account for uncertainty from two sources: random error, and systematic error due to the omssion of a confounder.
-As is typical, the pretest is our most important measured covariate, both in terms of its prediction of reassignment and of post-test scores.
-The sensitivity interval for the effect of being reassigned at least once on post-test scores, 
-\begin{table}
-\begin{tabular}{rrl}
-Benchmark&\multicolumn{2}{c}{Sensitivity Interval}\\
-<<sens,dependson='models'>>=
-source('hhh.r')
-X <- as.data.frame(model.matrix(mod3.1)[,-1])
-Ts <- Tz(X = X,treatment = 'everCPTRUE')
-Rhos <- vapply(names(X)[-grep('classid2',names(X))],
-               function(nn) partialCor(cpDat$y_yirt,X,nn),1)[-1]^2
-se <- adjustedEsts1[['mod3.1']][1,2]
-cat(names(Rhos)[1],'&',round(adjustedEsts1[['mod3.1']][1,'ests'],2),'&$\\pm$',
-    round(se*MEmult(abs(Ts[names(Rhos)[1]]),R = Rhos[1],df = mod3.1$df.residual,1.96),2),'\\\\')
-for(i in 2:length(Rhos))
-  cat(gsub('_','',names(Rhos)[i]),'&&$\\pm$',round(se*MEmult(T=abs(Ts[names(Rhos)[i]]),R = Rhos[i],df = mod3.1$df.residual,1.96),2),'\\\\')
+These ``sensitivity intervals'' account for uncertainty from two sources: random error, and systematic error due to the omission of a confounder.
+As is typical, the pretest is our most important measured covariate, both in terms of its prediction of reassignment and of posttest scores.
+The sensitivity interval for the effect of being reassigned at least
+once on posttest scores, allowing for the possible omission of a
+hypothetical confounder at most as important as pretest, is
+\Sexpr{round(adjustedEsts1[['mod3.1']][1,'ests'],2)} $\pm$
+\Sexpr{round(adjustedEsts1[['mod3.1']][1,'SEs']*multPre,2)}.
+This interval is quite wide, implying that such a covariate could
+explain much of the observed relationship between reassignment and
+posttest scores (or that the relationship may be much stronger).
+On the other hand, the sensitivity interval allowing for the possible
+omission of a less important hypothetical confounder---one that
+predicts posttests and reassignment as well as the next best observed
+covariates---is
+\Sexpr{round(adjustedEsts1[['mod3.1']][1,'ests'],2)} $\pm$
+\Sexpr{round(adjustedEsts1[['mod3.1']][1,'SEs']*multOth,2)}.
+This interval is substantially tighter.
+All in all, unmeasured confounding may play an important role here,
+but there is good reason to believe that it does not explain all of
+the observed relationship.
+
+The wide variety in the use of reassignment that we have documented
+here might suggest that reassignment's treatment effect might vary as
+well.
+Figure \ref{fig:trtHet} shows estimated classroom-specific treatment
+effects of $R^{bin}$, being reassigned at least once.
+The estimates came from a multilevel model in which posttest scores
+were regressed on $R^{bin}$ and student-level covariates, along with
+random effects for classroom and random slopes for $R^{bin}$ varying
+by classroom.
+Unlike fixed effects models, multilevel models ``partially pool'' data
+across classrooms to estimate classroom specific effects more precisely \citep{gelmanHill}.
+This is especially important given the small sample sizes within
+classrooms.
+Figure \ref{fig:trtHet} shows a wide variation in the effect of
+reassignment across classrooms---the estimated standard deviation of
+these effects was
+\Sexpr{round(sqrt(summary(mod5.1)$varcor$classid2[2,2]),2)},
+larger than the average effect itself.
+While the effect was negative in most classrooms, it was positive in some.
+This variation could be due to a number of factors, including
+differences in the composition of classrooms, but supports the
+hypothesis that differences in when and how reassignment is used
+lead to differences in its effect.
+
+\begin{figure}
+  \centering
+<<hetroPlot,fig.width=6,fig.height=3,dependson='heterogeneityMods'>>=
+re <- ranef(mod5.1,condVar=TRUE)
+reVar <- attr(re$classid2,'postVar')[2,2,]
+feVar <- vcov(mod5.1)['everCPTRUE','everCPTRUE']
+
+hetPlotDat <- data.frame(eff=re$classid2$everCPTRUE+fixef(mod5.1)['everCPTRUE'],
+                         se=sqrt(reVar+feVar),
+                         year=as.factor(data$year[match(rownames(re$classid2),data$classid2)]),
+                         state=data$state[match(rownames(re$classid2),data$classid2)])
+hetPlotDat$ord <- rank(hetPlotDat$eff)
+
+ggplot(hetPlotDat,aes(ord,eff))+geom_point()+
+#    geom_errorbar(aes(ymin=eff-2*se,ymax=eff+2*se),lwd=.2)+
+    geom_hline(yintercept=0,lty=2)+
+#    geom_hline(yintercept=fixef(mod5.1)['everCPTRUE'])
+    scale_x_continuous(labels=NULL,breaks=NULL)+
+    labs(y='Effect of Any Reassignment',x='Classroom')
 @
-\end{tabular}
-\caption{Sensitivity intervals for the $R^{bin}$ model.}
-\label{tab:sens}
-\end{table}
+\caption{The effect of being reassigned at least once, in each
+  classroom, as estimated by a multilevel model. The classrooms are
+  sorted by these estimated effects. The dotted line indicated an
+  effect of zero.}
+\label{fig:trtHet}
+\end{figure}
 
 
+% \section{Notes}
+% [[don't forget to include these]]
 
-\section{Notes}
-[[don't forget to include these]]
+% \begin{itemize}
+%   \item \# of students per state?
+%   \item NJ excluded from state-by-state comparisons, cuz too
+%     small. Included in ``overall,'' etc.
+%   \item What schools included?
+%   \item Students with no mastery data: maybe they didn't work at all,
+%     maybe they worked but we don't have their data. Treating them as unknown.
+% \end{itemize}
 
-\begin{itemize}
-  \item \# of students per state?
-  \item NJ excluded from state-by-state comparisons, cuz too
-    small. Included in ``overall,'' etc.
-  \item What schools included?
-  \item Students with no mastery data: maybe they didn't work at all,
-    maybe they worked but we don't have their data. Treating them as unknown.
-\end{itemize}
+\section{Discussion}\ref{sec:discussion}
+
+
+\bibliographystyle{plainnat}
+\bibliography{ct,cp}
 
 \end{document}
-<<eval=FALSE>>=
 
- nextDat <- secOrder%>%filter(!is.na(status))%>%group_by(field_id,classid2,year,state)%>%
-  summarize(naf=sum(is.na(prevStatus) & status=='final_or_incomplete')/sum(is.na(prevStatus)),
-   nacp=sum(is.na(prevStatus) & status=='changed placement')/sum(is.na(prevStatus)),
-   naprom=sum(is.na(prevStatus) & status=='promoted')/sum(is.na(prevStatus)),
-   nagrad=sum(is.na(prevStatus) & status=='graduated')/sum(is.na(prevStatus)),
-   ff=sum(prevStatus==1 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
-   fcp=sum(prevStatus==1 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
-   fprom=sum(prevStatus==1 & status=='promoted',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
-   fgrad=sum(prevStatus==1 & status=='graduated',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
-   cpf=sum(prevStatus==2 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
-   cpcp=sum(prevStatus==2 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
-   cpprom=sum(prevStatus==2 & status=='promoted',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
-   cpgrad=sum(prevStatus==2 & status=='graduated',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
-   promf=sum(prevStatus==3 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
-   promcp=sum(prevStatus==3 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
-   promprom=sum(prevStatus==3 & status=='promoted',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
-   promgrad=sum(prevStatus==3 & status=='graduated',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
-   gradf=sum(prevStatus==4 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
-   gradcp=sum(prevStatus==4 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
-   gradprom=sum(prevStatus==4 & status=='promoted',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
-   gradgrad=sum(prevStatus==4 & status=='graduated',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
-   npna=sum(is.na(prevStatus)),npf=sum(prevStatus==1,na.rm=TRUE),npcp=sum(prevStatus==2,na.rm=TRUE),
-    npprom=sum(prevStatus==3,na.rm=TRUE),npgrad=sum(prevStatus==4,na.rm=TRUE))
-
-@
 

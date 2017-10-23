@@ -61,3 +61,28 @@ m2Splitvcov.1 <- vcovHC(m2ols25Split.1,'HC')
 
 save(list=ls(),
      file='mastNextols.RData')
+
+
+ nextDat <- secOrder%>%filter(!is.na(status))%>%group_by(field_id,classid2,year,state)%>%
+  summarize(naf=sum(is.na(prevStatus) & status=='final_or_incomplete')/sum(is.na(prevStatus)),
+   nacp=sum(is.na(prevStatus) & status=='changed placement')/sum(is.na(prevStatus)),
+   naprom=sum(is.na(prevStatus) & status=='promoted')/sum(is.na(prevStatus)),
+   nagrad=sum(is.na(prevStatus) & status=='graduated')/sum(is.na(prevStatus)),
+   ff=sum(prevStatus==1 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
+   fcp=sum(prevStatus==1 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
+   fprom=sum(prevStatus==1 & status=='promoted',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
+   fgrad=sum(prevStatus==1 & status=='graduated',na.rm=TRUE)/sum(prevStatus==1,na.rm=TRUE),
+   cpf=sum(prevStatus==2 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
+   cpcp=sum(prevStatus==2 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
+   cpprom=sum(prevStatus==2 & status=='promoted',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
+   cpgrad=sum(prevStatus==2 & status=='graduated',na.rm=TRUE)/sum(prevStatus==2,na.rm=TRUE),
+   promf=sum(prevStatus==3 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
+   promcp=sum(prevStatus==3 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
+   promprom=sum(prevStatus==3 & status=='promoted',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
+   promgrad=sum(prevStatus==3 & status=='graduated',na.rm=TRUE)/sum(prevStatus==3,na.rm=TRUE),
+   gradf=sum(prevStatus==4 & status=='final_or_incomplete',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
+   gradcp=sum(prevStatus==4 & status=='changed placement',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
+   gradprom=sum(prevStatus==4 & status=='promoted',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
+   gradgrad=sum(prevStatus==4 & status=='graduated',na.rm=TRUE)/sum(prevStatus==4,na.rm=TRUE),
+   npna=sum(is.na(prevStatus)),npf=sum(prevStatus==1,na.rm=TRUE),npcp=sum(prevStatus==2,na.rm=TRUE),
+    npprom=sum(prevStatus==3,na.rm=TRUE),npgrad=sum(prevStatus==4,na.rm=TRUE))

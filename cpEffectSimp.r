@@ -67,6 +67,13 @@ mod4.1 <- update(mod6,addCovs)
 mod5 <- lmer(y_yirt~everCP+year+state+pretest+(everCP|classid2)+(1|schoolid2),data=cpDat)
 mod5.1 <- update(mod7,addCovs)
 
+
+## classes with some cp
+cpClass <- unique(cpDat$classid2[cpDat$everCP])
+
+print('mod3.1 with only CP classes included')
+print(summary(mod3.1.2 <- update(mod3.1,subset=classid2%in%cpClass))$coef['everCPTRUE',])
+
 ## for(mm in grep('mod',ls(),value=TRUE))
 ##     print(summary(assign(paste0(mm,'Y'),update(get(mm),y_yirt~.+pretest))))
 
@@ -74,8 +81,6 @@ save(list=grep('mod',ls(),value=TRUE),file='outcomeMods.RData')
 
 
 
-## classes with some cp
-cpClass <- unique(cpDat$classid2[cpDat$everCP])
 ols5.1 <- lm(y_yirt~everCP+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl+pretest+classid2,
            data=cpDat,subset=classid2%in%cpClass)#)$coef['everCPTRUE',]
 ols5.1.1 <- lm(y_yirt~everCP+race+sex+grade+spec_speced+spec_gifted+spec_esl+frl+ns(pretest,5)+classid2,
@@ -128,18 +133,25 @@ byState2 <- ggplot(filter(cpDat,year==2 & state %in% c('TX','KY','MI')),aes(ncp,
 classLevel <- aggregate(cpDat[,sapply(cpDat,class)%in%c('numeric','integer','logical')],
                         by=list(classid2=cpDat$classid2),FUN=mean,na.rm=TRUE)
 classLevel$state <- cpDat$state[match(classLevel$classid2,cpDat$classid2)]
-classLevel$schoolid2 <- cpDat$schoolid2[match(classLevel$classid2,cpDat$classid2)]
+classLevel$schoolid2 <- cpDat$schoolid2[match(classLevel$classid2,cpDat$classid2)
+]classLevel$grade <- aggregate(cpDat$grade=='9',
+                               by=list(classid2=cpDat$classid2),FUN=mean,na.rm=TRUE)$x
+classLevel$race <- aggregate(cpDat$race=='White',
+                        by=list(classid2=cpDat$classid2),FUN=mean,na.rm=TRUE)$x
 
 
 qplot(ncp,gainScore,data=classLevel)+geom_smooth()
 qplot(ncp,gainScore,data=classLevel)+geom_smooth()+facet_grid(year~.)
 
 
+summary(lm(y_yirt~I(ncp==0)+pretest+race+grade+spec_speced+spec_gifted+spec_esl+frl+frlMIS+year+schoolid2,
+           ,data=classLevel,subset=state!='LA'))
+
 summary(lm(gainScore~I(ncp==0)+ncp+state+year,data=classLevel))
 summary(lm(gainScore~ncp+state+year,data=classLevel))
 summary(lm(gainScore~I(ncp==0)+ncp+schoolid2+year,data=classLevel,subset=state!='LA'))
 
-summary(lm(y_yirt~I(ncp==0)+ncp+ns(xirt,3)+grade+spec_speced+spec_gifted+spec_esl+frl+schoolid2+year,data=classLevel,subset=state!='LA'))
+summary(lm(y_yirt~I(ncp==0)+ncp+splines::ns(xirt,3)+grade+spec_speced+spec_gifted+spec_esl+frl+schoolid2+year,data=classLevel,subset=state!='LA'))
 
 summary(lm(y_yirt~I(ncp==0)+ncp+xirt+schoolid2+year,data=classLevel,subset=state!='LA'))
 

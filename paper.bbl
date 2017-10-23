@@ -1,0 +1,81 @@
+\begin{thebibliography}{11}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Bloom(1968)]{bloom1968learning}
+Benjamin~S Bloom.
+\newblock Learning for mastery. instruction and curriculum. regional education
+  laboratory for the carolinas and virginia, topical papers and reprints,
+  number 1.
+\newblock \emph{Evaluation comment}, 1\penalty0 (2):\penalty0 n2, 1968.
+
+\bibitem[Corbett(2001)]{corbett2001cognitive}
+Albert Corbett.
+\newblock Cognitive computer tutors: Solving the two-sigma problem.
+\newblock \emph{User Modeling 2001}, pages 137--147, 2001.
+
+\bibitem[Gelman and Hill(2006)]{gelmanHill}
+Andrew Gelman and Jennifer Hill.
+\newblock \emph{Data analysis using regression and multilevel/hierarchical
+  models}.
+\newblock Cambridge university press, 2006.
+
+\bibitem[Hosman et~al.(2010)Hosman, Hansen, and Holland]{hhh}
+Carrie~A Hosman, Ben~B Hansen, and Paul~W Holland.
+\newblock The sensitivity of linear regression coefficients' confidence limits
+  to the omission of a confounder.
+\newblock \emph{The Annals of Applied Statistics}, pages 849--870, 2010.
+
+\bibitem[Kulik et~al.(1990)Kulik, Kulik, and
+  Bangert-Drowns]{kulik1990effectiveness}
+Chen-Lin~C Kulik, James~A Kulik, and Robert~L Bangert-Drowns.
+\newblock Effectiveness of mastery learning programs: A meta-analysis.
+\newblock \emph{Review of educational research}, 60\penalty0 (2):\penalty0
+  265--299, 1990.
+
+\bibitem[Pane et~al.(2014{\natexlab{a}})Pane, Griffin, McCaffrey, and
+  Karam]{pane2013effectiveness}
+John~F Pane, Beth~Ann Griffin, Daniel~F McCaffrey, and Rita Karam.
+\newblock Effectiveness of cognitive tutor algebra i at scale.
+\newblock \emph{Educational Evaluation and Policy Analysis}, 36\penalty0
+  (2):\penalty0 127--144, 2014{\natexlab{a}}.
+
+\bibitem[Pane et~al.(2014{\natexlab{b}})Pane, Griffin, McCaffrey, and
+  Karam]{pane2014effectiveness}
+John~F Pane, Beth~Ann Griffin, Daniel~F McCaffrey, and Rita Karam.
+\newblock Effectiveness of cognitive tutor algebra i at scale.
+\newblock \emph{Educational Evaluation and Policy Analysis}, 36\penalty0
+  (2):\penalty0 127--144, 2014{\natexlab{b}}.
+
+\bibitem[Sales et~al.(2016)Sales, Wilks, and Pane]{sales2016student}
+Adam Sales, Asa Wilks, and John Pane.
+\newblock Student usage predicts treatment effect heterogeneity in the
+  cognitive tutor algebra i program.
+\newblock In \emph{Proceedings of the 9th International Conference on
+  Educational Data Mining. International Educational Data Mining Society},
+  pages 207--214, 2016.
+
+\bibitem[Sales and Pane(2015)]{sales2015exploring}
+Adam~C Sales and John~F Pane.
+\newblock Exploring causal mechanisms in a randomized effectiveness trial of
+  the cognitive tutor.
+\newblock In \emph{Proceedings of the 8th International Conference on
+  Educational Data Mining. International Educational Data Mining Society},
+  2015.
+
+\bibitem[Sales and Pane(2017)]{sales2017role}
+Adam~C Sales and John~F Pane.
+\newblock The role of mastery learning in intelligent tutoring systems:
+  Principal stratification on a latent variable.
+\newblock \emph{arXiv preprint arXiv:1707.09308}, 2017.
+
+\bibitem[Wenger(2014)]{wenger2014artificial}
+Etienne Wenger.
+\newblock \emph{Artificial intelligence and tutoring systems: computational and
+  cognitive approaches to the communication of knowledge}.
+\newblock Morgan Kaufmann, 2014.
+
+\end{thebibliography}
