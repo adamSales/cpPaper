@@ -55,11 +55,6 @@ Temporary Items
 
 .#numSecCheck.r
 
-*.jpg
-
-*.jpg
-
-*.jpg
 
 fig1.jpg
 
@@ -69,16 +64,15 @@ percentCC.jpg
 
 *.RData
 
-*.pdf
 
 
 *#
 cache/*
-figure/*
+
 *.aux
 *.log
 *~
-paper.tex
+
 
 auto/*
 fig1AAA.r
