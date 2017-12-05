@@ -209,8 +209,11 @@ Some figures will only show data from a subset of states; since so few
 students were in New Jersey, it will be excluded from almost all
 state-by-state comparisons (but included analyses that pool across states).
 <<nByState,dependson='data'>>=
-xtable(data%>%group_by(state,year)%>%summarize(n=n_distinct(field_id))%>%dcast(year~state),
-       caption='Numbers of students in the sample by state and study year',label='tab:nByState')
+sampleSizeTable <- data%>%group_by(state,year)%>%summarize(n=n_distinct(field_id))%>%dcast(year~state)
+sampleSizeTable <- sampleSizeTable[,-1]
+rownames(sampleSizeTable) <- c('Year 1','Year 2')
+
+print(xtable(sampleSizeTable,caption='Numbers of students in the sample by state and study year',label='tab:nByState'),include.rownames=TRUE)
 @
 
 In this smaller sample, \Sexpr{sum(data[['obsUsage']]==FALSE)}
@@ -812,11 +815,16 @@ for(i in 1:nrow(tab1)){
     cat(tab1[i,1],round(unlist(tab1[i,-1])),sep='&')
     cat('\\\\')
 }
+cat('Total',round(colSums(tab1[,-1])),sep='&')
+cat('\\\\')
 cat('&\\multicolumn{6}{c}{Year 2}\\\\ \n')
 for(i in 1:nrow(tab2)){
     cat(tab2[i,1],round(unlist(tab2[i,-1])),sep='&')
     cat('\\\\')
 }
+cat('Total',round(colSums(tab2[,-1])),sep='&')
+cat('\\\\')
+
 rownames(tab1) <- rownames(tab2) <- tab1$variable
 tab1 <- as.matrix(tab1[,-1])
 tab2 <- as.matrix(tab2[,-1])

@@ -1,4 +1,4 @@
-\begin{thebibliography}{11}
+\begin{thebibliography}{10}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -36,19 +36,12 @@ Chen-Lin~C Kulik, James~A Kulik, and Robert~L Bangert-Drowns.
 \newblock \emph{Review of educational research}, 60\penalty0 (2):\penalty0
   265--299, 1990.
 
-\bibitem[Pane et~al.(2014{\natexlab{a}})Pane, Griffin, McCaffrey, and
-  Karam]{pane2013effectiveness}
-John~F Pane, Beth~Ann Griffin, Daniel~F McCaffrey, and Rita Karam.
-\newblock Effectiveness of cognitive tutor algebra i at scale.
-\newblock \emph{Educational Evaluation and Policy Analysis}, 36\penalty0
-  (2):\penalty0 127--144, 2014{\natexlab{a}}.
-
-\bibitem[Pane et~al.(2014{\natexlab{b}})Pane, Griffin, McCaffrey, and
+\bibitem[Pane et~al.(2014)Pane, Griffin, McCaffrey, and
   Karam]{pane2014effectiveness}
 John~F Pane, Beth~Ann Griffin, Daniel~F McCaffrey, and Rita Karam.
 \newblock Effectiveness of cognitive tutor algebra i at scale.
 \newblock \emph{Educational Evaluation and Policy Analysis}, 36\penalty0
-  (2):\penalty0 127--144, 2014{\natexlab{b}}.
+  (2):\penalty0 127--144, 2014.
 
 \bibitem[Sales et~al.(2016)Sales, Wilks, and Pane]{sales2016student}
 Adam Sales, Asa Wilks, and John Pane.
