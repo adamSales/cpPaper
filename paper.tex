@@ -204,11 +204,7 @@ Kentucky (KY), Louisiana (LA), Michigan (MI), New Jersey (NJ), and
 Texas (TX). Each state participated in both the middle school and high
 school arms of the study, except AL, which participated only in the
 middle school arm. The current study focuses on high school students
-only. %\marginpar{I think it reads better to use the spelled-out names,
-%  but I'm happy to switch if you feel strongly about this.}%, due to the large number of students in this cohort and the
-% significant positive treatment effect previously found for this
-% cohort. All discussion that follows refers exclusively to the high
-% school data.
+only.
 
 There are some limitations to the available data for this study.
 Log data from some schools, and some students within schools, were
@@ -308,13 +304,7 @@ In particular, Texas shifted almost entirely to customized curricula
 from years 1 to 2.
 
 
-% All students who participated in the treatment condition of the study were enrolled in at least one curriculum throughout the school year.
-% Figure
-% In Year 1, the standard Algebra curriculum was the most-used curriculum across schools participating in the study; other curricula were Bridge-to-Algebra (pre-algebra), Algebra II, and five customized curricula that were used in two schools. The standard curricula used in Year 2 included the three that were used in Year 1, plus Geometry and Algebra II Bonus. In Year 2, Carnegie Learning also developed many more customized curricula with input from participating schools, for a total of 33 curricula used in 13 schools. This led to fewer students enrolled in the standard curriculum and more enrolled in customized curricula overall in Year 2.
 
-% In the available data, representing a subset of the entire study sample, the number of students enrolled in at least one standard curriculum in Year 1 was 2,801; in Year 2, this number decreased to 1,204. The number of students enrolled in at least one customized curriculum was 115 in Year 1 and increased to 2,333 in Year 2. It should be noted that students could be enrolled in multiple curricula. For instance, teachers could choose to enroll students in any of the standard curricula provided, such as Algebra I or Algebra II, along with any of the customized curricula that were used by the school.
-
-% The use of customized curricula varied substantially by state. For instance, schools in CT and NJ did not use customized curricula in either Year 1 or Year 2. All other states contained schools that used customized curricula in addition to the standard curricula. CT schools maintained similar number of students in Algebra I across both years with 111 in Year 1 and 135 in Year 2. NJ substantially decreased the number of students in the CTAI program from 89 to 32 from Year 1 to Year 2. However, while all other states (KY, LA, MI, and TX) did decrease enrollment in the standard Algebra I curriculum the second year, those same states increased enrollment in the customized curricula. KY added 3 customized curricula with 146 students, LA added 15 customized curricula with 286 students, MI added 5 customized curricula with 370 students, and TX added 10 additional customized curricula and had the largest enrollment in these curricula with 1,531 students. Students enrolled in the standard Algebra I curriculum dropped from 974 in Year 1 to 61 in Year 2 in TX. As noted above, students could be enrolled in more than one curriculum. In Year 2, the average number of curricula per a student ranged from 1.00 (NJ and CT) to 2.53 (TX). The next highest value was LA at 2.10.
 
 Throughout the school year, teachers could have a class of students
 working on multiple curricula either sequentially, where the students
@@ -385,27 +375,14 @@ by 1.
 
 
 
-% \begin{figure}
-% <<mastSec,dependson=c('usageTime','data','setup'),fig.width=6,fig.height=3>>=
-% print(mastStateYear <- ggplot(secByStud2,aes(Yr,mastered))+geom_boxplot()+facet_grid(~state)+labs(x='',y='\\# Sections Mastered Per Student')+coord_cartesian(ylim=c(0,250)))
-% @
-% \caption{Boxplots of the number of sections each of Cognitive Tutor
-%   software each student mastered, by year and state. Students
-%   mastering more than 250 sections (sum(secByStud[['mastered']]>250,na.rm=TRUE)/2) of nrow(secByStud)/2) and students
-%   with no mastery data (sum(is.na(secByStud[['mastered']]))/2)
-%   were excluded.}
-% \label{fig:mastSec}
-% \end{figure}
-
 
 
 Figure \ref{fig:timeByStud} shows that the number of hours students
 spent working on the CT software in some more detail, via
 state-by-year boxplots.
 Analogous figures for the numbers of problems and sections students
-worked, %available in an online supplement,
-showed similar patterns.% for
-%the numbers of sections and problems students worked.
+worked,
+showed similar patterns.
 Usage time varied substantially between students and across states and
 years.
 Students in Texas,
@@ -467,13 +444,6 @@ All in all, students used CT software less in year 2 than in year
 On the other hand, students in the second year tended to see a
 slightly wider range of topics, and varied somewhat more in their usage.
 
-\begin{comment}
-Of course, more worked sections does not necessarily mean better worked sections. For instance, students might attempt fewer sections in year two, but graduate a higher percentage. Thus we investigated whether, on average, there were more graduated sections per students the second year, and how this related to whether they were enrolled in the standard versus customized curricula. Overall, the number of graduated sections per student increased in year 2. The number of graduated sections per student was 17.94 in year 1 and 25.66 in year 2 in standard curricula. However, the customized curricula had fewer average graduated sections per student enrolled compared to the standard curricula; these numbers were 5.64 in year 1 and 11.47 in year 2. The percentages of average graduated sections to the average total worked sections were: 33.33% in Year 1 and 48.92% in Year 2 in the standard curricula, and 57.55% in Year 2 for the customized curricula. The average number of promoted sections per student also increased from Year 1 to Year 2, though only slightly. In Year 1, the average number of promotions were 1.20 for the customized curricula versus 3.64 for the standard curricula; in Year 2, those numbers were 2.20 and 4.95, respectively.
-
-We also evaluated the time spent per section across different curricula and states.  Some records were omitted from this analysis: sections missing information on date of completion, as well as each student's last section attempted because there is no completion date recorded for those sections. As presented in Figures 2 and 3 for year 1 and 2, respectively, students in NJ increased the time spent per section from year 1 to year 2; however, there were relatively few students in the study from NJ. From Figure 1, it was shown that CT and TX completed, on average, fewer sections per student. From the information presented in Figures 2 and 3, these states spent the highest average number of days per section. TX, with the largest enrollment of students and the greatest use of customized curricula in year 2, had students spending slightly more days completing sections in customized curricula relative to the standard curricula.
-
-Figures 4 and 5 present information for only sections that were mastered by students, that is, cases in which a student was judged by the software to have mastered the material in the section. Results are similar to the data presented in Figures 2 and 3. However, in year 2, TX students in customized curricula spent fewer days on a section they mastered, compared to the time Texas students spent mastering sections in the standard curricula. This difference is also seen in Kentucky and Louisiana. If customized curriculum are more aligned with teachers' instruction, graduating from a section may require fewer days than sections in the standard curricula, possibly because students are working on the same topics in class as they are in the software. Figures 4 and 5 also show that, on average, Connecticut and Texas spent more days graduating from sections, regardless whether the section was part of a standard curricula or customized curricula. One explanation for the longer time periods in these states may be due to a teacher's use of the software simultaneously with the textbook instruction. In this case, the teachers could have switched back-and-forth as they instructed, hence extending the time worked by their students. For the states with shorter time periods, teachers may have followed a more sequential process where they first completed one component, e.g. textbook material, and then allowed students to focus on and complete the second component, e.g. software.
-\end{comment}
 
 
 \section{Working Units in Order---Or Not}\label{sec:order}
@@ -736,23 +706,6 @@ curriculum (3\% vs.
 This may indicate an overall skepticism towards the Carnegie Learning standards
 among certain schools and teachers, manifested in both adoption of
 alternative curricula and reassignment.%\marginpar{does that make more sense?}
-
-% A somewhat lower proportion of Algebra I sections from customized
-% curricula were mastered
-% (round(100*subset(statusCurr,Curr2=='Algebra I (Cust.)' & variable=='Graduated')[['value']])\%)
-% than from the standard Algebra I curriculum
-% (round(100*subset(statusCurr,Curr2=='Algebra I' & variable=='Graduated')[['value']])\%).
-% This difference must be interpreted with caution, since a greater
-% proportion of sections of the customized curriculum ended in
-% reassignment
-
-% or were final
-% (round(100*subset(statusCurr,Curr2=='Algebra I (Cust.)' &   variable=='Final')[['value']])\% vs.
-% round(100*subset(statusCurr,Curr2=='Algebra I' & variable=='Final')[['value']])\%)
-% , as well.
-% The proportion of sections ending in promotion was almost identical:
-% (round(100*subset(statusCurr,Curr2=='Algebra I (Cust.)' &variable=='Promoted')[['value']])\% vs.
-% round(100*subset(statusCurr,Curr2=='Algebra I' & variable=='Promoted')[['value']])\%).
 
 
 \section{Digging Deeper into Section Reassignment}\label{sec:cp}
@@ -1347,17 +1300,6 @@ lead to differences in its effect.
 \end{figure}
 
 
-% \section{Notes}
-% [[don't forget to include these]]
-
-% \begin{itemize}
-%   \item \# of students per state?
-%   \item NJ excluded from state-by-state comparisons, cuz too
-%     small. Included in ``overall,'' etc.
-%   \item What schools included?
-%   \item Students with no mastery data: maybe they didn't work at all,
-%     maybe they worked but we don't have their data. Treating them as unknown.
-% \end{itemize}
 
 \section{Summary and Discussion}\label{sec:discussion}
 
