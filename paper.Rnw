@@ -42,6 +42,13 @@ A (Mostly) Descriptive Analysis of Log Data from the Cognitive Tutor Algebra I E
 
 <<include=FALSE>>=
 library(knitr)
+library(lubridate)
+library(scales)
+library(reshape2)
+library(dplyr)
+library(ggplot2)
+library(xtable)
+
 #library(tikzDevice)
 opts_chunk$set(
 echo=FALSE, results='asis',cache=TRUE,warning=FALSE,error=FALSE,message=FALSE,autodep = FALSE
@@ -106,7 +113,7 @@ mastery.
 This article examines teachers' and schools' adherence and
 non-adherence to the standard, mastery-based CTAI curriculum, using
 data from the RAND study, a seven-state randomized controlled trial of
-CTAI in high schools and middle schools. The study found a significant
+CTAI in high schools and middle schools. That study found a significant
 positive effect of CTAI in high schools, during their second year of
 implementation but not the first. Students in the treatment group of
 the study were enrolled in one or more of the standard or customized
@@ -132,7 +139,7 @@ patterns of usage.
 First, we will discuss standard and customized CTAI curricula used in
 the study (Section \ref{sec:curricula}).
 Next, in Section \ref{sec:usage}, we will describe patterns in the amount CTAI usage, showing that
-it varied widely between states, between years, and between students.
+it varied widely between states, between years, between schools, and between students.
 In particular, the amount of usage decreased from years 1 to
 2---though more in some states than others.
 Then in section \ref{sec:order} we will describe how the amount of usage
@@ -313,8 +320,8 @@ from each curriculum, from standard and customized varieties, by state
 and year.
 First, note that the vast majority of worked problems were from the
 Algebra I sequence.
-A small but notable number of more advanced problems were worked in
-Kentucky in Year 2, and some less advanced problems were worked in
+A small but notable number of less advanced problems were worked in
+Kentucky in year 2, and some more advanced problems were worked in
 Michigan and Louisiana.
 Secondly, note the rise in ``customized curricula'' in year 2 in
 Texas, Kentucky, and Michigan, the three states with the most students
@@ -339,16 +346,17 @@ teachers located in Kentucky had their students working on Algebra I
 throughout most of the year and then reassigned them to Algebra II in
 the last month of school. In contrast, a different teacher in Kentucky had students variously
 enrolled in three different curricula throughout the entire year
-(Bridge-to-Algebra, Algebra I, and a specialized Geometry curriculum),
+(Bridge-to-Algebra, Algebra I, and a customized Geometry curriculum),
 while a year 2 teacher in Michigan enrolled students in
 three curricula sequentially throughout the year: Algebra I
-until November, followed by a customized curriculum util February, and
+until November, followed by a customized curriculum until February, and
 ending with a different customized curriculum until June. While there are numerous instances of these
-uses of multiple curricula in Year 2, there are also many occurrences
+uses of multiple curricula in year 2, there are also many occurrences
 of teachers who had their students enrolled in the standard Algebra I
-throughout the entire year.  In TX mostly, with some instances in Michigan,
-there were teachers who exclusively used customized curricula the
-whole second year.
+throughout the entire year, including all Connecticut teachers.
+There were also teachers, mostly in Texas, who used customized
+curricula exclusively throughout the
+second year.
 
 \section{Student Usage Across States and Years}\label{sec:usage}
 
@@ -459,8 +467,9 @@ Figure \ref{fig:timeByStud} shows that the number of hours students
 spent working on the CT software in some more detail, via
 state-by-year boxplots.
 Analogous figures for the numbers of problems and sections students
-worked, available in an online supplement, showed similar patterns for
-the numbers of sections and problems students worked.
+worked, %available in an online supplement,
+showed similar patterns.% for
+%the numbers of sections and problems students worked.
 Usage time varied substantially between students and across states and
 years.
 Students in Texas,
@@ -475,10 +484,11 @@ Overall, usage varied a bit more in year 2 than in year
 1---the median absolute deviation of time spent was \Sexpr{round(mad(secByStud[['time']][secByStud[['Yr']]=='Yr 1'],na.rm=TRUE,constant=1),1)} hours in the first year, compared to \Sexpr{round(mad(secByStud[['time']][secByStud[['Yr']]=='Yr 2'],na.rm=TRUE,constant=1),1)} in  the second year.
 The increase in variation seems to be driven both by increasing
 between-state variation, and a between-student increase in Louisiana.
-One intriguing possibility is that CT usage may have been better tailored to
-teachers and students in the second year than in the first---perhaps
-students who stood to gain more from the software increased their
-usage, and the rest of the students used it less.
+One intriguing possibility is that the amount of CT usage may have been better tailored to
+teachers and students in the second year than in the first. Perhaps
+usage increased for
+students who stood to gain more from the software and decreased for
+students who stood to gain less.
 
 In contrast to the decreasing numbers of hours, problems, and sections students
 worked in year 2, Table \ref{tab:medUsage} shows that the median number of units
@@ -492,8 +502,8 @@ worked by state and year.
 The geographic variation in units worked mirrors the pattern in Figure
 \ref{fig:timeByStud}, with more usage in Kentucky, Michigan, and
 Louisiana but less in Texas, Connecticut, and New Jersey.
-However, in every state the median Year 2 student worked at least as
-many different units as the median Year 1 student.
+However, in every state the median year 2 student worked at least as
+many different units as the median year 1 student.
 Variation in the number of units worked also increased slightly
 from years 1 to 2---the interquartile range (IQR) increased in every state
 except for Kentucky, where a decrease in IQR was accompanied by an
@@ -528,11 +538,11 @@ On the other hand, students in the second year tended to see a
 slightly wider range of topics, and varied somewhat more in their usage.
 
 \begin{comment}
-Of course, more worked sections does not necessarily mean better worked sections. For instance, students might attempt fewer sections in year two, but graduate a higher percentage. Thus we investigated whether, on average, there were more graduated sections per students the second year, and how this related to whether they were enrolled in the standard versus customized curricula. Overall, the number of graduated sections per student increased in Year 2. The number of graduated sections per student was 17.94 in Year 1 and 25.66 in Year 2 in standard curricula. However, the customized curricula had fewer average graduated sections per student enrolled compared to the standard curricula; these numbers were 5.64 in Year 1 and 11.47 in Year 2. The percentages of average graduated sections to the average total worked sections were: 33.33% in Year 1 and 48.92% in Year 2 in the standard curricula, and 57.55% in Year 2 for the customized curricula. The average number of promoted sections per student also increased from Year 1 to Year 2, though only slightly. In Year 1, the average number of promotions were 1.20 for the customized curricula versus 3.64 for the standard curricula; in Year 2, those numbers were 2.20 and 4.95, respectively.
+Of course, more worked sections does not necessarily mean better worked sections. For instance, students might attempt fewer sections in year two, but graduate a higher percentage. Thus we investigated whether, on average, there were more graduated sections per students the second year, and how this related to whether they were enrolled in the standard versus customized curricula. Overall, the number of graduated sections per student increased in year 2. The number of graduated sections per student was 17.94 in year 1 and 25.66 in year 2 in standard curricula. However, the customized curricula had fewer average graduated sections per student enrolled compared to the standard curricula; these numbers were 5.64 in year 1 and 11.47 in year 2. The percentages of average graduated sections to the average total worked sections were: 33.33% in Year 1 and 48.92% in Year 2 in the standard curricula, and 57.55% in Year 2 for the customized curricula. The average number of promoted sections per student also increased from Year 1 to Year 2, though only slightly. In Year 1, the average number of promotions were 1.20 for the customized curricula versus 3.64 for the standard curricula; in Year 2, those numbers were 2.20 and 4.95, respectively.
 
-We also evaluated the time spent per section across different curricula and states.  Some records were omitted from this analysis: sections missing information on date of completion, as well as each student's last section attempted because there is no completion date recorded for those sections. As presented in Figures 2 and 3 for Year 1 and 2, respectively, students in NJ increased the time spent per section from Year 1 to Year 2; however, there were relatively few students in the study from NJ. From Figure 1, it was shown that CT and TX completed, on average, fewer sections per student. From the information presented in Figures 2 and 3, these states spent the highest average number of days per section. TX, with the largest enrollment of students and the greatest use of customized curricula in Year 2, had students spending slightly more days completing sections in customized curricula relative to the standard curricula.
+We also evaluated the time spent per section across different curricula and states.  Some records were omitted from this analysis: sections missing information on date of completion, as well as each student's last section attempted because there is no completion date recorded for those sections. As presented in Figures 2 and 3 for year 1 and 2, respectively, students in NJ increased the time spent per section from year 1 to year 2; however, there were relatively few students in the study from NJ. From Figure 1, it was shown that CT and TX completed, on average, fewer sections per student. From the information presented in Figures 2 and 3, these states spent the highest average number of days per section. TX, with the largest enrollment of students and the greatest use of customized curricula in year 2, had students spending slightly more days completing sections in customized curricula relative to the standard curricula.
 
-Figures 4 and 5 present information for only sections that were mastered by students, that is, cases in which a student was judged by the software to have mastered the material in the section. Results are similar to the data presented in Figures 2 and 3. However, in Year 2, TX students in customized curricula spent fewer days on a section they mastered, compared to the time Texas students spent mastering sections in the standard curricula. This difference is also seen in Kentucky and Louisiana. If customized curriculum are more aligned with teachers' instruction, graduating from a section may require fewer days than sections in the standard curricula, possibly because students are working on the same topics in class as they are in the software. Figures 4 and 5 also show that, on average, Connecticut and Texas spent more days graduating from sections, regardless whether the section was part of a standard curricula or customized curricula. One explanation for the longer time periods in these states may be due to a teacher's use of the software simultaneously with the textbook instruction. In this case, the teachers could have switched back-and-forth as they instructed, hence extending the time worked by their students. For the states with shorter time periods, teachers may have followed a more sequential process where they first completed one component, e.g. textbook material, and then allowed students to focus on and complete the second component, e.g. software.
+Figures 4 and 5 present information for only sections that were mastered by students, that is, cases in which a student was judged by the software to have mastered the material in the section. Results are similar to the data presented in Figures 2 and 3. However, in year 2, TX students in customized curricula spent fewer days on a section they mastered, compared to the time Texas students spent mastering sections in the standard curricula. This difference is also seen in Kentucky and Louisiana. If customized curriculum are more aligned with teachers' instruction, graduating from a section may require fewer days than sections in the standard curricula, possibly because students are working on the same topics in class as they are in the software. Figures 4 and 5 also show that, on average, Connecticut and Texas spent more days graduating from sections, regardless whether the section was part of a standard curricula or customized curricula. One explanation for the longer time periods in these states may be due to a teacher's use of the software simultaneously with the textbook instruction. In this case, the teachers could have switched back-and-forth as they instructed, hence extending the time worked by their students. For the states with shorter time periods, teachers may have followed a more sequential process where they first completed one component, e.g. textbook material, and then allowed students to focus on and complete the second component, e.g. software.
 \end{comment}
 
 
@@ -593,7 +603,7 @@ worked each unit.
 
 In year 1, the curve is almost monotonically decreasing, as one would
 expect if students adhered to the curriculum.
-Students varied in how many units they worked---with the variation due
+Students varied in the number of units they worked---with the variation due
 to both student ability and the amount of time allocated to CTAI
 within a classroom---but they mostly followed the standard curriculum.
 Students who worked fewer units stopped earlier in the sequence, and those who worked more units progressed farther.
@@ -609,7 +619,7 @@ In both these cases, the subsequent unit was worked on by a greater
 proportion of students than the immediately prior unit.
 
 Most strikingly, ``Linear Equations with Variables on Both Sides'' was worked by a
-greater proportion of students in Year 2 than in Year 1, and by a
+greater proportion of students in year 2 than in year 1, and by a
 greater proportion of students than any of the previous six sections.
 Presumably teachers and administrators wanted students to focus on
 that unit, perhaps because they found it to be particularly effective,
@@ -866,9 +876,10 @@ In Texas, however, the percentage of sections ending in reassignment increased b
 of about about
 \Sexpr{round(tab2b['Reassigned','TX']/tab1b['Reassigned','TX'])},
 to about \Sexpr{round(tab2b['Reassigned','TX']*100)}\%.
-The proportion of Texas sections labeled ``Final'' increased as well,
-most likely due to the decrease in usage, and thus the total number of
-sections.
+The proportion of Texas sections labeled ``Final'' increased as
+well---the expected result of decreasing the overall number of worked
+sections and holding fixed the likelihood of ending
+usage while in the middle of a section.
 
 Across states, sections ended in reassignment at a rate of about
 \Sexpr{round(tab1b['Reassigned','Overall']*100)}\% in year 1 and
@@ -1114,9 +1125,9 @@ reassignment was school, accounting for
 \Sexpr{vcs[['Overall_1']]['schoolid','sig2']}\% of the variation in year 1,
 and \Sexpr{vcs[['Overall_2']]['schoolid',1]}\% in year 2.
 After school, state was the most important, accounting for
-\Sexpr{vcs[['Overall_1']]['state',1]} and
+\Sexpr{vcs[['Overall_1']]['state',1]}\% and
 \Sexpr{vcs[['Overall_2']]['state',1]}\% in the two years, and unit,
-accounting for \Sexpr{vcs[['Overall_1']]['unit',1]} and \Sexpr{vcs[['Overall_2']]['unit',1]}\%.
+accounting for \Sexpr{vcs[['Overall_1']]['unit',1]}\% and \Sexpr{vcs[['Overall_2']]['unit',1]}\%.
 Surprisingly, classroom and student-level factors only accounted for
 \Sexpr{vcs[['Overall_1']]['classid',1]}\% and
 \Sexpr{vcs[['Overall_1']]['field_id',1]}\% in year 1, respectively,
@@ -2092,7 +2103,7 @@ We found that:
     worked sections in year 1 and
     \Sexpr{round(tab2b['Mastered','Overall']*100)}\% in  year 2 ended
     with the student having mastered all of the included skills.
-  \item There were three ways students worked a section with
+  \item There were three ways students worked a section without
     mastering its contents: exhausting its problems and being
     promoted, being reassigned to a new section by the teacher, and
     ending CT use altogether.
