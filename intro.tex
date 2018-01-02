@@ -1,0 +1,103 @@
+
+\begin{abstract}
+Mastery learning, the notion that students learn best if they move on
+from studying a topic only after having demonstrated mastery, sits at
+the foundation of the theory of intelligent tutoring. This paper is an
+exploration of how mastery learning plays out in practice, based on
+log data from a large randomized effectiveness trial of the Cognitive
+Tutor Algebra I (CTAI) curriculum. We find that students frequently
+progressed from CTAI sections they were working on without
+demonstrating mastery and worked units out of order. Moreover, these
+behaviors were substantially more common in the second year of the
+study, in which the CTAI effect was significantly larger. We explore
+the various ways students departed from the official CTAI curriculum,
+focusing on heterogeneity between years, states, schools, and
+students. The paper concludes with an observational study of the
+effect on post-test scores of teachers reassigning students out of
+their current sections before they mastered the requisite skills,
+finding that reassignment appears to lowers posttest scores---a finding
+that is fairly reseliant to confouding from omitted
+covariates---but that the effect varies substantially between
+classrooms.
+\end{abstract}
+\section{Introduction}
+Mastery learning sits at the foundation of intelligent tutoring
+systems \cite{corbett2001cognitive,wenger2014artificial}.
+The philosophy of mastery learning assumes a well-structured
+curriculum, and posits that students progress within the curriculum as
+they master its skills
+\cite{bloom1968learning,kulik1990effectiveness}. The Cognitive Tutor
+Algebra I (CTAI) system, developed by Carnegie Learning, Inc., is one of the best studied and best regarded examples of modern educational software. It is a blended learning system for teaching algebraic concepts and principles, to middle and high school students, including both textbook materials and software. The software component of the curriculum allows students to progress at their own pace and receive individualized feedback on their performance. A large-scale randomized effectiveness trial conducted by the RAND corporation showed that, in some circumstances, CTAI boosts students' scores on an Algebra-I posttest by about one fifth of a standard deviation \cite{pane2014effectiveness}. CTAI's success in this experiment would seem to validate its pedagogy: mastery learning, and the algebra I curriculum on which it is based.
+
+However, the theory underlying CTAI does not always determine its
+use. To be sure, the software has a standard set of algebra topics,
+divided into units and further into sections; and a standard sequence
+for presenting them. But this precise curriculum is not mandatory. At
+the request of educators, it can be customized by altering what units
+or sections are included (including, possibly, material from a
+different standard curriculum such as geometry), as well as their
+sequence, to conform to local or state standards or scope and sequence
+guides. Further, teachers have the option of moving students within
+the curriculum, regardless of the software's estimate of their skill
+mastery.
+
+This article examines teachers' and schools' adherence and
+non-adherence to the standard, mastery-based CTAI curriculum, using
+data from the RAND study, a seven-state randomized controlled trial of
+CTAI in high schools and middle schools. That study found a significant
+positive effect of CTAI in high schools, during their second year of
+implementation but not the first. Students in the treatment group of
+the study were enrolled in one or more of the standard or customized
+curricula during their participation in the study, and the software
+logged aspects of their usage, including time spent, sections
+encountered, and whether the software judged the students to have
+mastered the sections. Adopting standard procedures of an
+effectiveness trial, both Carnegie Learning and the researchers
+running the study restricted their support and oversight to what is
+typically provided outside of an experimental context. Thus, the
+software data from the study reflect typical usage. Secondary data analyses used principal stratification to show that students who attempted more sections experienced larger treatment effects, and students who had high or low assistance levels, as opposed to an average level, experienced smaller treatment effects \cite{sales2015exploring,sales2016student}.
+\citeN{sales2017role} found that students more likely to master worked
+sections of the CTAI software may experience \emph{smaller} effects
+than those less likely to achieve mastery, casting doubt on the role
+of mastery learning as a mechanism for the treatment effect.
+
+Here we contextualize the previous findings to describe, in detail, the ways
+in which schools, teachers, and students violate mastery learning.
+We will begin with short discussions of the RAND effectiveness trial and the usage
+data it produced.
+Sections \ref{sec:curricula}---\ref{sec:order} will describe overall
+patterns of usage.
+First, we will discuss standard and customized CTAI curricula used in
+the study (Section \ref{sec:curricula}).
+Next, in Section \ref{sec:usage}, we will describe patterns in the amount CTAI usage, showing that
+it varied widely between states, between years, between schools, and between students.
+In particular, the amount of usage decreased from years 1 to
+2---though more in some states than others.
+Then in section \ref{sec:order} we will describe how the amount of usage
+changed---which units of the CTAI curriculum were worked more and less
+from years 1 to 2---and find that order in which students worked
+CTAI's units varied across years. We show that this change is due
+mostly, but not completely, to the presence of customized curricula in
+year 2.
+
+In Section \ref{sec:mastery} we will describe patterns of mastery in general,
+and in Section \ref{sec:cp} we will delve deeply into ``reassignment'': the process in which a
+teacher moves a student out of a section he or she has not (yet)
+mastered into a new section.
+In particular, we will attempt to elucidate teachers' goals in
+reassigning students. One hypothesis is the need for teachers to push
+ahead students who were falling behind, i.e. to reassign them from
+sections on which they were struggling, to allow them catch up with
+the rest of the class. Another hypothesis is that teachers sought to
+push students past easier sections to begin working on more relevant
+or challenging topics for them. A third hypothesis is that teachers needed to cover certain topics in preparation for an upcoming state exam, and might have reassigned groups of students all at the same time to cover topics that might otherwise not have been covered. This hypothesis may lead to an increase in reassignments as the exam approaches.
+We find evidence of all three motivations for reassignment, varying
+across classrooms, schools, states, and study  years.
+
+Finally, in Section \ref{sec:effects} will will give
+quasi-experimental estimates of the effects of reassignment on
+students' posttest scores.
+We find that reassignment probably decreases student learning,
+though the effects vary widely across classrooms.
+Section \ref{sec:discussion} will conclude the article with a summary
+of findings and discussion.

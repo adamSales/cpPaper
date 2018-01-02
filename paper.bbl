@@ -7,6 +7,11 @@
   number 1.
 \newblock {\em Evaluation comment\/}~{\em 1,\/}~2, n2.
 
+\bibitem[\protect\citeauthoryear{Corbett}{Corbett}{2001}]{corbett2001cognitive}
+{\sc Corbett, A.} 2001.
+\newblock Cognitive computer tutors: Solving the two-sigma problem.
+\newblock {\em User Modeling 2001\/}, 137--147.
+
 \bibitem[\protect\citeauthoryear{Gelman and Hill}{Gelman and
   Hill}{2006}]{gelmanHill}
 {\sc Gelman, A.} {\sc and} {\sc Hill, J.} 2006.
@@ -59,5 +64,11 @@
 \newblock The role of mastery learning in intelligent tutoring systems:
   Principal stratification on a latent variable.
 \newblock {\em arXiv preprint arXiv:1707.09308\/}.
+
+\bibitem[\protect\citeauthoryear{Wenger}{Wenger}{2014}]{wenger2014artificial}
+{\sc Wenger, E.} 2014.
+\newblock {\em Artificial intelligence and tutoring systems: computational and
+  cognitive approaches to the communication of knowledge}.
+\newblock Morgan Kaufmann.
 
 \end{thebibliography}
