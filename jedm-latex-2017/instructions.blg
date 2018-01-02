@@ -1,0 +1,113 @@
+This is BibTeX, Version 0.99d (TeX Live 2016/Debian)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: instructions.aux
+The style file: acmtrans.bst
+Database file #1: ./ref.bib
+Warning--entry type for "JCohen96" isn't style-file defined
+--line 195 of file ./ref.bib
+Warning--entry type for "Thornburg01" isn't style-file defined
+--line 557 of file ./ref.bib
+Warning--entry type for "Ablamowicz07" isn't style-file defined
+--line 567 of file ./ref.bib
+Warning--entry type for "TUGInstmem" isn't style-file defined
+--line 1440 of file ./ref.bib
+Warning--entry type for "CTANacmart" isn't style-file defined
+--line 1448 of file ./ref.bib
+Warning--missing author in Editor00
+Warning--missing author in Editor00a
+Warning--no key, editor or organization in Czerwinski:2008:1358628
+Warning--no author, editor, or organization in Czerwinski:2008:1358628
+Warning--to sort, need editor, organization, or key in Czerwinski:2008:1358628
+Warning--no author, editor, or organization in 1984:1040142
+Warning--no author, editor, or organization in 2004:ITE:1009386.1010128
+Warning--missing author in Mullender:1993:DS(:302430
+Warning--no author, editor, or organization in CROSSBOW
+Warning--no author, editor, or organization in Harvard-01
+Warning--no author, editor, or organization in TUGInstmem
+Warning--no author, editor, or organization in 1984:1040142
+Warning--no author, editor, or organization in 1984:1040142
+Warning--no author, editor, or organization in CROSSBOW
+Warning--no author, editor, or organization in CROSSBOW
+Warning--no key, editor or organization in Czerwinski:2008:1358628
+Warning--no author, editor, or organization in Czerwinski:2008:1358628
+Warning--no key, editor or organization in Czerwinski:2008:1358628
+Warning--no author, editor, or organization in Czerwinski:2008:1358628
+Warning--no author, editor, or organization in Harvard-01
+Warning--no author, editor, or organization in Harvard-01
+Warning--no author, editor, or organization in 2004:ITE:1009386.1010128
+Warning--no author, editor, or organization in 2004:ITE:1009386.1010128
+Warning--no author, editor, or organization in TUGInstmem
+Warning--no author, editor, or organization in TUGInstmem
+Warning--no author, editor, or organization in 1984:1040142
+Warning--empty author in 1984:1040142
+Warning--empty title in 1984:1040142
+Warning--page numbers missing in 1984:1040142
+Warning--no key, editor or organization in Czerwinski:2008:1358628
+Warning--no author, editor, or organization in Czerwinski:2008:1358628
+Warning--empty institution in Buss:1987:VTB:897367
+Warning--empty publisher in clark:pct
+Warning--empty address in clark:pct
+Warning--page numbers missing in Cohen07
+Warning--no author, editor, or organization in CROSSBOW
+Warning--empty chapter and pages in Editor00
+Warning--page numbers missing in Editor00a
+Warning--empty organization in Fear05
+Warning--empty address in GM05
+Warning--no author, editor, or organization in Harvard-01
+Warning--no author, editor, or organization in 2004:ITE:1009386.1010128
+Warning--empty author in 2004:ITE:1009386.1010128
+Warning--empty address in book-minimal
+Warning--empty address in Knuth97
+Warning--empty address in Knuth98
+Warning--can't use both author and editor fields in Kong:2004:IEC:123456.887010
+Warning--can't use both author and editor fields in Kong:2005:IEC:887006.887010
+Warning--can't use both author and editor fields in Kong:2006:IEC:887006.887010
+Warning--page numbers missing in Lee05
+Warning--empty institution in Petrie:1986:NAD:899644
+Warning--page numbers missing in Rous08
+Warning--page numbers missing in SaeediJETC10
+Warning--no author, editor, or organization in TUGInstmem
+Warning--empty year in CTANacmart
+Warning--page numbers missing in Werneck:2000:FMC:351827.384253
+You've used 93 entries,
+            2969 wiz_defined-function locations,
+            1453 strings with 22191 characters,
+and the built_in function-call counts, 59194 in all, are:
+= -- 5087
+> -- 3614
+< -- 15
++ -- 1053
+- -- 1247
+* -- 5023
+:= -- 10639
+add.period$ -- 400
+call.type$ -- 93
+change.case$ -- 609
+chr.to.int$ -- 88
+cite$ -- 153
+duplicate$ -- 1937
+empty$ -- 4002
+format.name$ -- 1383
+if$ -- 11235
+int.to.chr$ -- 6
+int.to.str$ -- 0
+missing$ -- 102
+newline$ -- 468
+num.names$ -- 863
+pop$ -- 554
+preamble$ -- 1
+purify$ -- 1178
+quote$ -- 0
+skip$ -- 1896
+stack$ -- 0
+substring$ -- 2999
+swap$ -- 657
+text.length$ -- 15
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 1619
+warning$ -- 56
+while$ -- 867
+width$ -- 0
+write$ -- 1335
+(There were 61 warnings)

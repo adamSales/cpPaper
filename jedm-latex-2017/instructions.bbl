@@ -1,0 +1,584 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{??}{{$\!\!$}}{1984}]{1984:1040142}
+{$\!\!$} 1984.
+\newblock {\em SIGCOMM Comput. Commun. Rev.\/}~{\em 13-14,\/}~5-1.
+
+\bibitem[\protect\citeauthoryear{??}{Cze}{2008}]{Czerwinski:2008:1358628}
+ 2008.
+\newblock {\em CHI '08: CHI '08 extended abstracts on Human factors in
+  computing systems}. ACM, New York, NY, USA.
+\newblock General Chair-Czerwinski, Mary and General Chair-Lund, Arnie and
+  Program Chair-Tan, Desney.
+
+\bibitem[\protect\citeauthoryear{Ablamowicz and Fauser}{Ablamowicz and
+  Fauser}{2007}]{Ablamowicz07}
+{\sc Ablamowicz, R.} {\sc and} {\sc Fauser, B.} 2007.
+\newblock Clifford: a maple 11 package for clifford algebra computations,
+  version 11.
+
+\bibitem[\protect\citeauthoryear{Abril and Plant}{Abril and
+  Plant}{2007}]{Abril07}
+{\sc Abril, P.~S.} {\sc and} {\sc Plant, R.} 2007.
+\newblock The patent holder's dilemma: Buy, sell, or troll?
+\newblock {\em Communications of the ACM\/}~{\em 50,\/}~1 (Jan.), 36--44.
+
+\bibitem[\protect\citeauthoryear{Adya, Bahl, Padhye, A.Wolman, and Zhou}{Adya
+  et~al\mbox{.}}{2004}]{Adya-01}
+{\sc Adya, A.}, {\sc Bahl, P.}, {\sc Padhye, J.}, {\sc A.Wolman}, {\sc and}
+  {\sc Zhou, L.} 2004.
+\newblock A multi-radio unification protocol for {IEEE} 802.11 wireless
+  networks.
+\newblock In {\em Proceedings of the IEEE 1st International Conference on
+  Broadnets Networks (BroadNets'04)}. IEEE, Los Alamitos, CA, 210--217.
+
+\bibitem[\protect\citeauthoryear{Akyildiz, Melodia, and Chowdhury}{Akyildiz
+  et~al\mbox{.}}{2007}]{Akyildiz-02}
+{\sc Akyildiz, I.~F.}, {\sc Melodia, T.}, {\sc and} {\sc Chowdhury, K.~R.}
+  2007.
+\newblock A survey on wireless multimedia sensor networks.
+\newblock {\em Computer Netw.\/}~{\em 51,\/}~4, 921--960.
+
+\bibitem[\protect\citeauthoryear{Akyildiz, Su, Sankarasubramaniam, and
+  Cayirci}{Akyildiz et~al\mbox{.}}{2002}]{Akyildiz-01}
+{\sc Akyildiz, I.~F.}, {\sc Su, W.}, {\sc Sankarasubramaniam, Y.}, {\sc and}
+  {\sc Cayirci, E.} 2002.
+\newblock Wireless sensor networks: A survey.
+\newblock {\em Comm. ACM\/}~{\em 38,\/}~4, 393--422.
+
+\bibitem[\protect\citeauthoryear{American Mathematical Society}{American
+  Mathematical Society}{2015}]{Amsthm15}
+American Mathematical Society 2015.
+\newblock {\em Using the amsthm Package}.
+\newblock American Mathematical Society.
+\newblock \url{http://www.ctan.org/pkg/amsthm}.
+
+\bibitem[\protect\citeauthoryear{Andler}{Andler}{1979}]{Andler79}
+{\sc Andler, S.} 1979.
+\newblock Predicate path expressions.
+\newblock In {\em Proceedings of the 6th. ACM SIGACT-SIGPLAN symposium on
+  Principles of Programming Languages}. POPL '79. ACM Press, New York, NY,
+  226--236.
+
+\bibitem[\protect\citeauthoryear{Anisi}{Anisi}{2003}]{anisi03}
+{\sc Anisi, D.~A.} 2003.
+\newblock Optimal motion control of a ground vehicle.
+\newblock M.S.\ thesis, Royal Institute of Technology (KTH), Stockholm, Sweden.
+
+\bibitem[\protect\citeauthoryear{{Archer, Jr.}, Conway, and Schneider}{{Archer,
+  Jr.} et~al\mbox{.}}{1984}]{6:1:1}
+{\sc {Archer, Jr.}, J.~E.}, {\sc Conway, R.}, {\sc and} {\sc Schneider, F.~B.}
+  1984.
+\newblock User recovery and reversal in interactive systems.
+\newblock {\em ACM Trans. Program. Lang. Syst.\/}~{\em 6,\/}~1 (Jan.), 1--19.
+
+\bibitem[\protect\citeauthoryear{Bahl, Chancre, and Dungeon}{Bahl
+  et~al\mbox{.}}{2004}]{Bahl-02}
+{\sc Bahl, P.}, {\sc Chancre, R.}, {\sc and} {\sc Dungeon, J.} 2004.
+\newblock {SSCH}: Slotted seeded channel hopping for capacity improvement in
+  {IEEE} 802.11 ad-hoc wireless networks.
+\newblock In {\em Proceeding of the 10th International Conference on Mobile
+  Computing and Networking (MobiCom'04)}. ACM, New York, NY, 112--117.
+
+\bibitem[\protect\citeauthoryear{Baker and Yacef}{Baker and
+  Yacef}{2009}]{JEDM:baker2009}
+{\sc Baker, R.~S.} {\sc and} {\sc Yacef, K.} 2009.
+\newblock The state of educational data mining in 2009: A review and future
+  visions.
+\newblock {\em Journal of Educational Data Mining\/}~{\em 1,\/}~1, 3--17.
+
+\bibitem[\protect\citeauthoryear{Bowman, Debray, and Peterson}{Bowman
+  et~al\mbox{.}}{1993}]{bowman:reasoning}
+{\sc Bowman, M.}, {\sc Debray, S.~K.}, {\sc and} {\sc Peterson, L.~L.} 1993.
+\newblock Reasoning about naming systems.
+\newblock {\em ACM Trans. Program. Lang. Syst.\/}~{\em 15,\/}~5 (November),
+  795--825.
+
+\bibitem[\protect\citeauthoryear{Braams}{Braams}{1991}]{braams:babel}
+{\sc Braams, J.} 1991.
+\newblock Babel, a multilingual style-option system for use with latex's
+  standard document styles.
+\newblock {\em TUGboat\/}~{\em 12,\/}~2 (June), 291--301.
+
+\bibitem[\protect\citeauthoryear{Buss, Rosenberg, and Knott}{Buss
+  et~al\mbox{.}}{1987}]{Buss:1987:VTB:897367}
+{\sc Buss, J.~F.}, {\sc Rosenberg, A.~L.}, {\sc and} {\sc Knott, J.~D.} 1987.
+\newblock Vertex types in book-embeddings.
+\newblock Tech. rep., Amherst, MA, USA.
+
+\bibitem[\protect\citeauthoryear{Clark}{Clark}{1991}]{clark:pct}
+{\sc Clark, M.} 1991.
+\newblock Post congress tristesse.
+\newblock In {\em TeX90 Conference Proceedings}. TeX Users Group, 84--89.
+
+\bibitem[\protect\citeauthoryear{Clarkson}{Clarkson}{1985a}]{Clarkson85}
+{\sc Clarkson, K.~L.} 1985a.
+\newblock Algorithms for closest-point problems (computational geometry).
+\newblock Ph.D. thesis, Stanford University, Palo Alto, CA.
+\newblock UMI Order Number: AAT 8506171.
+
+\bibitem[\protect\citeauthoryear{Clarkson}{Clarkson}{1985b}]{Clarkson:1985:ACP:911891}
+{\sc Clarkson, K.~L.} 1985b.
+\newblock Algorithms for closest-point problems (computational geometry).
+\newblock Ph.D. thesis, Stanford University, Stanford, CA, USA.
+\newblock AAT 8506171.
+
+\bibitem[\protect\citeauthoryear{Cohen}{Cohen}{1996}]{JCohen96}
+Cohen 1996.
+\newblock Special issue: Digital libraries.
+
+\bibitem[\protect\citeauthoryear{Cohen, Nutt, and Sagic}{Cohen
+  et~al\mbox{.}}{2007}]{Cohen07}
+{\sc Cohen, S.}, {\sc Nutt, W.}, {\sc and} {\sc Sagic, Y.} 2007.
+\newblock Deciding equivalances among conjunctive aggregate queries.
+\newblock {\em J. ACM\/}~{\em 54,\/}~2 (Apr.).
+
+\bibitem[\protect\citeauthoryear{Conti, Di~Pietro, Mancini, and Mei}{Conti
+  et~al\mbox{.}}{2009}]{Conti:2009:DDS:1555009.1555162}
+{\sc Conti, M.}, {\sc Di~Pietro, R.}, {\sc Mancini, L.~V.}, {\sc and} {\sc Mei,
+  A.} 2009.
+\newblock Distributed data source verification in wireless sensor networks.
+\newblock {\em Inf. Fusion\/}~{\em 10,\/}~4 (Oct.), 342--353.
+
+\bibitem[\protect\citeauthoryear{??}{CROSSBOW}{2008}]{CROSSBOW}
+CROSSBOW 2008.
+\newblock {XBOW} sensor motes specifications.
+\newblock http://www.xbow.com.
+
+\bibitem[\protect\citeauthoryear{Culler, Estrin, and Srivastava}{Culler
+  et~al\mbox{.}}{2004}]{Culler-01}
+{\sc Culler, D.}, {\sc Estrin, D.}, {\sc and} {\sc Srivastava, M.} 2004.
+\newblock Overview of sensor networks.
+\newblock {\em IEEE Comput.\/}~{\em 37,\/}~8 (Special Issue on Sensor
+  Networks), 41--49.
+
+\bibitem[\protect\citeauthoryear{Dijkstra}{Dijkstra}{1979}]{Dijkstra:1979:GSC:1241515.1241518}
+{\sc Dijkstra, E.} 1979.
+\newblock Go to statement considered harmful.
+\newblock In {\em Classics in software engineering}. Yourdon Press, Upper
+  Saddle River, NJ, USA, 27--33.
+
+\bibitem[\protect\citeauthoryear{Douglass, Harel, and Trakhtenbrot}{Douglass
+  et~al\mbox{.}}{1998}]{Douglass98}
+{\sc Douglass, B.~P.}, {\sc Harel, D.}, {\sc and} {\sc Trakhtenbrot, M.~B.}
+  1998.
+\newblock Statecarts in use: structured analysis and object-orientation.
+\newblock In {\em Lectures on Embedded Systems}, {G.~Rozenberg} {and} {F.~W.
+  Vaandrager}, Eds. Lecture Notes in Computer Science, vol. 1494.
+  Springer-Verlag, London, 368--394.
+
+\bibitem[\protect\citeauthoryear{Dunlop and Basili}{Dunlop and
+  Basili}{1985}]{7:1:137}
+{\sc Dunlop, D.~D.} {\sc and} {\sc Basili, V.~R.} 1985.
+\newblock Generalizing specifications for uniformly implemented loops.
+\newblock {\em ACM Trans. Program. Lang. Syst.\/}~{\em 7,\/}~1 (Jan.),
+  137--158.
+
+\bibitem[\protect\citeauthoryear{Editor}{Editor}{2007}]{Editor00}
+{\sc Editor, I.}, Ed. 2007.
+\newblock {\em The title of book one\/}, 1st. ed. The name of the series one,
+  vol.~9.
+\newblock University of Chicago Press, Chicago.
+
+\bibitem[\protect\citeauthoryear{Editor}{Editor}{2008}]{Editor00a}
+{\sc Editor, I.}, Ed. 2008.
+\newblock {\em The title of book two\/}, 2nd. ed.
+\newblock The name of the series two. University of Chicago Press, Chicago,
+  Chapter 100.
+
+\bibitem[\protect\citeauthoryear{Fear}{Fear}{2005}]{Fear05}
+{\sc Fear, S.} 2005.
+\newblock {\em Publication quality tables in {\LaTeX}}.
+\newblock \url{http://www.ctan.org/pkg/booktabs}.
+
+\bibitem[\protect\citeauthoryear{Geiger and Meek}{Geiger and Meek}{2005}]{GM05}
+{\sc Geiger, D.} {\sc and} {\sc Meek, C.} 2005.
+\newblock Structured variational inference procedures and their realizations.
+\newblock In {\em Proceedings of Tenth International Workshop on Artificial
+  Intelligence and Statistics, {\rm The Barbados}}. The Society for Artificial
+  Intelligence and Statistics.
+
+\bibitem[\protect\citeauthoryear{Gerndt}{Gerndt}{1989}]{gerndt:89}
+{\sc Gerndt, M.} 1989.
+\newblock Automatic parallelization for distributed-memory multiprocessing
+  systems.
+\newblock Ph.D. thesis, University of Bonn, Bonn, Germany.
+
+\bibitem[\protect\citeauthoryear{Goossens, Rahtz, Moore, and Sutor}{Goossens
+  et~al\mbox{.}}{1999}]{Goossens:1999:LWC:553897}
+{\sc Goossens, M.}, {\sc Rahtz, S.~P.}, {\sc Moore, R.}, {\sc and} {\sc Sutor,
+  R.~S.} 1999.
+\newblock {\em The Latex Web Companion: Integrating TEX, HTML, and XML\/}, 1st
+  ed.
+\newblock Addison-Wesley Longman Publishing Co., Inc., Boston, MA, USA.
+
+\bibitem[\protect\citeauthoryear{Gundy, Balzarotti, and Vigna}{Gundy
+  et~al\mbox{.}}{2007}]{VanGundy07}
+{\sc Gundy, M.~V.}, {\sc Balzarotti, D.}, {\sc and} {\sc Vigna, G.} 2007.
+\newblock Catch me, if you can: Evading network signatures with web-based
+  polymorphic worms.
+\newblock In {\em Proceedings of the first USENIX workshop on Offensive
+  Technologies}. WOOT '07. USENIX Association, Berkley, CA.
+
+\bibitem[\protect\citeauthoryear{Gundy, Balzarotti, and Vigna}{Gundy
+  et~al\mbox{.}}{2008}]{VanGundy08}
+{\sc Gundy, M.~V.}, {\sc Balzarotti, D.}, {\sc and} {\sc Vigna, G.} 2008.
+\newblock Catch me, if you can: Evading network signatures with web-based
+  polymorphic worms.
+\newblock In {\em Proceedings of the first USENIX workshop on Offensive
+  Technologies}. WOOT '08. USENIX Association, Berkley, CA, 99--100.
+
+\bibitem[\protect\citeauthoryear{Gundy, Balzarotti, and Vigna}{Gundy
+  et~al\mbox{.}}{2009}]{VanGundy09}
+{\sc Gundy, M.~V.}, {\sc Balzarotti, D.}, {\sc and} {\sc Vigna, G.} 2009.
+\newblock Catch me, if you can: Evading network signatures with web-based
+  polymorphic worms.
+\newblock In {\em Proceedings of the first USENIX workshop on Offensive
+  Technologies}. WOOT '09. USENIX Association, Berkley, CA, 90--100.
+
+\bibitem[\protect\citeauthoryear{Harel}{Harel}{1978}]{Harel78}
+{\sc Harel, D.} 1978.
+\newblock Logics of programs: Axiomatics and descriptive power.
+\newblock MIT Research Lab Technical Report TR-200, Massachusetts Institute of
+  Technology, Cambridge, MA.
+
+\bibitem[\protect\citeauthoryear{Harel}{Harel}{1979}]{Harel79}
+{\sc Harel, D.} 1979.
+\newblock {\em First-Order Dynamic Logic}. Lecture Notes in Computer Science,
+  vol.~68.
+\newblock Springer-Verlag, New York, NY.
+
+\bibitem[\protect\citeauthoryear{??}{Harvard CodeBlue}{2008}]{Harvard-01}
+Harvard CodeBlue 2008.
+\newblock {CodeBlue}: Sensor networks for medical care.
+\newblock http://www.eecs.harvard.edu/mdw/ proj/codeblue/.
+
+\bibitem[\protect\citeauthoryear{Heering and Klint}{Heering and
+  Klint}{1985}]{7:2:183}
+{\sc Heering, J.} {\sc and} {\sc Klint, P.} 1985.
+\newblock Towards monolingual programming environments.
+\newblock {\em ACM Trans. Program. Lang. Syst.\/}~{\em 7,\/}~2 (Apr.),
+  183--213.
+
+\bibitem[\protect\citeauthoryear{Herlihy}{Herlihy}{1993}]{herlihy:methodology}
+{\sc Herlihy, M.} 1993.
+\newblock A methodology for implementing highly concurrent data objects.
+\newblock {\em ACM Trans. Program. Lang. Syst.\/}~{\em 15,\/}~5 (November),
+  745--770.
+
+\bibitem[\protect\citeauthoryear{Hoare}{Hoare}{1972}]{Hoare:1972:CIN:1243380.1243382}
+{\sc Hoare, C. A.~R.} 1972.
+\newblock Chapter ii: Notes on data structuring.
+\newblock In {\em Structured programming}, {O.~J. Dahl}, {E.~W. Dijkstra},
+  {and} {C.~A.~R. Hoare}, Eds. Academic Press Ltd., London, UK, UK, 83--174.
+
+\bibitem[\protect\citeauthoryear{Hollis}{Hollis}{1999}]{Hollis:1999:VBD:519964}
+{\sc Hollis, B.~S.} 1999.
+\newblock {\em Visual Basic 6: Design, Specification, and Objects with
+  Other\/}, 1st ed.
+\newblock Prentice Hall PTR, Upper Saddle River, NJ, USA.
+
+\bibitem[\protect\citeauthoryear{H{\"o}rmander}{H{\"o}rmander}{1985a}]{MR781537}
+{\sc H{\"o}rmander, L.} 1985a.
+\newblock {\em The analysis of linear partial differential operators. {III}}.
+  Grundlehren der Mathematischen Wissenschaften [Fundamental Principles of
+  Mathematical Sciences], vol. 275.
+\newblock Springer-Verlag, Berlin, Germany.
+\newblock Pseudodifferential operators.
+
+\bibitem[\protect\citeauthoryear{H{\"o}rmander}{H{\"o}rmander}{1985b}]{MR781536}
+{\sc H{\"o}rmander, L.} 1985b.
+\newblock {\em The analysis of linear partial differential operators. {IV}}.
+  Grundlehren der Mathematischen Wissenschaften [Fundamental Principles of
+  Mathematical Sciences], vol. 275.
+\newblock Springer-Verlag, Berlin, Germany.
+\newblock Fourier integral operators.
+
+\bibitem[\protect\citeauthoryear{??}{IEEE}{2004}]{2004:ITE:1009386.1010128}
+IEEE 2004.
+\newblock Ieee tcsc executive committee.
+\newblock In {\em Proceedings of the IEEE International Conference on Web
+  Services}. ICWS '04. IEEE Computer Society, Washington, DC, USA, 21--22.
+
+\bibitem[\protect\citeauthoryear{Kirschmer and Voight}{Kirschmer and
+  Voight}{2010}]{Kirschmer:2010:AEI:1958016.1958018}
+{\sc Kirschmer, M.} {\sc and} {\sc Voight, J.} 2010.
+\newblock Algorithmic enumeration of ideal classes for quaternion orders.
+\newblock {\em SIAM J. Comput.\/}~{\em 39,\/}~5 (Jan.), 1714--1747.
+
+\bibitem[\protect\citeauthoryear{Knuth}{Knuth}{1981a}]{book-minimal}
+{\sc Knuth, D.~E.} 1981a.
+\newblock {\em Seminumerical Algorithms}.
+\newblock Addison-Wesley.
+
+\bibitem[\protect\citeauthoryear{Knuth}{Knuth}{1981b}]{test}
+{\sc Knuth, D.~E.} 1981b.
+\newblock {\em Seminumerical Algorithms\/}, 2nd ed. The Art of Computer
+  Programming, vol.~2.
+\newblock Addison-Wesley, Reading, MA.
+
+\bibitem[\protect\citeauthoryear{Knuth}{Knuth}{1984}]{knuth:texbook}
+{\sc Knuth, D.~E.} 1984.
+\newblock {\em The {\TeX{}book}}.
+\newblock Addison-Wesley, Reading, MA.
+
+\bibitem[\protect\citeauthoryear{Knuth}{Knuth}{1997}]{Knuth97}
+{\sc Knuth, D.~E.} 1997.
+\newblock {\em The Art of Computer Programming, Vol. 1: Fundamental Algorithms
+  (3rd. ed.)}.
+\newblock Addison Wesley Longman Publishing Co., Inc.
+
+\bibitem[\protect\citeauthoryear{Knuth}{Knuth}{1998}]{Knuth98}
+{\sc Knuth, D.~E.} 1998.
+\newblock {\em The Art of Computer Programming\/}, 3rd ed. Fundamental
+  Algorithms, vol.~1.
+\newblock Addison Wesley Longman Publishing Co., Inc.
+
+\bibitem[\protect\citeauthoryear{Kong}{Kong}{2001a}]{KAGM:2001}
+{\sc Kong, W.-C.} 2001a.
+\newblock {\em E-commerce and cultural values}.
+\newblock IGI Publishing, Hershey, PA, USA, Name of chapter: The implementation
+  of electronic commerce in SMEs in Singapore, 51--74.
+
+\bibitem[\protect\citeauthoryear{Kong}{Kong}{2001b}]{KA:2001}
+{\sc Kong, W.-C.} 2001b.
+\newblock The implementation of electronic commerce in smes in singapore.
+\newblock In {\em E-commerce and cultural values}. IGI Publishing, Hershey, PA,
+  USA, 51--74.
+
+\bibitem[\protect\citeauthoryear{Kong}{Kong}{2002}]{Kong:2002:IEC:887006.887010}
+{\sc Kong, W.-C.} 2002.
+\newblock Chapter 9.
+\newblock In {\em E-commerce and cultural values}, {T.~Thanasankit}, Ed. IGI
+  Publishing, Hershey, PA, USA, 51--74.
+
+\bibitem[\protect\citeauthoryear{Kong}{Kong}{2003}]{Kong:2003:IEC:887006.887011}
+{\sc Kong, W.-C.} 2003.
+\newblock The implementation of electronic commerce in smes in singapore.
+\newblock In {\em E-commerce and cultural values}, {T.~Thanasankit}, Ed. IGI
+  Publishing, Hershey, PA, USA, 51--74.
+
+\bibitem[\protect\citeauthoryear{Kong}{Kong}{2004}]{Kong:2004:IEC:123456.887010}
+{\sc Kong, W.-C.} 2004.
+\newblock {\em E-commerce and cultural values}.
+\newblock IGI Publishing, Hershey, PA, USA, Chapter~9, 51--74.
+
+\bibitem[\protect\citeauthoryear{Kong}{Kong}{2005}]{Kong:2005:IEC:887006.887010}
+{\sc Kong, W.-C.} 2005.
+\newblock {\em E-commerce and cultural values}.
+\newblock IGI Publishing, Hershey, PA, USA, Chapter: The implementation of
+  electronic commerce in SMEs in Singapore, 51--74.
+
+\bibitem[\protect\citeauthoryear{Kong}{Kong}{2006}]{Kong:2006:IEC:887006.887010}
+{\sc Kong, W.-C.} 2006.
+\newblock {\em E-commerce and cultural values}.
+\newblock IGI Publishing, Hershey, PA, USA, Chapter (in type field)~22, 51--74.
+
+\bibitem[\protect\citeauthoryear{Korach, Rotem, and Santoro}{Korach
+  et~al\mbox{.}}{1984}]{6:3:380}
+{\sc Korach, E.}, {\sc Rotem, D.}, {\sc and} {\sc Santoro, N.} 1984.
+\newblock Distributed algorithms for finding centers and medians in networks.
+\newblock {\em ACM Trans. Program. Lang. Syst.\/}~{\em 6,\/}~3 (July),
+  380--401.
+
+\bibitem[\protect\citeauthoryear{Kornerup}{Kornerup}{1994}]{ko94}
+{\sc Kornerup, J.} 1994.
+\newblock Mapping powerlists onto hypercubes.
+\newblock M.S.\ thesis, The University of Texas at Austin.
+\newblock (In preparation).
+
+\bibitem[\protect\citeauthoryear{Kosiur}{Kosiur}{2001}]{Kosiur01}
+{\sc Kosiur, D.} 2001.
+\newblock {\em Understanding Policy-Based Networking\/}, 2nd. ed.
+\newblock Wiley, New York, NY.
+
+\bibitem[\protect\citeauthoryear{Lamport}{Lamport}{1986}]{lamport:latex}
+{\sc Lamport, L.} 1986.
+\newblock {\em \it {\LaTeX}: A Document Preparation System}.
+\newblock Addison-Wesley, Reading, MA.
+
+\bibitem[\protect\citeauthoryear{Lee}{Lee}{1981}]{Lee:1978:TQA:800025.1198348}
+{\sc Lee, J.} 1981.
+\newblock Transcript of question and answer session.
+\newblock In {\em History of programming languages I}, {R.~L. Wexelblat}, Ed.
+  ACM, New York, NY, USA, 68--71.
+
+\bibitem[\protect\citeauthoryear{Lee}{Lee}{2005}]{Lee05}
+{\sc Lee, N.} 2005.
+\newblock Interview with bill kinder: January 13, 2005.
+\newblock {\em Comput. Entertain.\/}~{\em 3,\/}~1 (Jan.-March).
+
+\bibitem[\protect\citeauthoryear{Li, Buyuktur, Hutchful, Sant, and Nainwal}{Li
+  et~al\mbox{.}}{2008}]{Li:2008:PUC:1358628.1358946}
+{\sc Li, C.-L.}, {\sc Buyuktur, A.~G.}, {\sc Hutchful, D.~K.}, {\sc Sant,
+  N.~B.}, {\sc and} {\sc Nainwal, S.~K.} 2008.
+\newblock Portalis: using competitive online interactions to support aid
+  initiatives for the homeless.
+\newblock In {\em CHI '08 extended abstracts on Human factors in computing
+  systems}. ACM, New York, NY, USA, 3873--3878.
+
+\bibitem[\protect\citeauthoryear{McCracken and Golden}{McCracken and
+  Golden}{1990}]{McCracken:1990:SSC:575315}
+{\sc McCracken, D.~D.} {\sc and} {\sc Golden, D.~G.} 1990.
+\newblock {\em Simplified Structured COBOL with Microsoft/MicroFocus COBOL}.
+\newblock John Wiley \& Sons, Inc., New York, NY, USA.
+
+\bibitem[\protect\citeauthoryear{Mullender}{Mullender}{1993}]{Mullender:1993:DS(:302430}
+{\sc Mullender, S.}, Ed. 1993.
+\newblock {\em Distributed systems (2nd Ed.)}.
+\newblock ACM Press/Addison-Wesley Publishing Co., New York, NY, USA.
+
+\bibitem[\protect\citeauthoryear{Mumford}{Mumford}{1987}]{Mumford:1987:MES:54905.54911}
+{\sc Mumford, E.} 1987.
+\newblock Managerial expert systems and organizational change: some critical
+  research issues.
+\newblock In {\em Critical issues in information systems research}. John Wiley
+  \& Sons, Inc., New York, NY, USA, 135--155.
+
+\bibitem[\protect\citeauthoryear{Natarajan, Motani, de~Silva, Yap, and
+  Chua}{Natarajan et~al\mbox{.}}{2007}]{Natarajan-01}
+{\sc Natarajan, A.}, {\sc Motani, M.}, {\sc de~Silva, B.}, {\sc Yap, K.}, {\sc
+  and} {\sc Chua, K.~C.} 2007.
+\newblock Investigating network architectures for body sensor networks.
+\newblock In {\em Network Architectures}, {G.~Whitcomb} {and} {P.~Neece}, Eds.
+  Keleuven Press, Dayton, OH, 322--328.
+
+\bibitem[\protect\citeauthoryear{Nielson}{Nielson}{1985}]{7:3:359}
+{\sc Nielson, F.} 1985.
+\newblock Program transformations in a denotational setting.
+\newblock {\em ACM Trans. Program. Lang. Syst.\/}~{\em 7,\/}~3 (July),
+  359--379.
+
+\bibitem[\protect\citeauthoryear{Novak}{Novak}{2003}]{Novak03}
+{\sc Novak, D.} 2003.
+\newblock Solder man.
+\newblock In {\em ACM SIGGRAPH 2003 Video Review on Animation theater Program:
+  Part I - Vol. 145 (July 27--27, 2003)}. ACM Press, New York, NY, 4.
+
+\bibitem[\protect\citeauthoryear{Obama}{Obama}{2008}]{Obama08}
+{\sc Obama, B.} 2008.
+\newblock A more perfect union.
+\newblock Video.
+
+\bibitem[\protect\citeauthoryear{Petrie}{Petrie}{1986a}]{Petrie:1986:NAD:899644}
+{\sc Petrie, C.~J.} 1986a.
+\newblock New algorithms for dependency-directed backtracking.
+\newblock Tech. rep., Austin, TX, USA.
+
+\bibitem[\protect\citeauthoryear{Petrie}{Petrie}{1986b}]{Petrie:1986:NAD:12345}
+{\sc Petrie, C.~J.} 1986b.
+\newblock New algorithms for dependency-directed backtracking.
+\newblock M.S.\ thesis, University of Texas at Austin, Austin, TX, USA.
+
+\bibitem[\protect\citeauthoryear{Poker-Edge.Com}{Poker-Edge.Com}{2006}]{Poker06}
+{\sc Poker-Edge.Com}. 2006.
+\newblock Stats and analysis.
+
+\bibitem[\protect\citeauthoryear{Reid}{Reid}{1980}]{reid:scribe}
+{\sc Reid, B.~K.} 1980.
+\newblock A high-level approach to computer document formatting.
+\newblock In {\em Proceedings of the 7th Annual Symposium on Principles of
+  Programming Languages}. ACM, New York, 24--31.
+
+\bibitem[\protect\citeauthoryear{Romero and Ventura}{Romero and
+  Ventura}{2010}]{romero2010educational}
+{\sc Romero, C.} {\sc and} {\sc Ventura, S.} 2010.
+\newblock Educational data mining: a review of the state of the art.
+\newblock {\em Systems, Man, and Cybernetics, Part C: Applications and Reviews,
+  IEEE Transactions on\/}~{\em 40,\/}~6, 601--618.
+
+\bibitem[\protect\citeauthoryear{Rous}{Rous}{2008}]{Rous08}
+{\sc Rous, B.} 2008.
+\newblock The enabling of digital libraries.
+\newblock {\em Digital Libraries\/}~{\em 12,\/}~3 (July).
+\newblock To appear.
+
+\bibitem[\protect\citeauthoryear{Saeedi, Zamani, and Sedighi}{Saeedi
+  et~al\mbox{.}}{2010}]{SaeediMEJ10}
+{\sc Saeedi, M.}, {\sc Zamani, M.~S.}, {\sc and} {\sc Sedighi, M.} 2010.
+\newblock A library-based synthesis methodology for reversible logic.
+\newblock {\em Microelectron. J.\/}~{\em 41,\/}~4 (Apr.), 185--194.
+
+\bibitem[\protect\citeauthoryear{Saeedi, Zamani, Sedighi, and Sasanian}{Saeedi
+  et~al\mbox{.}}{2010}]{SaeediJETC10}
+{\sc Saeedi, M.}, {\sc Zamani, M.~S.}, {\sc Sedighi, M.}, {\sc and} {\sc
+  Sasanian, Z.} 2010.
+\newblock Synthesis of reversible circuit using cycle-based approach.
+\newblock {\em J. Emerg. Technol. Comput. Syst.\/}~{\em 6,\/}~4 (Dec.).
+
+\bibitem[\protect\citeauthoryear{Salas and Hille}{Salas and
+  Hille}{1978}]{salas:calculus}
+{\sc Salas, S.} {\sc and} {\sc Hille, E.} 1978.
+\newblock {\em Calculus: One and Several Variable}.
+\newblock John Wiley and Sons, New York.
+
+\bibitem[\protect\citeauthoryear{Scientist}{Scientist}{2009}]{JoeScientist001}
+{\sc Scientist, J.} 2009.
+\newblock The fountain of youth.
+\newblock Patent No. 12345, Filed July 1st., 2008, Issued Aug. 9th., 2009.
+
+\bibitem[\protect\citeauthoryear{Smith}{Smith}{2010}]{Smith10}
+{\sc Smith, S.~W.} 2010.
+\newblock An experiment in bibliographic mark-up: Parsing metadata for xml
+  export.
+\newblock In {\em Proceedings of the 3rd. annual workshop on Librarians and
+  Computers}, {R.~N. Smythe} {and} {A.~Noble}, Eds. LAC '10, vol.~3. Paparazzi
+  Press, Milan Italy, 422--431.
+
+\bibitem[\protect\citeauthoryear{Spector}{Spector}{1990}]{Spector90}
+{\sc Spector, A.~Z.} 1990.
+\newblock Achieving application requirements.
+\newblock In {\em Distributed Systems\/}, 2nd. ed., {S.~Mullender}, Ed. ACM
+  Press, New York, NY, 19--33.
+
+\bibitem[\protect\citeauthoryear{Thornburg}{Thornburg}{2001}]{Thornburg01}
+{\sc Thornburg, H.} 2001.
+\newblock Introduction to bayesian statistics.
+
+\bibitem[\protect\citeauthoryear{??}{TUG}{2017}]{TUGInstmem}
+TUG 2017.
+\newblock Institutional members of the {\TeX} users group.
+
+\bibitem[\protect\citeauthoryear{Tzamaloukas and
+  Garcia-Luna-Aceves}{Tzamaloukas and
+  Garcia-Luna-Aceves}{2000}]{Tzamaloukas-01}
+{\sc Tzamaloukas, A.} {\sc and} {\sc Garcia-Luna-Aceves, J.~J.} 2000.
+\newblock Channel-hopping multiple access.
+\newblock Tech. Rep. I-CA2301, Department of Computer Science, University of
+  California, Berkeley, CA.
+
+\bibitem[\protect\citeauthoryear{Veytsman}{Veytsman}{}]{CTANacmart}
+{\sc Veytsman, B.}
+\newblock acmart---{C}lass for typesetting publications of {ACM}.
+
+\bibitem[\protect\citeauthoryear{Wenzel}{Wenzel}{1992}]{Wenzel:1992:TVA:146022.146089}
+{\sc Wenzel, E.~M.} 1992.
+\newblock Three-dimensional virtual acoustic displays.
+\newblock In {\em Multimedia interface design}. ACM, New York, NY, USA,
+  257--288.
+
+\bibitem[\protect\citeauthoryear{Werneck, Setubal, and
+  da~Conceic\~{a}o}{Werneck
+  et~al\mbox{.}}{2000}]{Werneck:2000:FMC:351827.384253}
+{\sc Werneck, R.}, {\sc Setubal, J.~a.}, {\sc and} {\sc da~Conceic\~{a}o, A.}
+  2000.
+\newblock Finding minimum congestion spanning trees.
+\newblock {\em J. Exp. Algorithmics\/}~{\em 5}.
+
+\bibitem[\protect\citeauthoryear{Zhou, Lu, Wan, Yarvis, and Stankovic}{Zhou
+  et~al\mbox{.}}{2008}]{Zhou-06}
+{\sc Zhou, G.}, {\sc Lu, J.}, {\sc Wan, C.-Y.}, {\sc Yarvis, M.~D.}, {\sc and}
+  {\sc Stankovic, J.~A.} 2008.
+\newblock {\em Body Sensor Networks}.
+\newblock MIT Press, Cambridge, MA.
+
+\bibitem[\protect\citeauthoryear{Zhou, Wu, Yan, He, Huang, Stankovic, and
+  Abdelzaher}{Zhou et~al\mbox{.}}{2010}]{Zhou:2010:MMS:1721695.1721705}
+{\sc Zhou, G.}, {\sc Wu, Y.}, {\sc Yan, T.}, {\sc He, T.}, {\sc Huang, C.},
+  {\sc Stankovic, J.~A.}, {\sc and} {\sc Abdelzaher, T.~F.} 2010.
+\newblock A multifrequency mac specially designed for wireless sensor network
+  applications.
+\newblock {\em ACM Trans. Embed. Comput. Syst.\/}~{\em 9,\/}~4 (April),
+  39:1--39:41.
+
+\end{thebibliography}

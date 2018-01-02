@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+ \documentclass[notitlepage,12pt]{jedm}
 
 %\usepackage{endfloat}
 %\usepackage{soul}
@@ -15,7 +15,7 @@
 \usepackage{bbm}
 \usepackage{setspace}
 \usepackage{verbatim}
-\usepackage{natbib}
+%\usepackage{natbib}
 \usepackage{bm}
 \usepackage{pdflscape}
 %\usepackage[dvipsnames]{xcolor}
@@ -37,8 +37,12 @@
 \title{Mastery Learning in Practice:\\
 A (Mostly) Descriptive Analysis of Log Data from the Cognitive Tutor Algebra I Effectiveness Trial}
 
-\author{Anita Israni \and Adam C Sales \and John F Pane}
+\author{{\large Anita Israni}\\University of Texas College of
+  Education\\aisrani@gmail.com \and {\large Adam C Sales}\\University of Texas College of
+  Education\\asales@utexas.edu  \and {\large John F Pane}\\RAND Corporation\\jpane@rand.org}
 
+
+\date{}
 
 <<include=FALSE>>=
 library(knitr)
@@ -78,7 +82,7 @@ addOverallState <- function(dat){
 @
 
 
-<<data,include=FALSE>>=
+<<data,include=FALSE,cache=TRUE>>=
 if('cpPaper.RData'%in%list.files() & file.info('cpPaper.RData')$mtime>file.info('dataMerge.r')$mtime){
     load('cpPaper.RData')
 } else source('dataMerge.r')
@@ -89,14 +93,35 @@ if('cpPaper.RData'%in%list.files() & file.info('cpPaper.RData')$mtime>file.info(
 \begin{document}
 \maketitle
 
+\begin{abstract}
+Mastery learning, the notion that students learn best if they move on
+from studying a topic only after having demonstrated mastery, sits at
+the foundation of the theory of intelligent tutoring. This paper is an
+exploration of how mastery learning plays out in practice, based on
+log data from a large randomized effectiveness trial of the Cognitive
+Tutor Algebra I (CTAI) curriculum. We find that students frequently
+progressed from CTAI sections they were working on without
+demonstrating mastery and worked units out of order. Moreover, these
+behaviors were substantially more common in the second year of the
+study, in which the CTAI effect was significantly larger. We explore
+the various ways students departed from the official CTAI curriculum,
+focusing on heterogeneity between years, states, schools, and
+students. The paper concludes with an observational study of the
+effect on post-test scores of teachers reassigning students out of
+their current sections before they mastered the requisite skills,
+finding that reassignment appears to lowers posttest scores---a finding
+that is fairly reseliant to confouding from omitted
+covariates---but that the effect varies substantially between
+classrooms.
+\end{abstract}
 \section{Introduction}
 Mastery learning sits at the foundation of intelligent tutoring
-systems \citep[e.g.][]{corbett2001cognitive,wenger2014artificial}.
+systems \cite[e.g.][]{corbett2001cognitive,wenger2014artificial}.
 The philosophy of mastery learning assumes a well-structured
 curriculum, and posits that students progress within the curriculum as
 they master its skills
-\citep{bloom1968learning,kulik1990effectiveness}. The Cognitive Tutor
-Algebra I (CTAI) system, developed by Carnegie Learning, Inc., is one of the best studied and best regarded examples of modern educational software. It is a blended learning system for teaching algebraic concepts and principles, to middle and high school students, including both textbook materials and software. The software component of the curriculum allows students to progress at their own pace and receive individualized feedback on their performance. A large-scale randomized effectiveness trial conducted by the RAND corporation showed that, in some circumstances, CTAI boosts students' scores on an Algebra-I posttest by about one fifth of a standard deviation \citep{pane2014effectiveness}. CTAI's success in this experiment would seem to validate its pedagogy: mastery learning, and the algebra I curriculum on which it is based.
+\cite{bloom1968learning,kulik1990effectiveness}. The Cognitive Tutor
+Algebra I (CTAI) system, developed by Carnegie Learning, Inc., is one of the best studied and best regarded examples of modern educational software. It is a blended learning system for teaching algebraic concepts and principles, to middle and high school students, including both textbook materials and software. The software component of the curriculum allows students to progress at their own pace and receive individualized feedback on their performance. A large-scale randomized effectiveness trial conducted by the RAND corporation showed that, in some circumstances, CTAI boosts students' scores on an Algebra-I posttest by about one fifth of a standard deviation \cite{pane2014effectiveness}. CTAI's success in this experiment would seem to validate its pedagogy: mastery learning, and the algebra I curriculum on which it is based.
 
 However, the theory underlying CTAI does not always determine its
 use. To be sure, the software has a standard set of algebra topics,
@@ -124,8 +149,8 @@ mastered the sections. Adopting standard procedures of an
 effectiveness trial, both Carnegie Learning and the researchers
 running the study restricted their support and oversight to what is
 typically provided outside of an experimental context. Thus, the
-software data from the study reflect typical usage. Secondary data analyses used principal stratification to show that students who attempted more sections experienced larger treatment effects, and students who had high or low assistance levels, as opposed to an average level, experienced smaller treatment effects \citep{sales2015exploring,sales2016student}.
-\citet{sales2017role} found that students more likely to master worked
+software data from the study reflect typical usage. Secondary data analyses used principal stratification to show that students who attempted more sections experienced larger treatment effects, and students who had high or low assistance levels, as opposed to an average level, experienced smaller treatment effects \cite{sales2015exploring,sales2016student}.
+\citeN{sales2017role} found that students more likely to master worked
 sections of the CTAI software may experience \emph{smaller} effects
 than those less likely to achieve mastery, casting doubt on the role
 of mastery learning as a mechanism for the treatment effect.
@@ -1859,7 +1884,7 @@ pretest scores,\footnote{These are measured with error, and missing at a relativ
 \Sexpr{round(mean(is.na(cpDat[['xirt']]))*100)}\%). To account for
 this, we used regression calibration based on the 20 ``multiple
 imputations'' used in the original CTAI study,
-\citet{pane2014effectiveness}.} race, sex, grade, special education
+\citeN{pane2014effectiveness}.} race, sex, grade, special education
 and gifted status, English as a second language (ESL), and free and reduced-price lunch eligibility.
 
 
@@ -1906,12 +1931,12 @@ cat(
 The results are reported in Table \ref{effectResults}.
 All the effect estimates are negative, indicating that reassigning students may hurt their algebra learning.
 The estimated effects decrease in magnitude for three or four reassignments, but these estimates are very noisy---very few students were reassigned more than two times.
-The magnitudes of the effects are rather large: \citet{pane2014effectiveness} reported an effect, in year 2, of about 0.2; the estimated effect of at least one reassignment is \Sexpr{round(abs(adjustedEsts1[['mod3.1']][1,'ests'])/0.2*100)}\% of that.
+The magnitudes of the effects are rather large: \citeN{pane2014effectiveness} reported an effect, in year 2, of about 0.2; the estimated effect of at least one reassignment is \Sexpr{round(abs(adjustedEsts1[['mod3.1']][1,'ests'])/0.2*100)}\% of that.
 
 But what of unmeasured confounding?
 For instance, the negative effect may be due to baseline differences
 in ability, beyond what is captured in pretest scores.
-\citet{hhh} suggest a method of estimating the sensitivity of a regression to an omitted confounder based on bench-marking from observed confounders.
+\citeN{hhh} suggest a method of estimating the sensitivity of a regression to an omitted confounder based on bench-marking from observed confounders.
 In order to confound the causal relationship between reassignment and posttests, a confounder would have to predict both.
 Roughly speaking, the idea is to widen the confidence interval from an
 ostensibly causal linear model to account for the possibility of a hypothetical unmeasured confounder that predicts reassignment and posttests to the same extent as one of the observed covariates.
@@ -1947,7 +1972,7 @@ were regressed on $R^{bin}$ and student-level covariates, along with
 random effects for classroom and random slopes for $R^{bin}$ varying
 by classroom.
 Unlike fixed effects models, multilevel models ``partially pool'' data
-across classrooms to estimate classroom specific effects more precisely \citep{gelmanHill}.
+across classrooms to estimate classroom specific effects more precisely \cite{gelmanHill}.
 This is especially important given the small sample sizes within
 classrooms.
 Figure \ref{fig:trtHet} shows a wide variation in the effect of
@@ -2076,7 +2101,7 @@ implementation may yield important insights---or important
 questions---about effectiveness, and the science of when
 intelligent tutors work, and when they don't.
 
-\bibliographystyle{plainnat}
+\bibliographystyle{acmtrans}
 \bibliography{ct,cp}
 
 \end{document}

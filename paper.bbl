@@ -1,74 +1,63 @@
-\begin{thebibliography}{10}
-\providecommand{\natexlab}[1]{#1}
-\providecommand{\url}[1]{\texttt{#1}}
-\expandafter\ifx\csname urlstyle\endcsname\relax
-  \providecommand{\doi}[1]{doi: #1}\else
-  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+\begin{thebibliography}{}
 
-\bibitem[Bloom(1968)]{bloom1968learning}
-Benjamin~S Bloom.
+\bibitem[\protect\citeauthoryear{Bloom}{Bloom}{1968}]{bloom1968learning}
+{\sc Bloom, B.~S.} 1968.
 \newblock Learning for mastery. instruction and curriculum. regional education
   laboratory for the carolinas and virginia, topical papers and reprints,
   number 1.
-\newblock \emph{Evaluation comment}, 1\penalty0 (2):\penalty0 n2, 1968.
+\newblock {\em Evaluation comment\/}~{\em 1,\/}~2, n2.
 
-\bibitem[Corbett(2001)]{corbett2001cognitive}
-Albert Corbett.
-\newblock Cognitive computer tutors: Solving the two-sigma problem.
-\newblock \emph{User Modeling 2001}, pages 137--147, 2001.
-
-\bibitem[Gelman and Hill(2006)]{gelmanHill}
-Andrew Gelman and Jennifer Hill.
-\newblock \emph{Data analysis using regression and multilevel/hierarchical
+\bibitem[\protect\citeauthoryear{Gelman and Hill}{Gelman and
+  Hill}{2006}]{gelmanHill}
+{\sc Gelman, A.} {\sc and} {\sc Hill, J.} 2006.
+\newblock {\em Data analysis using regression and multilevel/hierarchical
   models}.
-\newblock Cambridge university press, 2006.
+\newblock Cambridge university press.
 
-\bibitem[Hosman et~al.(2010)Hosman, Hansen, and Holland]{hhh}
-Carrie~A Hosman, Ben~B Hansen, and Paul~W Holland.
+\bibitem[\protect\citeauthoryear{Hosman, Hansen, and Holland}{Hosman
+  et~al\mbox{.}}{2010}]{hhh}
+{\sc Hosman, C.~A.}, {\sc Hansen, B.~B.}, {\sc and} {\sc Holland, P.~W.} 2010.
 \newblock The sensitivity of linear regression coefficients' confidence limits
   to the omission of a confounder.
-\newblock \emph{The Annals of Applied Statistics}, pages 849--870, 2010.
+\newblock {\em The Annals of Applied Statistics\/}, 849--870.
 
-\bibitem[Kulik et~al.(1990)Kulik, Kulik, and
-  Bangert-Drowns]{kulik1990effectiveness}
-Chen-Lin~C Kulik, James~A Kulik, and Robert~L Bangert-Drowns.
+\bibitem[\protect\citeauthoryear{Kulik, Kulik, and Bangert-Drowns}{Kulik
+  et~al\mbox{.}}{1990}]{kulik1990effectiveness}
+{\sc Kulik, C.-L.~C.}, {\sc Kulik, J.~A.}, {\sc and} {\sc Bangert-Drowns,
+  R.~L.} 1990.
 \newblock Effectiveness of mastery learning programs: A meta-analysis.
-\newblock \emph{Review of educational research}, 60\penalty0 (2):\penalty0
-  265--299, 1990.
+\newblock {\em Review of educational research\/}~{\em 60,\/}~2, 265--299.
 
-\bibitem[Pane et~al.(2014)Pane, Griffin, McCaffrey, and
-  Karam]{pane2014effectiveness}
-John~F Pane, Beth~Ann Griffin, Daniel~F McCaffrey, and Rita Karam.
+\bibitem[\protect\citeauthoryear{Pane, Griffin, McCaffrey, and Karam}{Pane
+  et~al\mbox{.}}{2014}]{pane2014effectiveness}
+{\sc Pane, J.~F.}, {\sc Griffin, B.~A.}, {\sc McCaffrey, D.~F.}, {\sc and} {\sc
+  Karam, R.} 2014.
 \newblock Effectiveness of cognitive tutor algebra i at scale.
-\newblock \emph{Educational Evaluation and Policy Analysis}, 36\penalty0
-  (2):\penalty0 127--144, 2014.
+\newblock {\em Educational Evaluation and Policy Analysis\/}~{\em 36,\/}~2,
+  127--144.
 
-\bibitem[Sales et~al.(2016)Sales, Wilks, and Pane]{sales2016student}
-Adam Sales, Asa Wilks, and John Pane.
+\bibitem[\protect\citeauthoryear{Sales, Wilks, and Pane}{Sales
+  et~al\mbox{.}}{2016}]{sales2016student}
+{\sc Sales, A.}, {\sc Wilks, A.}, {\sc and} {\sc Pane, J.} 2016.
 \newblock Student usage predicts treatment effect heterogeneity in the
   cognitive tutor algebra i program.
-\newblock In \emph{Proceedings of the 9th International Conference on
-  Educational Data Mining. International Educational Data Mining Society},
-  pages 207--214, 2016.
+\newblock In {\em Proceedings of the 9th International Conference on
+  Educational Data Mining. International Educational Data Mining Society}.
+  207--214.
 
-\bibitem[Sales and Pane(2015)]{sales2015exploring}
-Adam~C Sales and John~F Pane.
+\bibitem[\protect\citeauthoryear{Sales and Pane}{Sales and
+  Pane}{2015}]{sales2015exploring}
+{\sc Sales, A.~C.} {\sc and} {\sc Pane, J.~F.} 2015.
 \newblock Exploring causal mechanisms in a randomized effectiveness trial of
   the cognitive tutor.
-\newblock In \emph{Proceedings of the 8th International Conference on
-  Educational Data Mining. International Educational Data Mining Society},
-  2015.
+\newblock In {\em Proceedings of the 8th International Conference on
+  Educational Data Mining. International Educational Data Mining Society}.
 
-\bibitem[Sales and Pane(2017)]{sales2017role}
-Adam~C Sales and John~F Pane.
+\bibitem[\protect\citeauthoryear{Sales and Pane}{Sales and
+  Pane}{2017}]{sales2017role}
+{\sc Sales, A.~C.} {\sc and} {\sc Pane, J.~F.} 2017.
 \newblock The role of mastery learning in intelligent tutoring systems:
   Principal stratification on a latent variable.
-\newblock \emph{arXiv preprint arXiv:1707.09308}, 2017.
-
-\bibitem[Wenger(2014)]{wenger2014artificial}
-Etienne Wenger.
-\newblock \emph{Artificial intelligence and tutoring systems: computational and
-  cognitive approaches to the communication of knowledge}.
-\newblock Morgan Kaufmann, 2014.
+\newblock {\em arXiv preprint arXiv:1707.09308\/}.
 
 \end{thebibliography}
